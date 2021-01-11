@@ -26,7 +26,7 @@ public interface DBCraft {
 	public String validate();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per costruire la tabella.
+	 * Questo metodo costruisce l'istruzione da mandare al DB per creare il db.
 	 * 
 	 * @return l'istruzione con tutti i campi impostati
 	 * 
@@ -36,16 +36,16 @@ public interface DBCraft {
 	
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per sapere se esiste la tabella
+	 * Questo metodo costruisce l'istruzione da mandare al DB per sapere se esiste (con una select) il db
 	 * 
 	 * @return l'istruzione con tutti i campi impostati
 	 * 
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 */
-	public String exists();
+	public String select();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare la tabella
+	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare il db
 	 * 
 	 * @return l'istruzione con tutti i campi impostati
 	 * 

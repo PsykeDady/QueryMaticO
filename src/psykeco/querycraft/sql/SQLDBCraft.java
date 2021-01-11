@@ -34,20 +34,23 @@ public class SQLDBCraft implements DBCraft{
 
 	@Override
 	public String create() {
-		// TODO Auto-generated method stub
-		return null;
+		String validation=validate();
+		if(! validation.equals("")) throw new IllegalArgumentException(validation);
+		return "create database `"+db+"`";
 	}
 
 	@Override
-	public String exists() {
-		// TODO Auto-generated method stub
-		return null;
+	public String select() {
+		String validation=validate();
+		if(! validation.equals("")) throw new IllegalArgumentException(validation);
+		return "show databases like '"+db+"'";
 	}
 
 	@Override
 	public String drop() {
-		// TODO Auto-generated method stub
-		return null;
+		String validation=validate();
+		if(! validation.equals("")) throw new IllegalArgumentException(validation);
+		return "drop database `"+db+"`";
 	}
 
 }

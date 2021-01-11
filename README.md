@@ -92,7 +92,7 @@ Espone i seguenti metodi:
 | `primary(String) : TableCraft` | aggiunge una chiave primaria                                 |
 | `validate() : boolean`         | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
 | `create() : String`            | costruisce l' istruzione di creazione sotto forma di stringa |
-| `exists() : String`            | ccostruisce la select sotto forma di stringa                 |
+| `select() : String`            | ccostruisce la select sotto forma di stringa                 |
 | `drop() : String`              | costruisce l' istruzione di drop sotto forma di stringa      |
 
 
@@ -106,13 +106,13 @@ La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni da
 
 Espone i seguenti metodi:
 
-| **Nome metodo**                | **Descrizione** *(***obbligatorio)*                          |
-| ------------------------------ | ------------------------------------------------------------ |
-| `DB(String) : TableCraft`      | imposta il nome del DB *                                     |
-| `validate() : boolean`         | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
-| `create() : String`            | costruisce l' istruzione di creazione sotto forma di stringa |
-| `exists() : String`            | ccostruisce la select sotto forma di stringa                 |
-| `drop() : String`              | costruisce l' istruzione di drop sotto forma di stringa      |
+| **Nome metodo**        | **Descrizione** *(***obbligatorio)*                          |
+| ---------------------- | ------------------------------------------------------------ |
+| `DB(String) : DBCraft` | imposta il nome del DB *                                     |
+| `validate() : boolean` | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
+| `create() : String`    | costruisce l' istruzione di creazione sotto forma di stringa |
+| `select() : String`    | ccostruisce la select sotto forma di stringa                 |
+| `drop() : String`      | costruisce l' istruzione di drop sotto forma di stringa      |
 
 
 

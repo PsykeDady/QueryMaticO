@@ -63,13 +63,13 @@ public interface TableCraft {
 	
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per sapere se esiste la tabella
+	 * Questo metodo costruisce l'istruzione da mandare al DB per sapere se esiste (con una select) la tabella
 	 * 
 	 * @return l'istruzione con tutti i campi impostati
 	 * 
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 */
-	public String exists();
+	public String select();
 	
 	/**
 	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare la tabella

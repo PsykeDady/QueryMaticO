@@ -141,7 +141,7 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public String exists() {
+	public String select() {
 		String validation=validate();
 		
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
