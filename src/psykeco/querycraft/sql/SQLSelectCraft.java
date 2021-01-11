@@ -1,13 +1,15 @@
 package psykeco.querycraft.sql;
 
 import java.util.HashMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
 import psykeco.querycraft.QueryCraft;
+import psykeco.querycraft.SelectCraft;
 
-public class SQLSelectCraft implements QueryCraft {
+public class SQLSelectCraft implements SelectCraft {
 
 	private String table;
 	private String db;
@@ -122,13 +124,18 @@ public class SQLSelectCraft implements QueryCraft {
 		else
 			column.deleteCharAt(column.length()-1);
 		
-		values.append(" from `"+db+"`.`"+table+"` where 1=1 ");
+		values.append(" from `"+db+"`.`"+table+"`");
+		
+		
+		values.append(" where 1=1 ");
 		
 		for (Entry<String,Object> f : filter.entrySet()) {
 			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );
 		}
 		
+		
 		return column.toString()+values.toString();
 	}
+
 
 }

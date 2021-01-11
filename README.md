@@ -2,7 +2,7 @@
 
 version `0.5`
 
-Java framework to semplify DB connection and to generate istruction
+Java  ORM framework to semplify DB connection and to generate istruction
 
 ## ConnessioneDB
 
@@ -65,6 +65,12 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 
 
 
+> NOTA:
+>
+> `SelectCraft` è pensata per essere un interfaccia basata su `QueryCraft` che ne estende le operazioni aggiungendo le join.   
+>
+> Allo stato attuale però non è completa quindi non implementa alcun altra funzione aggiuntiva
+
 ### exception
 
 | Eccezione                       | messaggio                                                 | quando                                                       |
@@ -117,3 +123,15 @@ Espone i seguenti metodi:
 
 
 L'unica implementazione disponibile è quella di `SQLDBCraft`
+
+
+
+## TODO
+
+- QueryCraft : join e filterJ (filter on join) 
+- QueryCraft : gestire Date e GregorianCalendar
+- QueryCraft : gestione File
+- QueryCraft : UNIT TEST
+- MySqlConnection : Generare valore di ritorno
+- MySqlConnection : gestire Messaggi di Errore
+- MySqlConnection : UNIT TEST 

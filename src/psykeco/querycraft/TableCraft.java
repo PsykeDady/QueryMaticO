@@ -10,7 +10,7 @@ public interface TableCraft {
 	 * @param db : nuovo nome del db
 	 * @return istanza di TableCraft con db aggiornato
 	 */
-	public TableCraft db(String db);
+	public TableCraft DB(String db);
 	
 	/**
 	 * Imposta nome tabella e parametri o colonne
@@ -79,5 +79,36 @@ public interface TableCraft {
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 */
 	public String drop();
+	
+	/**
+	 * crea un istanza di QueryCraft che inserisce una tupla dell'oggetto indicato
+	 * 
+	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * 
+	 * @return un istanza di {@link QueryCraft} che rappresenta la insert
+	 */
+	public QueryCraft insertData(Object o);
+	
+	/**
+	 * crea un istanza di QueryCraft che effettua una select in base ai parametri non null
+	 * dell'oggetto passato come parametro
+	 * 
+	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * 
+	 * @return un istanza di {@link SelectCraft} che rappresenta la select
+	 */
+	public SelectCraft selectData(Object o);
+	
+	/**
+	 * crea un istanza di QueryCraft che elimina le tuple con le caratteristiche 
+	 * non null dell'oggetto indicato
+	 * 
+	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * 
+	 * @return un istanza di {@link QueryCraft} che rappresenta la delete
+	 */
+	public QueryCraft deleteData(Object o);
+	
+	
 
 }

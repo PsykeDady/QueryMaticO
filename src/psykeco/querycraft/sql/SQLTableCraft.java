@@ -1,17 +1,21 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.utility.SQLClassParser.parseClass;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
-import static psykeco.querycraft.utility.SQLClassParser.parseClass;
+import psykeco.querycraft.QueryCraft;
+import psykeco.querycraft.SelectCraft;
 import psykeco.querycraft.TableCraft;
+import psykeco.querycraft.utility.SQLClassParser;
 
 /**
- * SQLTableCraft costruisceì istruzioni SQL 
+ * SQLTableCraft costruisce istruzioni SQL 
  * per creare, distruggere o chiedere se esiste
  *  una tabella a partire da una classe java.
  * 
@@ -37,6 +41,9 @@ public class SQLTableCraft implements TableCraft{
 	private Map<String,String> kv =new HashMap<>();
 	/** lista delle chiavi primarie */
 	private List<String> primary = new LinkedList<>();
+	/** la classe rappresentativa della tabella */
+	@SuppressWarnings("rawtypes")
+	private Class type;
 	
 	
 	/**
@@ -60,12 +67,11 @@ public class SQLTableCraft implements TableCraft{
 	@SuppressWarnings("rawtypes")
 	public SQLTableCraft(String db, Class c) {
 		this.db=db;
-		table=getTrueName(c);
-		kv=parseClass(c);
+		table(c);
 	}
 	
 	@Override
-	public SQLTableCraft db(String db) {
+	public SQLTableCraft DB(String db) {
 		this.db=db;
 		return this;
 	}
@@ -73,6 +79,7 @@ public class SQLTableCraft implements TableCraft{
 	@SuppressWarnings("rawtypes")
 	@Override
 	public SQLTableCraft table(Class c) {
+		type=c;
 		table=getTrueName(c);
 		kv=parseClass(c);
 		return this;
@@ -160,6 +167,54 @@ public class SQLTableCraft implements TableCraft{
 		String sb="drop table if exists `"+db+"`.`"+attachPreSuf(table)+"`";
 		
 		return sb;
+	}
+
+	@Override
+	public QueryCraft insertData(Object o) {
+		QueryCraft qc=new SQLInsertCraft().DB(db).table(table);
+		
+		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
+		
+		for (Entry<String,Object> entry : map.entrySet()) {
+			if(entry.getValue()==null) continue;
+			qc.entry(entry);
+		}
+		
+		return qc;
+	}
+
+	@Override
+	public SelectCraft selectData(Object o) {
+		if(type.isInstance(o))
+			throw new IllegalArgumentException("oggetto passato di classe non supportata");
+		
+		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
+		
+		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
+		
+		for (Entry<String,Object> entry : map.entrySet()) {
+			if(entry.getValue()==null) continue;
+			qc.filter(entry);
+		}
+		
+		return qc;
+	}
+
+	@Override
+	public QueryCraft deleteData(Object o) {
+		if(type.isInstance(o))
+			throw new IllegalArgumentException("oggetto passato di classe non supportata");
+		
+		QueryCraft qc=new SQLDeleteCraft().DB(db).table(table);
+		
+		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
+		
+		for (Entry<String,Object> entry : map.entrySet()) {
+			if(entry.getValue()==null) continue;
+			qc.filter(entry);
+		}
+		
+		return qc;
 	}
 	
 }

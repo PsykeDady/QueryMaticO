@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
+import psykeco.querycraft.sql.SQLDBCraft;
 import psykeco.querycraft.utility.ConnessioneDB;
 
 
@@ -78,12 +79,10 @@ public class MySqlConnection {
 		
 		if(!connesso) return false;
 		
-		String query="create database "+nomeDB;
-		
-		nomeDB=nomeDB.replace(' ', '_');
+		DBCraft craf=new SQLDBCraft().DB(nomeDB);
 		
 		try {
-			connessione.createStatement().execute(query);
+			connessione.createStatement().execute(craf.create());
 			return true;
 		} catch (SQLException e) {
 			return false;
@@ -100,10 +99,10 @@ public class MySqlConnection {
 		
 		if(!connesso) throw new IllegalArgumentException() ;
 		
-		String query="select schema_name from information_schema.schemata where schema_name='"+nomeDB+'\'';
+		DBCraft craf=new SQLDBCraft().DB(nomeDB);
 		
 		try {
-			ResultSet rs=connessione.createStatement().executeQuery(query);
+			ResultSet rs=connessione.createStatement().executeQuery(craf.select());
 			return rs.next();
 		} catch (SQLException e) {
 			return false;
@@ -119,10 +118,10 @@ public class MySqlConnection {
 		
 		if(!connesso) return false; 
 		
-		String query = "drop database "+nomeDB;
+		DBCraft craf=new SQLDBCraft().DB(nomeDB);
 		
 		try{
-			connessione.createStatement().execute(query);
+			connessione.createStatement().execute(craf.drop());
 			return true;
 		}catch(SQLException s){
 			return false;

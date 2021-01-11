@@ -5,6 +5,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import sun.net.www.content.audio.x_aiff;
+
 /**
  * classe di utilit&agrave; per leggere i parametri di una classe e quindi mapparli 
  * su tipi di SQL
@@ -87,6 +89,36 @@ public final class SQLClassParser {
 		}
 		
 		return map;
+	}
+	
+	/**
+	 * Costruisce una mappa "nomecampo-valore" dell'oggetto istanza 
+	 * passata con i campi della classe passata ( se è un istanza di quella classe)
+	 * 
+	 * @param type     classe supposta
+	 * @param instance istanza della classe 
+	 * 
+	 * @return mappa nomecampo,valore
+	 */
+	public static Map<String,Object> parseInstance(Class type, Object instance){
+		if(!type.isInstance(instance))
+			throw new IllegalArgumentException("oggetto passato di classe non supportata");
+
+		Map<String,Object> mappa=new HashMap<>();
+		
+		Field[] f= type.getDeclaredFields();
+		
+		for ( Field x : f ) {
+			boolean acc=x.isAccessible();
+			x.setAccessible(true);
+			Object value=null;
+			try {value = x.get(instance);} catch (Exception e) {}
+			mappa.put(x.getName(), value);
+			x.setAccessible(acc);
+		}
+		
+		return mappa;
+		
 	}
 	
 	/**

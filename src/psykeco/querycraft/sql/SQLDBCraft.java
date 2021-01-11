@@ -1,9 +1,6 @@
 package psykeco.querycraft.sql;
 
-import java.util.Map.Entry;
-
 import psykeco.querycraft.DBCraft;
-import psykeco.querycraft.TableCraft;
 
 /**
  * SQLDBCraft costruisceì istruzioni SQL 
@@ -18,7 +15,7 @@ public class SQLDBCraft implements DBCraft{
 	private String db;
 
 	@Override
-	public DBCraft db(String db) {
+	public DBCraft DB(String db) {
 		this.db=db;
 		return this;
 	}
