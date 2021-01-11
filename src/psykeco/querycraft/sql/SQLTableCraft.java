@@ -11,8 +11,9 @@ import static psykeco.querycraft.utility.SQLClassParser.parseClass;
 import psykeco.querycraft.TableCraft;
 
 /**
- * SQLCreateTableCraft costruisce un istruzione SQL 
- * per creare una tabella a partire da una classe java.
+ * SQLTableCraft costruisceì istruzioni SQL 
+ * per creare, distruggere o chiedere se esiste
+ *  una tabella a partire da una classe java.
  * 
  * Per farlo, usa le reflection e legge tutti i campi, ogni 
  * campo diventa una colonna e il nome delle classe viene 

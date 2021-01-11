@@ -13,9 +13,9 @@ public interface DBCraft {
 	/**
 	 * imposta il nome del db
 	 * @param db : nuovo nome del db
-	 * @return istanza di TableCraft con db aggiornato
+	 * @return istanza di DBCraft con db aggiornato
 	 */
-	public TableCraft db(String db);
+	public DBCraft db(String db);
 	
 	/**
 	 * analizza i campi della query e quindi ne valida il contenuto, restituendo eventualmente un messaggio di errore che 
