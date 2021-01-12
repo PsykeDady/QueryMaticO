@@ -109,6 +109,18 @@ public interface TableCraft {
 	 */
 	public QueryCraft deleteData(Object o);
 	
-	
+	/**
+	 * crea un istanza di QueryCraft che aggiorna le tuple con le informazioni dell'istanza passata.
+	 * Per farlo, utilizza come chiave di ricerca il campo indicato da {@link #primary}
+	 * 
+	 * @param o un oggetto che rappresenta i campi non null da aggiornare 
+	 * ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}. 
+	 * Il campo primario è obbligatorio
+	 * 
+	 * @throws IllegalArgumentException se primary non &egrave; stato specificato
+	 * 
+	 * @return un istanza di {@link QueryCraft} che rappresenta la delete
+	 */
+	public QueryCraft updateData(Object o);
 
 }

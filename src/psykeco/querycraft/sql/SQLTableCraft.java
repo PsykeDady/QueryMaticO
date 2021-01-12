@@ -210,5 +210,30 @@ public class SQLTableCraft implements TableCraft{
 		
 		return qc;
 	}
+
+	@Override
+	public QueryCraft updateData(Object o) {
+		if (primary.isEmpty())
+			throw new IllegalArgumentException("deve essere presente almeno una chiave primaria");
+		
+		QueryCraft qc=new SQLUpdateCraft().DB(db).table(table);
+		
+		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
+		
+		for (Entry<String,Object> entry : map.entrySet()) {
+			if(primary.contains(entry.getKey()) ) {
+				if( entry.getValue()==null  ) 
+					throw new IllegalArgumentException("Gli elementi nella chiave primaria non possono essere null");
+				
+				qc.filter(entry);
+			} else {
+				if(entry.getValue()==null) continue;
+				
+				qc.entry(entry);
+			}
+		}
+		
+		return qc;
+	}
 	
 }

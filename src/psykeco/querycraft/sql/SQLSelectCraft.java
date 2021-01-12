@@ -1,7 +1,6 @@
 package psykeco.querycraft.sql;
 
 import java.util.HashMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
