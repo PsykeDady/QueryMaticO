@@ -72,7 +72,7 @@ public class SQLSelectCraft implements SelectCraft {
 	
 	@Override
 	public SQLSelectCraft filter(Entry<String, Object> filter) {
-		return entry(filter.getKey(),filter.getValue());
+		return filter(filter.getKey(),filter.getValue());
 	}
 	
 	@Override

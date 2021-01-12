@@ -185,9 +185,6 @@ public class SQLTableCraft implements TableCraft{
 
 	@Override
 	public SelectCraft selectData(Object o) {
-		if(type.isInstance(o))
-			throw new IllegalArgumentException("oggetto passato di classe non supportata");
-		
 		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
 		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
@@ -202,9 +199,6 @@ public class SQLTableCraft implements TableCraft{
 
 	@Override
 	public QueryCraft deleteData(Object o) {
-		if(type.isInstance(o))
-			throw new IllegalArgumentException("oggetto passato di classe non supportata");
-		
 		QueryCraft qc=new SQLDeleteCraft().DB(db).table(table);
 		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);

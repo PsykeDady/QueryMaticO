@@ -7,6 +7,8 @@ package psykeco.querycraft;
  */
 public interface SelectCraft extends QueryCraft{
 	
-	
+	// join(SelectCraft joinTable, String alias)
+	// joinFilter (Entry<String,String>)
+	// joinFilter (String columnThis, String columnOther)
 
 }

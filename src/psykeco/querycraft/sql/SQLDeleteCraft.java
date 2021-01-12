@@ -36,7 +36,7 @@ public class SQLDeleteCraft implements QueryCraft{
 	
 	@Override
 	public SQLDeleteCraft filter(Entry<String, Object> filter) {
-		return entry(filter.getKey(),filter.getValue());
+		return filter(filter.getKey(),filter.getValue());
 	}
 	
 	@Override

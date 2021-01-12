@@ -43,7 +43,7 @@ class TableCraftTest {
 	}
 	
 	@Test
-	void testInsert () {
+	void testInsertData () {
 		String expected =
 			  "insert into `TestDB`.`Entita` ( `chiave`,`campo`) "
 			+ "values (123,'un campo generico')"
@@ -57,6 +57,39 @@ class TableCraftTest {
 				table(Entita.class).primary("chiave");
 		
 		assertEquals(expected,s.insertData(ins).craft().trim());
+	}
+	
+	@Test
+	void testSelectData () {
+		String expected =
+				  "select * "
+				+ "from `TestDB`.`Entita` "
+				+ "where 1=1 AND `campo`='un campo generico'";
+		;
+		
+		Entita ins=new Entita();
+		ins.setCampo("un campo generico");
+		
+		TableCraft s = new SQLTableCraft().DB("TestDB").
+				table(Entita.class).primary("chiave");
+		
+		assertEquals(expected,s.selectData(ins).craft().trim());
+	}
+	
+	@Test
+	void testDeleteData () {
+		String expected =
+				  "delete from `TestDB`.`Entita` "
+				+ "where 1=1 AND `campo`='un campo generico'";
+		;
+		
+		Entita ins=new Entita();
+		ins.setCampo("un campo generico");
+		
+		TableCraft s = new SQLTableCraft().DB("TestDB").
+				table(Entita.class).primary("chiave");
+		
+		assertEquals(expected,s.deleteData(ins).craft().trim());
 	}
 
 }

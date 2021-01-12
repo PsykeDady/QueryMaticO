@@ -40,7 +40,7 @@ public class SQLUpdateCraft implements QueryCraft {
 	
 	@Override
 	public SQLUpdateCraft filter(Entry<String, Object> filter) {
-		return entry(filter.getKey(),filter.getValue());
+		return filter(filter.getKey(),filter.getValue());
 	}
 	
 	@Override
