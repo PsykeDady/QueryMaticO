@@ -14,9 +14,9 @@ class QueryCraftTest {
 	@Test
 	void testSelect () {
 		String expected =
-			"select `campo`, `chiave` "
-			+ "from `TestDB`.`TestTable` "
-			+ "where 1=1 AND "
+			"SELECT `campo`,`chiave` "
+			+ "FROM `TestDB`.`TestTable` "
+			+ "WHERE 1=1 AND "
 			+ 	"`colonna 2`=5 "
 			+ 	"AND `colonna 1`='stringa 1'"
 		;
@@ -34,9 +34,9 @@ class QueryCraftTest {
 	@Test
 	void testInsert () {
 		String expected =
-			"insert into `TestDB`.`TestTable` "
+			"INSERT INTO `TestDB`.`TestTable` "
 			+ 	"( `chiave`,`campo`) "
-			+ "values "
+			+ "VALUES "
 			+ 	"(5,'questo e un test')"
 		;
 		
@@ -52,8 +52,8 @@ class QueryCraftTest {
 	@Test
 	void testDelete () {
 		String expected =
-			"delete from `TestDB`.`TestTable` "
-			+ "where 1=1 "
+			"DELETE FROM `TestDB`.`TestTable` "
+			+ "WHERE 1=1 "
 				+ "AND `colonna 2`=5 "
 				+ "AND `colonna 1`='stringa 1'"
 		;

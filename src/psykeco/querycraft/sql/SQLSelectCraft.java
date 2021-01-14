@@ -161,14 +161,16 @@ public class SQLSelectCraft extends SelectCraft {
 		}
 		
 		String result=sb.toString();	
-		return result.equals("") ? attachAlias("*") : result.trim();
+		return result.equals("") ? attachAlias(null) : result.trim();
 	}
 
 	@Override
 	public String fromCraft() {
 		StringBuilder sb=new StringBuilder();
 		
-		sb.append("`"+db+"`.`"+table+"` `"+alias+"`");
+		sb.append("`"+db+"`.`"+table+"`");
+		if(alias!=null)
+			sb.append("`"+alias+"`");
 		
 		if( joinTable != null ) {
 			sb.append(", "+joinTable.fromCraft());

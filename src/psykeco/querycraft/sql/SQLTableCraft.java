@@ -165,8 +165,8 @@ public class SQLTableCraft implements TableCraft{
 		String sb="SELECT * "
 				+ "FROM information_schema.tables "
 				+ "WHERE "
-					+ "TABLE_SCHEMA='"+db+"' "
-					+ "and TABLE_NAME='"+attachPreSuf(table)+"'";
+					+ "table_schema='"+db+"' "
+					+ "AND table_name='"+attachPreSuf(table)+"'";
 		
 		return sb;
 	}

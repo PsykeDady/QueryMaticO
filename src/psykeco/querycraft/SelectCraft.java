@@ -18,9 +18,10 @@ public abstract class SelectCraft implements QueryCraft{
 	}
 	
 	protected String attachAlias(String what) {
+		what=(what==null)?"*":"`"+what+"`";
 		if(alias==null || alias.equals("")) 
-			return "";
-		return "`"+alias+"`.`"+what+"`";
+			return what;
+		return "`"+alias+"`."+what;
 	}
 	
 	public abstract SelectCraft entry (String valore);

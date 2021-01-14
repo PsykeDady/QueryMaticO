@@ -31,12 +31,12 @@ class TableCraftTest {
 	@Test
 	void testCreate () {
 		String expected =
-				  "create table `TestDB`.`Entita` ("
+				  "CREATE TABLE `TestDB`.`Entita` ("
 					+ "chiave INT,"
 					+ "campo TEXT,"
 					+ "anotherCampo NVARCHAR(676),"
 	
-					+ "primary key(chiave,anotherCampo)"
+					+ "PRIMARY KEY(chiave,anotherCampo)"
 				+ ")"
 		;
 		
@@ -49,7 +49,7 @@ class TableCraftTest {
 	@Test
 	void testDrop () {
 		String expected =
-			"drop table if exists `TestDB`.`Entita`"
+			"DROP TABLE IF EXISTS `TestDB`.`Entita`"
 		;
 		
 		TableCraft s = new SQLTableCraft().DB("TestDB").
@@ -61,10 +61,10 @@ class TableCraftTest {
 	@Test
 	void testSelect () {
 		String expected =
-			  "select * "
-			+ "from information_schema "
-			+ "where table_schema='TestDB' "
-			+ "and table_name='Entita'"
+			  "SELECT * "
+			+ "FROM information_schema.tables "
+			+ "WHERE table_schema='TestDB' "
+			+ "AND table_name='Entita'"
 		;
 		
 		TableCraft s = new SQLTableCraft().DB("TestDB").
@@ -76,8 +76,8 @@ class TableCraftTest {
 	@Test
 	void testInsertData () {
 		String expected =
-			  "insert into `TestDB`.`Entita` ( `chiave`,`campo`) "
-			+ "values (123,'un campo generico')"
+			  "INSERT INTO `TestDB`.`Entita` ( `chiave`,`campo`) "
+			+ "VALUES (123,'un campo generico')"
 		;
 		
 		Entita ins=new Entita();
@@ -93,9 +93,9 @@ class TableCraftTest {
 	@Test
 	void testSelectData () {
 		String expected =
-				  "select * "
-				+ "from `TestDB`.`Entita` "
-				+ "where 1=1 AND `campo`='un campo generico'";
+				  "SELECT * "
+				+ "FROM `TestDB`.`Entita` "
+				+ "WHERE 1=1 AND `campo`='un campo generico'";
 		;
 		
 		Entita ins=new Entita();
@@ -110,8 +110,8 @@ class TableCraftTest {
 	@Test
 	void testDeleteData () {
 		String expected =
-				  "delete from `TestDB`.`Entita` "
-				+ "where 1=1 AND `campo`='un campo generico'";
+				  "DELETE FROM `TestDB`.`Entita` "
+				+ "WHERE 1=1 AND `campo`='un campo generico'";
 		;
 		
 		Entita ins=new Entita();
@@ -126,9 +126,9 @@ class TableCraftTest {
 	@Test
 	void testUpdateData () {
 		String expected =
-				  "update `TestDB`.`Entita` "
-				+ "set `campo`='un campo generico',`anotherCampo`='Another campo generico'  "
-				+ "where 1=1 AND `chiave`=123"
+				  "UPDATE `TestDB`.`Entita` "
+				+ "SET `campo`='un campo generico',`anotherCampo`='Another campo generico'  "
+				+ "WHERE 1=1 AND `chiave`=123"
 				
 		;
 		
