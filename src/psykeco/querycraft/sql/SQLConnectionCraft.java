@@ -1,0 +1,142 @@
+package psykeco.querycraft.sql;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import psykeco.querycraft.ConnectionCraft;
+import psykeco.querycraft.DBCraft;
+
+public class SQLConnectionCraft  implements ConnectionCraft{
+	
+	
+	/**
+	 * default driver for mysql
+	 */
+	public static final String DEFAULT_DRIVER="com.mysql.jdbc.Driver";
+	
+	/**
+	 * default URL
+	 */
+	public static final String DEFAULT_LOCALHOST="localhost";
+	
+	/**
+	 * default port for mysql
+	 */
+	public static final int DEFAULT_PORT=3306;
+	
+	/**
+	 * default user (root) 
+	 */
+	public static final String DEFAULT_USER="root";
+	
+	/**
+	 * semi-URL standard della connessione con jdbc. <br>
+	 * Va completato con : <br>
+	 * <ul>
+	 * 	<li> il link (obbligatorio) </li>
+	 * 	<li> portadi connessione (non obbligatoria) </li>
+	 * 	<li> il nome del database (non obbligatorio) </li>
+	 * </ul>
+	 * <br> 
+	 * ecco un esempio di forma completa:<br>
+	 * <code>jdbc:mysql://localhost:3306/TestDB</code>
+	 */
+	public static final String URL_INIT="jdbc:mysql://";
+	
+	@SuppressWarnings("unused")
+	private String driver=DEFAULT_DRIVER;
+	private String url=DEFAULT_LOCALHOST;
+	private String db;
+	private int port = DEFAULT_PORT;
+	private String user=DEFAULT_USER;
+	private String psk="";
+	
+	@Override
+	public ConnectionCraft driver(String driver) {
+		this.driver=driver;
+		return this;
+	}
+
+	@Override
+	public ConnectionCraft url(String url) {
+		this.url=url;
+		return this;
+	}
+
+	@Override
+	public ConnectionCraft user(String user) {
+		this.user=user;
+		return this;
+	}
+
+	@Override
+	public ConnectionCraft psk(String psk) {
+		this.psk=psk;
+		return this;
+	}
+
+	@Override
+	public ConnectionCraft db(String db) {
+		this.db=db;
+		return this;
+	}
+	
+	@Override
+	public ConnectionCraft port(int port) {
+		this.port=port;
+		return this;
+	}
+	
+	@Override
+	public String validation() {
+		if(url==null) return "url vuoto";
+		if(port < 1024 || 49151 < port) return "valore della porta errato";
+		if(user==null) return "utente non valido";
+		if(psk==null) return "psk non valida";
+		if (db!=null && ! db.matches(DBCraft.BASE_REGEX)) return "nome db non valido";
+		
+		return "";
+	}
+	
+	/**
+	 * @return istanza di connessione da usare 
+	 * 
+	 * @throws    IllegalStateException se la connessione non viene stabilita
+	 * @throws IllegalArgumentException se i parametri non passano la validazione
+	 */
+	@Override
+	public Connection connect() {
+		String validate = validation() ;
+		if (!validate.equals("")) throw new IllegalArgumentException(validate);
+		String URL=URL_INIT+url+':'+port+((db!=null)?'/'+db:"");
+		Connection connessione=null;
+		try{
+			connessione=DriverManager.getConnection(URL,user,psk);
+		}catch(SQLException s){
+			throw new IllegalStateException(s.getMessage());
+		}
+		return connessione;
+	}
+	
+	public boolean equals(Object o) {
+		if(o==null) return false;
+		if(!(o instanceof SQLConnectionCraft)) return false;
+		SQLConnectionCraft other=(SQLConnectionCraft) o;
+		
+		return 
+			((driver==null && other.driver==null) || 
+				(driver!=null && driver.equals(other.driver))) &&
+			((url==null && other.url==null) || 
+				(url!=null && url.equals(other.url))) &&
+			port == other.port &&
+			((db==null && other.db==null) || 
+				(db!=null && db.equals( other.db))) &&
+			((user==null && other.user==null) ||
+				(user!=null && user.equals( other.user))) &&
+			((psk==null && other.psk==null) || 
+				(psk!=null && psk.equals( other.psk)))
+		;
+	}
+
+}
