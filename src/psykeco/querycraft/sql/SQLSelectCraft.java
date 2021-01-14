@@ -7,13 +7,19 @@ import java.util.TreeSet;
 
 import psykeco.querycraft.QueryCraft;
 import psykeco.querycraft.SelectCraft;
+import static psykeco.querycraft.utility.SQLClassParser.parseType;
+import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
 
-public class SQLSelectCraft implements SelectCraft {
+public class SQLSelectCraft extends SelectCraft {
 
 	private String table;
 	private String db;
 	private HashMap<String,Object> filter=new HashMap<>();
 	private Set<String> kv=new TreeSet<>();
+	/** couple join table and alias name*/
+	private SQLSelectCraft joinTable; 
+	/** map of this-column join-column filter  */
+	private HashMap<String,String> joinFilter=new HashMap<>();
 	
 	
 	@Override
@@ -36,6 +42,7 @@ public class SQLSelectCraft implements SelectCraft {
 	 * 
 	 * @return un istanza di SQLSelectCraft con il campo aggiunto alla select
 	 * */
+	@Override
 	public SQLSelectCraft entry(String colonna) {
 		this.kv.add(colonna);
 		return this;
@@ -96,44 +103,99 @@ public class SQLSelectCraft implements SelectCraft {
 		}
 		
 		for (Entry<String,Object> kv : this.filter.entrySet()) {
-			String value=kv.getValue().toString();
+			String type=parseType((getTrueName(kv.getValue().getClass())),false);
+			boolean isString= parseType("String",false).equals(type);
+			String value= kv.getValue().toString();
+			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
 			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey().matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			if ( ! value      .matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
+			if ( ! kv.getKey()      .matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			if ( isString && ! value.matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
-		return "";
+		return (joinTable!=null)?joinTable.validate():"";
 	}
 
 	@Override
 	public String craft() {
-		StringBuilder column=new StringBuilder(kv.size()*10);		
-		StringBuilder values=new StringBuilder(filter.size()*20);
-		
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		
-		column.append("select");
-		for (String k : kv ) {
-			column.append(" `"+k+"`,");
+		
+		return "SELECT "+selectCraft()+" FROM "+fromCraft()+" WHERE 1=1 "+whereCraft();
+	}
+
+	@Override
+	public SelectCraft join(SelectCraft joinTable) {
+		if( ! (joinTable instanceof SelectCraft) ) 
+			throw new IllegalArgumentException("la tabella di join deve essere di tipo SQLSelectCraft");
+		this.joinTable=(SQLSelectCraft) joinTable;
+		return this;
+	}
+
+	@Override
+	public SelectCraft joinFilter(Entry<String, String> thisOther) {
+		
+		return joinFilter(thisOther.getKey(),thisOther.getValue());
+	}
+
+	@Override
+	public SelectCraft joinFilter(String columnThis, String columnOther) {
+		joinFilter.put(columnThis, columnOther);
+		return this;
+	}
+
+	@Override
+	public String selectCraft() {
+		StringBuilder sb=new StringBuilder();
+		
+		if (kv.size()!=0) {
+			for (String k : kv ) {
+				sb.append(attachAlias(k)+",");
+			}
+			sb.deleteCharAt(sb.length()-1);
 		}
-		if (kv.size()==0) 
-			column.append(" *");
-		else
-			column.deleteCharAt(column.length()-1);
 		
-		values.append(" from `"+db+"`.`"+table+"`");
+		if( joinTable != null ) {
+			sb.append(","+joinTable.selectCraft());
+		}
 		
+		String result=sb.toString();	
+		return result.equals("") ? attachAlias("*") : result.trim();
+	}
+
+	@Override
+	public String fromCraft() {
+		StringBuilder sb=new StringBuilder();
 		
-		values.append(" where 1=1 ");
+		sb.append("`"+db+"`.`"+table+"` `"+alias+"`");
+		
+		if( joinTable != null ) {
+			sb.append(", "+joinTable.fromCraft());
+		}
+		
+		String result=sb.toString();	
+		return result.equals("") ? attachAlias("*") : result.trim();
+
+	}
+
+	@Override
+	public String whereCraft() {
+		StringBuilder sb=new StringBuilder();
 		
 		for (Entry<String,Object> f : filter.entrySet()) {
-			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );
+			sb.append("AND "+attachAlias(f.getKey())+"="+QueryCraft.str(f.getValue())+" " );
 		}
 		
+		if( joinTable != null ) {
+			sb.append(joinTable.whereCraft());
+			for (Entry<String,String> f : joinFilter.entrySet()) {
+				sb.append(" AND "+attachAlias(f.getKey())+"="+joinTable.attachAlias(f.getValue())+" " );
+			}
+		}
 		
-		return column.toString()+values.toString();
+		String result=sb.toString();	
+		return result.trim();
 	}
 
 

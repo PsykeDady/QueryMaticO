@@ -64,13 +64,6 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 ![](documentation-md/QueryCraft_Hierarchy.png)
 
 
-
-> NOTA:
->
-> `SelectCraft` è pensata per essere un interfaccia basata su `QueryCraft` che ne estende le operazioni aggiungendo le join.   
->
-> Allo stato attuale però non è completa quindi non implementa alcun altra funzione aggiuntiva
-
 ### exception
 
 | Eccezione                       | messaggio                                                 | quando                                                       |
@@ -81,7 +74,26 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 | `IllegalArgumentException`      | Una chiave/ il valore di una chiave è stata trovato vuoto | Durante la fase di validazione, è stata trovata una chiave o il valore di una chiave vuoti ( son due messaggi diversi, a seconda di cosa non è stato trovato) |
 | `IllegalArgumentException`      | Nome tabella/db/chiave/valore non valido                  | Durante la fase di validazione, son stati trovati dei valori di tabella/db/chiave/valore non validi () son quattro messaggi diversi, a seconda di cosa non ha passato la regex) |
 
+## SelectCraft
 
+estende l'interfaccia QueryCraft aggiungendo le funzioni di join. Espone i metodi:
+
+| **Nome metodo**                                              | **Descrizione** *(***obbligatorio)*                          |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `alis(String) : SelectCraft`                                 | imposta un nome da usare come alias nella query              |
+| `join(SelectCraft) : SelectCraft`                            | imposta un selectCraft per la join (al momento max=1)        |
+| `joinFilter(Entry<String,String>) : SelectCraft`             | imposta una coppia di colonne che deve essere uguale tra la select this (primo valore) e la select in join |
+| `joinFilter(String columntThis,String columnOther) : SelectCraft` | come sopra, ma preleva due stringhe in ingresso              |
+| `selectCraft() : String`                                     | restituzione dei campi nella select                          |
+| `fromCraft() : String`                                       | restituzione dei campi nella from                            |
+| `whereCraft() : String`                                      | restituzione dei campi nella where                           |
+
+
+L'unica implementazione attuale è `SQLSelectCraft`
+
+> NOTA:
+>
+> Allo stato attuale non è completa l'implementazione
 
 ## TableCraft 
 
@@ -100,6 +112,10 @@ Espone i seguenti metodi:
 | `create() : String`            | costruisce l' istruzione di creazione sotto forma di stringa |
 | `select() : String`            | ccostruisce la select sotto forma di stringa                 |
 | `drop() : String`              | costruisce l' istruzione di drop sotto forma di stringa      |
+| `insertData(Object) : String`              | costruisce l' istruzione di insert usando un istanza      |
+| `selectData(Object) : String`              | costruisce l' istruzione di select usando un istanza      |
+| `updateData(Object) : String`              | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary)    |
+| `deleteData(Object) : String`              | costruisce l' istruzione di delete usando un istanza      |
 
 
 
@@ -128,10 +144,11 @@ L'unica implementazione disponibile è quella di `SQLDBCraft`
 
 ## TODO
 
-- QueryCraft : join e filterJ (filter on join) 
+- ~~QueryCraft : join e filterJ (filter on join)~~
+- controlli su alias 
 - QueryCraft : gestire Date e GregorianCalendar
-- QueryCraft : gestione File
-- QueryCraft : UNIT TEST
+- QueryCraft : gestione File BLOB
+- QueryCraft : UNIT TEST (rifare esistenti)
 - MySqlConnection : Generare valore di ritorno
 - MySqlConnection : gestire Messaggi di Errore
 - MySqlConnection : UNIT TEST 

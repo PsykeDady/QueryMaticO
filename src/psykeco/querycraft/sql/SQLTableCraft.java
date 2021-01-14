@@ -2,6 +2,7 @@ package psykeco.querycraft.sql;
 
 import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
 import static psykeco.querycraft.utility.SQLClassParser.parseClass;
+import static psykeco.querycraft.utility.SQLClassParser.parseType;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -136,11 +137,19 @@ public class SQLTableCraft implements TableCraft{
 		
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
 		
-		sb.append("create table `"+db+"`.`"+attachPreSuf(table)+"` (");
+		sb.append("CREATE TABLE `"+db+"`.`"+attachPreSuf(table)+"` (");
 		
 		for (Entry<String,String> kv :this.kv.entrySet() ) {
-			sb.append(attachPreSuf(kv.getKey())+' '+kv.getValue());
-			sb.append(primary.contains(kv.getKey())? " primary key," : ",");
+			boolean isPrimary=primary.contains(kv.getKey());
+			String parsedType=parseType(kv.getValue(),isPrimary);
+			sb.append(attachPreSuf(kv.getKey())+' '+parsedType+",");
+		}
+		
+		if(! primary.isEmpty()) {
+			sb.append("PRIMARY KEY(");
+			for (String k : primary) sb.append(k+',');
+			sb.setCharAt(sb.length()-1,')');
+			sb.append(',');
 		}
 		
 		sb.setCharAt(sb.length()-1, ')');
@@ -153,7 +162,11 @@ public class SQLTableCraft implements TableCraft{
 		
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
 		
-		String sb="select * from information_schema where table_schema='"+db+"' and table_name='"+attachPreSuf(table)+"'";
+		String sb="SELECT * "
+				+ "FROM information_schema.tables "
+				+ "WHERE "
+					+ "TABLE_SCHEMA='"+db+"' "
+					+ "and TABLE_NAME='"+attachPreSuf(table)+"'";
 		
 		return sb;
 	}
@@ -164,7 +177,7 @@ public class SQLTableCraft implements TableCraft{
 		
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
 		
-		String sb="drop table if exists `"+db+"`.`"+attachPreSuf(table)+"`";
+		String sb="DROP TABLE IF EXISTS `"+db+"`.`"+attachPreSuf(table)+"`";
 		
 		return sb;
 	}

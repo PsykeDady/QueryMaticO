@@ -16,8 +16,6 @@ public class SQLInsertCraft implements QueryCraft {
 	
 	public SQLInsertCraft() {}
 	
-	public final static String INIT="insert into ";
-	
 	private String table;
 	private String db;
 	private HashMap<String,Object> kv=new HashMap<>();
@@ -79,8 +77,8 @@ public class SQLInsertCraft implements QueryCraft {
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		
-		values.append(INIT+'`'+db+"`.`"+table+'`'+" ( ");
-		column.append(" values (");
+		values.append("INSERT INTO "+'`'+db+"`.`"+table+'`'+" ( ");
+		column.append(" VALUES (");
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
 			values.append( '`'+kv.getKey()  +"`," );

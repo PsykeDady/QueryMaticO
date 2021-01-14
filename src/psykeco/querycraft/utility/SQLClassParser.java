@@ -32,9 +32,18 @@ public final class SQLClassParser {
 		TINYBLOB  ,
 		VARBINARY ,
 		DATE      ,
+		TEXT	  ,
 		TIME      ,
 		TIMESTAMP ,
 		DATETIME  ;
+		
+		public static String precision() {
+			return "(10,2)";
+		}
+		
+		public static String NVARCHAR_PRIMARY() {
+			return "NVARCHAR(676)";
+		}
 	}//enum
 	
 	//static class, private constructor
@@ -85,7 +94,7 @@ public final class SQLClassParser {
 		
 		for ( Field x : f ) {
 			String s = getTrueName(x.getType());
-			map.put(x.getName(), parseType(s));
+			map.put(x.getName(), s);
 		}
 		
 		return map;
@@ -126,7 +135,7 @@ public final class SQLClassParser {
 	 * @param type una stringa rappresentate la classe
 	 * @return il tipo sql associato
 	 */
-	public static String parseType(String type) {
+	public static String parseType(String type, boolean primary) {
 		
 		switch (type) {
 			case "int"    : case "Integer":
@@ -136,14 +145,15 @@ public final class SQLClassParser {
 			case "short"  : case "Short"  : return Tipo.INT.name();
 			
 			case "float"  : case "Float"  :
-			case "double" : case "Double" : return Tipo.DECIMAL.name();
+			case "double" : case "Double" : return Tipo.DECIMAL.name()+Tipo.precision();
 			
 			case "Date"   : 
-			case "GregorianCalendar"      : return Tipo.DATE.name();
+			case "GregorianCalendar"      : 
+			case "LocalDateTime"          : return Tipo.DATE.name();
 			
-			case "File"   : return Tipo.BLOB.name();
+			case "File"   :                 return Tipo.BLOB.name();
 		}
 		
-		return "NVARCHAR(32766)";
+		return primary ? Tipo.NVARCHAR_PRIMARY() : Tipo.TEXT.name();
 	}
 }//ParametroTabella

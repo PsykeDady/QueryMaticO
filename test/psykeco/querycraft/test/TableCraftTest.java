@@ -15,25 +15,33 @@ class TableCraftTest {
 		private Integer chiave;
 		@SuppressWarnings("unused")
 		private String campo;
+		@SuppressWarnings("unused")
+		private String anotherCampo;
 		public void setChiave(int chiave) {
 			this.chiave = chiave;
 		}
 		public void setCampo(String campo) {
 			this.campo = campo;
 		}
+		public void setAnotherCampo(String anotherCampo) {
+			this.anotherCampo = anotherCampo;
+		}
 	}
 
 	@Test
 	void testCreate () {
 		String expected =
-			"create table `TestDB`.`Entita` ("
-				+ "chiave INT primary key,"
-				+ "campo NVARCHAR(32766)"
-			+ ")"
+				  "create table `TestDB`.`Entita` ("
+					+ "chiave INT,"
+					+ "campo TEXT,"
+					+ "anotherCampo NVARCHAR(676),"
+	
+					+ "primary key(chiave,anotherCampo)"
+				+ ")"
 		;
 		
 		TableCraft s = new SQLTableCraft().DB("TestDB").
-				table(Entita.class).primary("chiave");
+				table(Entita.class).primary("chiave").primary("anotherCampo");
 		
 		assertEquals(expected,s.create().trim());
 	}
@@ -119,13 +127,15 @@ class TableCraftTest {
 	void testUpdateData () {
 		String expected =
 				  "update `TestDB`.`Entita` "
-				+ "set `campo`='un campo generico'  "
-				+ "where 1=1 AND `chiave`=123";
+				+ "set `campo`='un campo generico',`anotherCampo`='Another campo generico'  "
+				+ "where 1=1 AND `chiave`=123"
+				
 		;
 		
 		Entita ins=new Entita();
 		ins.setChiave(123);
 		ins.setCampo("un campo generico");
+		ins.setAnotherCampo("Another campo generico");
 		
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave");

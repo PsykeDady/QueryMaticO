@@ -1,5 +1,8 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.utility.SQLClassParser.parseType;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -57,11 +60,14 @@ public class SQLDeleteCraft implements QueryCraft{
 		
 		
 		for (Entry<String,Object> kv : this.filter.entrySet()) {
-			String value=kv.getValue().toString();
+			String type=parseType((getTrueName(kv.getValue().getClass())),false);
+			boolean isString= parseType("String",false).equals(type);
+			String value= kv.getValue().toString();
+			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
 			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey().matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			if ( ! value      .matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
+			if ( ! kv.getKey()            .matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			if ( isString && ! value      .matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
 		return "";
@@ -74,7 +80,7 @@ public class SQLDeleteCraft implements QueryCraft{
 		String validation=validate();
 		if( ! validation.equals("")) throw new IllegalArgumentException(validation);
 		
-		values.append("delete from `"+db+"`.`"+table+"` where 1=1 ");
+		values.append("DELETE FROM `"+db+"`.`"+table+"` WHERE 1=1 ");
 		
 		for (Entry<String,Object> f : filter.entrySet()) {
 			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );

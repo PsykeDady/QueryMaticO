@@ -33,21 +33,21 @@ public class SQLDBCraft implements DBCraft{
 	public String create() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "create database `"+db+"`";
+		return "CREATE DATABASE `"+db+"`";
 	}
 
 	@Override
 	public String select() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "show databases like '"+db+"'";
+		return "SHOW DATABASES LIKE '"+db+"'";
 	}
 
 	@Override
 	public String drop() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "drop database `"+db+"`";
+		return "DROP DATABASE `"+db+"`";
 	}
 
 }
