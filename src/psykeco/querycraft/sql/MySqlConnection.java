@@ -91,7 +91,7 @@ public class MySqlConnection {
 	 *
 	 *@return stringa vuota se il comando &egrave; andato a buon fine. il messaggio di errore altrimenti
 	 */
-	public String esegui(String comando){
+	public String exec(String comando){
 		if(!statoConnessione()) {
 			errMsg= "Connessione Chiusa";
 			return errMsg;
@@ -205,15 +205,15 @@ public class MySqlConnection {
 		Boolean f=m.existDB(TEST_ECHO);
 		if (f==null) return m.getErrMsg();
 		else if (f) {
-			if( ! m.esegui(dbc.drop()).equals("")) 
+			if( ! m.exec(dbc.drop()).equals("")) 
 				return m.getErrMsg();
 			return "";
 		}
 		
-		if( ! m.esegui(dbc.create()).equals("")) 
+		if( ! m.exec(dbc.create()).equals("")) 
 			return m.getErrMsg();
 		
-		if( ! m.esegui(dbc.drop()).equals("")) 
+		if( ! m.exec(dbc.drop()).equals("")) 
 			return m.getErrMsg();
 		
 		return "";

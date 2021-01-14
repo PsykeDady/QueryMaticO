@@ -1,32 +1,112 @@
 # QueryCraft
 
-version `0.5`
+version `0.6`
 
 Java  ORM framework to semplify DB connection and to generate istruction
 
-## ConnessioneDB
+> **<u>ATTENZIONE</u>**:
+>
+> Il query craft è ancora in fase di sviluppo. Non pronto per la produzione
 
-iniziare la connessione (una tantum nel runtime) tramite `ConnessioneDB` :  
+## MYSQL : speed start e confronto con le metodologie classiche
+
+Ancora prima di mostrare la documentazione, ecco una piccola anteprima di come facilmente si pu&ograve; impostare una connessione MySql con il QueryCraft.
+
+Supponiamo di voler creare la seguente tabella :
+
+![ENTITY](documentation-md/SPEED_START_ENTITY.png)
+
+con identity chiave primaria. Quindi di voler inserire in tabella:
+
+| **IDENTITY** | **NAME** | **DESCRIPTION**                          |
+| -----------: | :------: | ---------------------------------------- |
+|          `1` |   DOGE   | *funny dog*                              |
+|          `2` |  MARIO   | *italian plumber*                        |
+|          `3` |  STEVEN  | *strange magic mix of diamond and a kid* |
+
+
+
+### senza QueryCraft
+
+
+
+### con QueryCraft
+
+Crea una classe che rappresenti la tabella:
 
 ```java
-if( ! ConnessioneDB.createInstance("nomeutente","psk")) {
-	System.err.println("errore");
-	System.exit(-1);
+public class Entity {
+    private int identity;
+    private String name;
+    private String description;
+    public Entity(int identity, String name, String description){
+        setIdentity(identity);
+        setName(name);
+        setDescription(description);
+    }
+    public void setIdentity(int identity){this.identity=identity;}
+    public void setName(String name){this.name=name;}
+    public void setDescription(String description){this.description=description;}
 }
 ```
 
-La connessione resta aperta ad oltranza fino a che non si usa il metodo `destroy` della medesima classe. 
 
-ConnessioneDB è una **classe statica** che non richiede di portarsi un istanza, ma fornisce essa stessa un istanza di java.sql.Connection in singleton.
 
-Alcune query, son fornite con `MySqlConnection`:  
+Quindi in un programma esegui:
+
+```java
+public static void main(String []args){
+	SQLConnectionCraft s = (SQLConnectionCraft) 
+        new SQLConnectionCraft().url("ip.add.re.sss").user("root").psk("password");
+    MySqlConnection m = new MySqlConnection(s);
+
+    // create db
+    DBCraft dbc = new SQLDBCraft().DB("DBName");
+    m.exec(dbc.create());
+    if (!m.getErrMsg().equals(""))
+        throw new IllegalStateException("an error occur: " + m.getErrMsg());
+
+    // create table
+    TableCraft tc = new SQLTableCraft().DB("DBName").table(Entity.class).primary("identity");
+    m.exec(tc.create());
+    if (!m.getErrMsg().equals(""))
+        throw new IllegalStateException("an error occur: " + m.getErrMsg());
+
+    // insert data
+    Entity e = new Entity(1, "DOGE", "funny dog");
+    m.exec(tc.insertData(e).craft());
+    if (!m.getErrMsg().equals(""))
+        throw new IllegalStateException("an error occur: " + m.getErrMsg());
+
+    e = new Entity(2, "MARIO", "italian plumber"); // con 1 non da errore... FIXME
+    m.exec(tc.insertData(e).craft());
+    if (!m.getErrMsg().equals(""))
+        throw new IllegalStateException("an error occur: " + m.getErrMsg());
+
+    e = new Entity(3, "STEVEN", "strange magic mix of diamond and a kid");
+    m.exec(tc.insertData(e).craft());
+    if (!m.getErrMsg().equals(""))
+        throw new IllegalStateException("an error occur: " + m.getErrMsg());
+    
+}
+```
+
+
+
+## ConnectionCraft
+
+> DOCUMENTAZIONE NON AGGIORNATA
+
+### MySqlConnection  
+
+Crea un istanza singleton di SQLConnectionCraft e la usa per le query
+
+Fornisce anche alcune query:  
 
 | nome metodo ( parametri input ) | output         | breve spiegazione                                   |
 | ------------------------------- | -------------- | --------------------------------------------------- |
-| `creaDB( String nomeDB)`        | `boolean`      | crea un DB                                          |
 | `existDB( String nomeDB)`       | `boolean`      | resistuisce `true` se esiste il DB                  |
-| `dropDB( String nomeDB)`        | `boolean`      | Cancella il db                                      |
-| `esegui( String queryCompleta)` | `boolean`      | esegue un istruzione MySql                          |
+| `exec( String queryCompleta)`   | `boolean`      | esegue un istruzione MySql                          |
 | `query( String queryCompleta)`  | `ResultSet`    | esegue una query, restituisce il ResultSet          |
 | `listDB()`                      | `List<String>` | restituisce la Lista dei DB sotto forma di stringhe |
 
@@ -149,6 +229,6 @@ L'unica implementazione disponibile è quella di `SQLDBCraft`
 - QueryCraft : gestire Date e GregorianCalendar
 - QueryCraft : gestione File BLOB
 - QueryCraft : UNIT TEST (rifare esistenti)
-- MySqlConnection : Generare valore di ritorno
-- MySqlConnection : gestire Messaggi di Errore
+- ~~MySqlConnection : Generare valore di ritorno~~
+- ~~MySqlConnection : gestire Messaggi di Errore~~
 - MySqlConnection : UNIT TEST 
