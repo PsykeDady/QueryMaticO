@@ -5,8 +5,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import sun.net.www.content.audio.x_aiff;
-
 /**
  * classe di utilit&agrave; per leggere i parametri di una classe e quindi mapparli 
  * su tipi di SQL
@@ -71,7 +69,7 @@ public final class SQLClassParser {
 	 * @param c la classe 
 	 * @return il nome
 	 */
-	public static String getTrueName(Class c) {
+	public static String getTrueName(@SuppressWarnings("rawtypes") Class c) {
 		return getTrueName(c.toString());
 	}
 	/**
@@ -85,11 +83,16 @@ public final class SQLClassParser {
 	
 	/**
 	 * Costruisce una mappa con i campi di una classe e i tipi SQL
+	 * La mappa contiene come:
+	 * <ul>
+	 *  <li>chiave : nome campo</li>
+	 *  <li>valore : tipo campo</li>
+	 * </ul>
 	 * @param c
 	 * @return la mappa <nome attributo,tipo sql>
 	 */
-	public static Map<String,String> parseClass(Class c){
-		HashMap<String,String> map= new HashMap<>();
+	public static Map<String,String> parseClass(@SuppressWarnings("rawtypes") Class c){
+		Map<String,String> map= new HashMap<>();
 		Field[] f= c.getDeclaredFields();
 		
 		for ( Field x : f ) {
@@ -101,7 +104,7 @@ public final class SQLClassParser {
 	}
 	
 	/**
-	 * Costruisce una mappa "nomecampo-valore" dell'oggetto istanza 
+	 * Costruisce una mappa "nome del campo-valore" dell'oggetto istanza 
 	 * passata con i campi della classe passata ( se è un istanza di quella classe)
 	 * 
 	 * @param type     classe supposta
@@ -109,7 +112,7 @@ public final class SQLClassParser {
 	 * 
 	 * @return mappa nomecampo,valore
 	 */
-	public static Map<String,Object> parseInstance(Class type, Object instance){
+	public static Map<String,Object> parseInstance(@SuppressWarnings("rawtypes") Class type, Object instance){
 		if(!type.isInstance(instance))
 			throw new IllegalArgumentException("oggetto passato di classe non supportata");
 

@@ -1,8 +1,7 @@
 package psykeco.querycraft.test;
 
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
@@ -22,13 +21,7 @@ class CompleteTest {
 		private int identity;
 		private String name;
 		private String description;
-
-		public Entity(int identity, String name, String description) {
-			setIdentity(identity);
-			setName(name);
-			setDescription(description);
-		}
-
+		
 		public void setIdentity(int identity) {
 			this.identity = identity;
 		}
@@ -50,49 +43,53 @@ class CompleteTest {
 		try(Scanner sc=new Scanner(pskf)){
 			psk=sc.nextLine();
 		} catch(Exception e) {}
-		SQLConnectionCraft s = (SQLConnectionCraft) 
-				new SQLConnectionCraft().psk(psk);
-		MySqlConnection m = new MySqlConnection(s);
+		MySqlConnection.createConnection((SQLConnectionCraft) 
+				new SQLConnectionCraft().psk(psk).autocommit(true));
+		MySqlConnection m = new MySqlConnection();
 
 		// create db
 		DBCraft dbc = new SQLDBCraft().DB("DBName");
+		System.out.println(dbc.create());
 		m.exec(dbc.create());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
 		// create table
 		TableCraft tc = new SQLTableCraft().DB("DBName").table(Entity.class).primary("identity");
+		System.out.println(tc.create());
 		m.exec(tc.create());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
 		// insert data
-		Entity e = new Entity(1, "DOGE", "funny dog");
+		Entity e = new Entity(); e.identity=1; e.name="DOGE"; e.description=("funny dog");
+		System.out.println(tc.insertData(e).craft());
 		m.exec(tc.insertData(e).craft());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
-		e = new Entity(2, "MARIO", "italian plumber"); // con 1 non da errore... FIXME
+		e = new Entity(); e.identity=2; e.name="MARIO"; e.description="italian plumber"; // con 1 non da errore... FIXME
+		System.out.println(tc.insertData(e).craft());
 		m.exec(tc.insertData(e).craft());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
-		e = new Entity(3, "STEVEN", "strange magic mix of diamond and a kid");
+		e = new Entity(); e.identity=3; e.name="STEVEN"; e.description="strange magic mix of diamond and a kid";
+		System.out.println(tc.insertData(e).craft());
 		m.exec(tc.insertData(e).craft());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 		
 		SelectCraft sel=new SQLSelectCraft().DB("DBName").table("Entity");
-		ResultSet rs=m.query(sel.craft());
-		
-		try {
-			while (rs.next()) {
-				System.out.println(rs.getInt("identity")+" "+rs.getString("name")+" "+rs.getString("description"));
-			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		System.out.println(sel.craft());
+		List<Entity> res=m.queryList(Entity.class, sel.craft());
+		if (!m.getErrMsg().equals(""))
+			throw new IllegalStateException("an error occur: " + m.getErrMsg());
+		for(Entity ent : res ) {
+			 System.out.println(ent.identity+" "+ent.name+" "+ent.description);
 		}
+		
+		
 
 	}
 	

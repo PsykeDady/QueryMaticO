@@ -22,7 +22,8 @@ class MySQLConnectionTest {
 			psk=sc.nextLine();
 		} catch(Exception e) {}
 		s.psk(psk);
-		MySqlConnection m=new MySqlConnection(s);
+		MySqlConnection.createConnection(s);
+		MySqlConnection m=new MySqlConnection();
 		
 		for (String x: m.listDB()) {
 			System.out.println(x);

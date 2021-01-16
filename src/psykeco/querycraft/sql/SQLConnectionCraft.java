@@ -31,6 +31,11 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	public static final String DEFAULT_USER="root";
 	
 	/**
+	 * default autocommit (true)
+	 */
+	public static final boolean DEFAULT_AUTOCOMMIT=true;
+	
+	/**
 	 * semi-URL standard della connessione con jdbc. <br>
 	 * Va completato con : <br>
 	 * <ul>
@@ -51,6 +56,7 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	private int port = DEFAULT_PORT;
 	private String user=DEFAULT_USER;
 	private String psk="";
+	private boolean autocommit=DEFAULT_AUTOCOMMIT;
 	
 	@Override
 	public ConnectionCraft driver(String driver) {
@@ -89,6 +95,12 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	}
 	
 	@Override
+	public ConnectionCraft autocommit(boolean autocommit) {
+		this.autocommit=autocommit;
+		return this;
+	}
+	
+	@Override
 	public String validation() {
 		if(url==null) return "url vuoto";
 		if(port < 1024 || 49151 < port) return "valore della porta errato";
@@ -113,6 +125,7 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 		Connection connessione=null;
 		try{
 			connessione=DriverManager.getConnection(URL,user,psk);
+			connessione.setAutoCommit(autocommit);
 		}catch(SQLException s){
 			throw new IllegalStateException(s.getMessage());
 		}

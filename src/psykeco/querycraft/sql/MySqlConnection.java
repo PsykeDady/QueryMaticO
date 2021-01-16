@@ -1,10 +1,13 @@
 package psykeco.querycraft.sql;
 
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.List;
 
 import psykeco.querycraft.DBCraft;
 
@@ -33,6 +36,11 @@ public class MySqlConnection {
 	private static Connection connessione;
 	
 	/**
+	 * include una serie di query
+	 */
+	private static Statement statement;
+	
+	/**
 	 * last SQL Error Message
 	 */
 	private String errMsg="";
@@ -45,42 +53,11 @@ public class MySqlConnection {
 	
 	/**
 	 * non inizia nessuna connessione, ma se ne esiste una 
-	 * la può sfruttare
+	 * la può sfruttare<br>
+	 * 
 	 */
 	public MySqlConnection() { }
 
-	/**
-	 * Se non esiste alcuna connessione ne apre una
-	 * @param connCraft la connectionCraft con cui aprire la connessione
-	 */
-	public MySqlConnection(SQLConnectionCraft connCraft) {
-		
-		if(connessione==null) {
-			MySqlConnection.connCraft=connCraft;
-			initConnection();
-		} 
-	}
-	
-	/**
-	 * crea una connessione con i dati inseriti.<br>
-	 * richiama {@link #MySqlConnection(SQLConnectionCraft)}
-	 * @param url localhost o un indirizzo ip 
-	 * @param port 
-	 * @param user nome utente
-	 * @param psk password
-	 */
-	public MySqlConnection(
-		String url, int port, 
-		String user, String psk
-	){
-		this (
-			(SQLConnectionCraft) new SQLConnectionCraft()
-				.url(url)
-				.port(port)
-				.user(user)
-				.psk(psk)
-		);
-	}
 	
 	/**
 	 *esegue un comando mysql e restituisce true se e' stato eseguito correttamente.<BR>
@@ -97,10 +74,14 @@ public class MySqlConnection {
 			return errMsg;
 		}
 		try{
-			connessione.createStatement().execute(comando);
+			if (connessione.getAutoCommit()) connessione.createStatement().execute(comando);
+			else {
+				if( statement==null ) statement=connessione.createStatement();
+				statement.execute(comando);
+			}
 			return "";
 		}catch(SQLException s){
-			return buildSQLErrMessage(s);
+			return errMsg=buildSQLErrMessage(s);
 		}//try-catch
 	}//esegui
 	
@@ -126,6 +107,44 @@ public class MySqlConnection {
 			errMsg=buildSQLErrMessage(s);
 		}//try-catch
 		return null;
+	}//query
+	
+	/**
+	 * esegue una query e ritorna il ResultSet associato.<br>
+	 * Se avviene un errore, o il db non e' connesso allora il valore
+	 * ritornato e' null.
+	 * Per riuscire il mapping automatico, la classe deve avere almeno un costruttore vuoto! (oltre che essere una classe concreta) 
+	 * 
+	 * @param c La classe di cui effettuare il mapping
+	 * @param query la query da eseguire
+	 * 
+	 * @return una linked list con il risultato. Se empty, ci potrebbe essere stato un errore (controllare con il msg) 
+	 * 
+	 */
+	public <T> List<T> queryList(Class<T> c, String query){
+		ResultSet rs = query(query);
+		LinkedList<T> ris=new LinkedList<T>();
+		try {
+			while(rs.next()) {
+				Field[] f= c.getDeclaredFields();
+				T istanza = c.newInstance();
+
+				for ( Field x : f ) {
+					boolean access=x.isAccessible();
+					x.setAccessible(true);
+					x.set(istanza, rs.getObject(x.getName(), x.getType()));
+					x.setAccessible(access);
+				}
+				ris.add(istanza);
+			}
+		}catch (SQLException s){
+			errMsg=buildSQLErrMessage(s);
+		} catch (IllegalAccessException e) {
+			errMsg="costruttore non accessibile. Prevedere un costruttore vuoto!";
+		} catch (InstantiationException e) {
+			errMsg="costruttore non accessibile, classe astratta o interfaccia! Prevedere un costruttore vuoto!";
+		} 
+		return ris;
 	}//query
 	
 	public String getErrMsg() {
@@ -180,11 +199,45 @@ public class MySqlConnection {
 	
 	// STATIC METHODS
 	
+	/**
+	 * Se non esiste alcuna connessione ne apre una
+	 * @param connCraft la connectionCraft con cui aprire la connessione
+	 */
+	public static void createConnection(SQLConnectionCraft connCraft) {
+		
+		if(connessione==null) {
+			MySqlConnection.connCraft=connCraft;
+			initConnection();
+		} 
+	}
+	
+	/**
+	 * crea una connessione con i dati inseriti.<br>
+	 * richiama {@link #createConnection(SQLConnectionCraft)}
+	 * @param url localhost o un indirizzo ip 
+	 * @param port 
+	 * @param user nome utente
+	 * @param psk password
+	 */
+	public static void createConnection(
+		String url, int port, 
+		String user, String psk
+	){
+		createConnection (
+			(SQLConnectionCraft) new SQLConnectionCraft()
+				.url(url)
+				.port(port)
+				.user(user)
+				.psk(psk)
+		);
+	}
+	
 	/** 
 	 * create the connection with connectionCraft
 	 * 
 	 */
 	private static void initConnection() {
+		statement=null;
 		connessione=connCraft.connect();
 		String msg=testConnessione();
 		if(!msg.equals("")) {
@@ -231,6 +284,7 @@ public class MySqlConnection {
 	 */
 	public static void reset() {
 		connessione=null;
+		statement=null;
 	}
 	
 	/**
@@ -241,6 +295,30 @@ public class MySqlConnection {
 			throw new IllegalStateException("sqlconnectioncraft non disponibile");
 		initConnection();
 	}
+	
+	/**
+	 * commit delle transizioni
+	 */
+	public static void commit() {
+		if(!statoConnessione()) return;
+		try{
+			connessione.commit();
+			statement=null;
+		}catch(SQLException s){}
+	}
+	
+	/**
+	 * rollback delle transizioni
+	 */
+	public static void rollback() {
+		if(!statoConnessione()) return;
+		try{
+			connessione.rollback();
+			statement=null;
+		}catch(SQLException s){}
+	}
+	
+	
 		
 	/**
 	 * Chiusura della connessione

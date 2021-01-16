@@ -41,6 +41,13 @@ public interface ConnectionCraft {
 	 * @return istanza di ConnectionCraft aggiornata
 	 */
 	public ConnectionCraft db (String db);
+
+	/** 
+	 * se true, ogni transizione avrà l'autocommit 
+	 * @param autcommit
+	 * @return istanza di ConnectionCraft aggiornata 
+	 * */
+	ConnectionCraft autocommit(boolean autocommit);
 	
 	/**
 	 * set della porta a cui connettersi
@@ -64,5 +71,6 @@ public interface ConnectionCraft {
 	 * altrimenti il messaggio dell'errore
 	 */
 	public String validation();
+
 
 }

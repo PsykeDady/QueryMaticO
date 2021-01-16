@@ -28,6 +28,60 @@ con identity chiave primaria. Quindi di voler inserire in tabella:
 
 ### senza QueryCraft
 
+```java
+public static void main(String [] main){
+	String validate = validation() ;
+    String URL="jdbc:mysql://localhost:3306";
+    Connection connessione=null;
+    
+    try{
+        connessione=DriverManager.getConnection(URL,"root",psk);
+    }catch(SQLException s){
+        throw new IllegalStateException(s.getMessage());
+    }
+    
+    try{
+        connessione.createStatement().execute("CREATE DATABASE `DBName`");
+    }catch(SQLException s){
+        throw new IllegalStateException(s);
+    }//try-catch
+    
+     try{
+        connessione.createStatement().execute("CREATE TABLE `DBName`.`Entity` (identity INT,name TEXT,description TEXT,PRIMARY KEY(identity))");
+    }catch(SQLException s){
+        throw new IllegalStateException(s);
+    }//try-catch
+    
+    try{
+        connessione.createStatement().execute("INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (1,'DOGE','funny dog')");
+    }catch(SQLException s){
+        throw new IllegalStateException(s);
+    }//try-catch
+    
+    try{
+        connessione.createStatement().execute("INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (2,'MARIO','italian plumber')");
+    }catch(SQLException s){
+        throw new IllegalStateException(s);
+    }//try-catch
+    
+    try{
+        connessione.createStatement().execute("INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (3,'STEVEN','strange magic mix of diamond and a kid')");
+    }catch(SQLException s){
+        throw new IllegalStateException(s);
+    }//try-catch
+    
+    try{
+        ResultSet rs=connessione.createStatement().executeQuery("SELECT * FROM `DBName`.`Entity`");
+        while (rs.next()) {
+            System.out.println(rs.getInt("identity")+" "+rs.getString("name")+" "+rs.getString("description"));
+        }
+    }catch(SQLException s){
+        errMsg=buildSQLErrMessage(s);
+    }//try-catch
+    
+}
+```
+
 
 
 ### con QueryCraft
@@ -56,9 +110,9 @@ Quindi in un programma esegui:
 
 ```java
 public static void main(String []args){
-	SQLConnectionCraft s = (SQLConnectionCraft) 
-        new SQLConnectionCraft().url("ip.add.re.sss").user("root").psk("password");
-    MySqlConnection m = new MySqlConnection(s);
+	MySqlConnection.createConnection((SQLConnectionCraft) 
+				new SQLConnectionCraft().psk(psk));
+	MySqlConnection m = new MySqlConnection();
 
     // create db
     DBCraft dbc = new SQLDBCraft().DB("DBName");
@@ -78,7 +132,7 @@ public static void main(String []args){
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
-    e = new Entity(2, "MARIO", "italian plumber"); // con 1 non da errore... FIXME
+    e = new Entity(2, "MARIO", "italian plumber"); 
     m.exec(tc.insertData(e).craft());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
@@ -88,8 +142,34 @@ public static void main(String []args){
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
     
+    List<Entity> res=m.queryList(Entity.class, sel.craft());
+    if (!m.getErrMsg().equals(""))
+        throw new IllegalStateException("an error occur: " + m.getErrMsg());
+    for(Entity ent : res ) {
+        System.out.println(ent.identity+" "+ent.name+" "+ent.description);
+    }
+    
 }
 ```
+
+
+
+### Pro e contro
+
+
+
+|      | Senza Query Craft | Con Query Craft |
+| ---- | ----------------- | --------------- |
+|      |                   |                 |
+|      |                   |                 |
+|      |                   |                 |
+
+
+
+### Thats'all ?
+
+No, non è tutto qua. 
+Con query craft puoi generare facilmente update a partire dalle istanze, creare più istanze di select diverse e farne la join su determinati campi.
 
 
 
