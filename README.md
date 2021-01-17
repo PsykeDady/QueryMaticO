@@ -12,8 +12,8 @@ Java  ORM framework to semplify DB connection and to generate istruction
 
 ## DOCUMENTATION:
 
-- [ :it: ita ](documentation-md/ITALIAN_DOC)   
-- [ :gb: en ](documentation-md/ITALIAN_DOC) [ *not complete yet* ]  
+- [ :it: ita ](documentation-md/ITALIAN_DOC.md)   
+- [ :gb: en ](documentation-md/ENGLISH_DOC.md) [ *not complete yet* ]  
 
 ## KNOWN BUG/ISSUE/LIMITATION
 
