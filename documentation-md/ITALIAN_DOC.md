@@ -10,7 +10,7 @@ QueryCraft è un framework che include
 
 Attraverso questo framework, la persistenza con java ottiene un approccio Orientato ad Oggetti, astraendo completamente il linguaggio di connessione del DB.
 
-- [Salta ad inizio documentazione](##ConnectionCraft)
+- [Salta ad inizio documentazione](#ConnectionCraft)
 
 
 
