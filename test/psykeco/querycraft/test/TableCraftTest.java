@@ -87,7 +87,7 @@ class TableCraftTest {
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave");
 		
-		assertEquals(expected,s.insertData(ins).craft().trim());
+		assertEquals(expected,s.insertData(ins).craft());
 	}
 	
 	@Test
@@ -104,7 +104,7 @@ class TableCraftTest {
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave");
 		
-		assertEquals(expected,s.selectData(ins).craft().trim());
+		assertEquals(expected,s.selectData(ins).craft());
 	}
 	
 	@Test
@@ -120,7 +120,7 @@ class TableCraftTest {
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave");
 		
-		assertEquals(expected,s.deleteData(ins).craft().trim());
+		assertEquals(expected,s.deleteData(ins).craft());
 	}
 	
 	@Test
@@ -140,7 +140,7 @@ class TableCraftTest {
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave");
 		
-		assertEquals(expected,s.updateData(ins).craft().trim());
+		assertEquals(expected,s.updateData(ins).craft());
 	}
 
 }

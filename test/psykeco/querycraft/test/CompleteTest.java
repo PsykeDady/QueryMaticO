@@ -2,6 +2,8 @@ package psykeco.querycraft.test;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
@@ -46,21 +48,37 @@ class CompleteTest {
 		MySqlConnection.createConnection((SQLConnectionCraft) 
 				new SQLConnectionCraft().psk(psk).autocommit(true));
 		MySqlConnection m = new MySqlConnection();
-
-		// create db
 		DBCraft dbc = new SQLDBCraft().DB("DBName");
-		System.out.println(dbc.create());
-		m.exec(dbc.create());
-		if (!m.getErrMsg().equals(""))
-			throw new IllegalStateException("an error occur: " + m.getErrMsg());
-
-		// create table
 		TableCraft tc = new SQLTableCraft().DB("DBName").table(Entity.class).primary("identity");
-		System.out.println(tc.create());
-		m.exec(tc.create());
-		if (!m.getErrMsg().equals(""))
-			throw new IllegalStateException("an error occur: " + m.getErrMsg());
+		try {
+			System.out.println(dbc.create());
+			m.exec(dbc.create());
+			if (!m.getErrMsg().equals(""))
+				throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
+			// create table
+			System.out.println(tc.create());
+			m.exec(tc.create());
+			if (!m.getErrMsg().equals(""))
+				throw new IllegalStateException("an error occur: " + m.getErrMsg());
+			
+			completeTest(tc, m);
+		} finally {
+			// reset
+			System.out.println(tc.drop());
+			m.exec(tc.drop());
+			if (!m.getErrMsg().equals(""))
+				System.out.println("an error occur: \n" + m.getErrMsg());
+			
+			System.out.println(dbc.drop());
+			m.exec(dbc.drop());
+			if (!m.getErrMsg().equals(""))
+				System.out.println("an error occur: \n" + m.getErrMsg());
+		}
+	}
+	
+	
+	void completeTest(TableCraft tc, MySqlConnection m) {
 		// insert data
 		Entity e = new Entity(); e.identity=1; e.name="DOGE"; e.description=("funny dog");
 		System.out.println(tc.insertData(e).craft());
@@ -68,13 +86,13 @@ class CompleteTest {
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
-		e = new Entity(); e.identity=2; e.name="MARIO"; e.description="italian plumber"; // con 1 non da errore... FIXME
+		e = new Entity(); e.identity=2; e.name="MARIO"; e.description="italian plumber";
 		System.out.println(tc.insertData(e).craft());
 		m.exec(tc.insertData(e).craft());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
-		e = new Entity(); e.identity=3; e.name="STEVEN"; e.description="strange magic mix of diamond and a kid";
+		e = new Entity(); e.identity=3; e.name="STEVEN"; e.description="strange magic mix of diamond and  kidèàòù";
 		System.out.println(tc.insertData(e).craft());
 		m.exec(tc.insertData(e).craft());
 		if (!m.getErrMsg().equals(""))
@@ -89,10 +107,16 @@ class CompleteTest {
 			 System.out.println(ent.identity+" "+ent.name+" "+ent.description);
 		}
 		
+		Map<String,Object> map=m.queryMap(sel.craft());
+		if (!m.getErrMsg().equals(""))
+			throw new IllegalStateException("an error occur: \n" + m.getErrMsg());
+		for(Entry<String,Object> kv : map.entrySet()) {
+			 System.out.println(kv.getKey()+" "+kv.getValue().getClass());
+		}
 		
-
+		
+		
 	}
-	
 	
 
 }

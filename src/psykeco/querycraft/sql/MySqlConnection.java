@@ -4,12 +4,17 @@ package psykeco.querycraft.sql;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import psykeco.querycraft.DBCraft;
+import psykeco.querycraft.utility.SQLClassParser;
 
 
 /**
@@ -79,7 +84,7 @@ public class MySqlConnection {
 				if( statement==null ) statement=connessione.createStatement();
 				statement.execute(comando);
 			}
-			return "";
+			return errMsg="";
 		}catch(SQLException s){
 			return errMsg=buildSQLErrMessage(s);
 		}//try-catch
@@ -102,6 +107,7 @@ public class MySqlConnection {
 		}
 		try{
 			ResultSet rs=connessione.createStatement().executeQuery(query);
+			errMsg="";
 			return  rs;
 		}catch(SQLException s){
 			errMsg=buildSQLErrMessage(s);
@@ -137,6 +143,7 @@ public class MySqlConnection {
 				}
 				ris.add(istanza);
 			}
+			errMsg="";
 		}catch (SQLException s){
 			errMsg=buildSQLErrMessage(s);
 		} catch (IllegalAccessException e) {
@@ -146,6 +153,32 @@ public class MySqlConnection {
 		} 
 		return ris;
 	}//query
+	
+	/**
+	 * restituisce una mappa chiave valore dove: TODO ristrutturare
+	 * <ul>
+	 * 	<li>chiave = nome della colonne</li>
+	 * 	<li>valore = valore della colonna come {@link Object}</li>
+	 * </ul>
+	 * @param query la query
+	 * @return una mappa nomecolonna-valorecolonna
+	 */ 
+	public Map<String,Object> queryMap(String query){
+		ResultSet rs = query(query);
+		Map<String,Object> ris=new HashMap<>();
+		try {
+			while(rs.next()) {
+				ResultSetMetaData rsmeta= rs.getMetaData();
+				for(int i=1;i<=rsmeta.getColumnCount();i++) {
+					ris.put(rsmeta.getColumnLabel(i),rs.getObject(i));
+				}
+			}
+			errMsg="";
+		}catch (SQLException s){
+			errMsg=buildSQLErrMessage(s);
+		} 
+		return ris;
+	}
 	
 	public String getErrMsg() {
 		return errMsg;
@@ -323,7 +356,7 @@ public class MySqlConnection {
 	/**
 	 * Chiusura della connessione
 	 */
-	public static void chiusura(){
+	public static void close(){
 		if(!statoConnessione()) return;
 		try{
 			connessione.close();
@@ -336,7 +369,19 @@ public class MySqlConnection {
 	 * @return
 	 */
 	private static String buildSQLErrMessage(SQLException e) {
-		return "state="+e.getSQLState()+"\ncode="+e.getErrorCode()+"\nmsg="+e.getMessage();
+		String ln="";
+		for (StackTraceElement o: e.getStackTrace()) {
+			if(o.getClassName().equals(MySqlConnection.class.getName())) {
+				ln=o.toString();
+				break;
+			}
+		}
+		String error=""+
+			"ErrLine number="+ln+
+			"\nstate="+e.getSQLState()+
+			"\ncode="+e.getErrorCode()+
+			"\nmsg="+e.getMessage();
+		return error;
 	}
 	
 }//classe MySqlConnection
