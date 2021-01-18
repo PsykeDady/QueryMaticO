@@ -248,13 +248,61 @@ La classe fornisce i seguenti metodi statici per interagire con la Connessione, 
 | nome metodo ( parametri input ) | output         | breve spiegazione                                   |
 | ------------------------------- | -------------- | --------------------------------------------------- |
 |`createConnection(SQLConnectionCraft)` 		 | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate 	|
-|`createConnection(String, int, String, String)` | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate 	|
+|`createConnection(String url, int port, String user, String psk)` | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate (versione con parametri) |
 |`statoConnessione()`	 						 | `boolean` | restituisce true se &egrave; connesso 										|
 |`reset()` 										 | `void` 	 | imposta a null l'istanza statica di connessione								|
 |`reboot()` 									 | `void` 	 | ricrea la connessione con le informazioni passate a momento di creazione		|
 |`commit()` 									 | `void` 	 | esegue il commit dello statement corrente 									|
 |`rollback()` 									 | `void` 	 | esegue il rollback dello statement corrente ( se autocommit &egrave; false ) |
 |`close()` 										 | `void` 	 | chiude la connessione 														|
+
+
+
+## DBCraft 
+
+La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni dei database.
+
+Espone i seguenti metodi:
+
+| **Nome metodo**        | **Descrizione** *(***obbligatorio)*                          |
+| ---------------------- | ------------------------------------------------------------ |
+| `DB(String) : DBCraft` | imposta il nome del DB *                                     |
+| `validate() : boolean` | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
+| `create() : String`    | costruisce l' istruzione di creazione sotto forma di stringa |
+| `select() : String`    | ccostruisce la select sotto forma di stringa                 |
+| `drop() : String`      | costruisce l' istruzione di drop sotto forma di stringa      |
+
+
+
+L'unica implementazione disponibile è quella di `SQLDBCraft`
+
+
+
+## TableCraft
+
+La `TableCraft` crea le istruzioni per generare, eliminare e trarre informazioni dalle tabelle a partire dalle classi java. Per farlo usa la **reflection**.
+
+Espone i seguenti metodi:
+
+| **Nome metodo**                | **Descrizione** *(***obbligatorio)*                          |
+| ------------------------------ | ------------------------------------------------------------ |
+| `DB(String) : TableCraft`      | imposta il nome del DB *                                     |
+| `table(Class) : TableCraft`    | imposta il nome della tabella *                              |
+| `suffix(String) : TableCraft`  | imposta un suffisso                                          |
+| `prefix(String) : TableCraft`  | imposta un prefisso                                          |
+| `primary(String) : TableCraft` | aggiunge una chiave primaria                                 |
+| `validate() : boolean`         | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
+| `create() : String`            | costruisce l' istruzione di creazione sotto forma di stringa |
+| `select() : String`            | ccostruisce la select sotto forma di stringa                 |
+| `drop() : String`              | costruisce l' istruzione di drop sotto forma di stringa      |
+| `insertData(Object) : String`  | costruisce l' istruzione di insert usando un istanza         |
+| `selectData(Object) : String`  | costruisce l' istruzione di select usando un istanza         |
+| `updateData(Object) : String`  | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary) |
+| `deleteData(Object) : String`  | costruisce l' istruzione di delete usando un istanza         |
+
+
+
+L'unica implementazione disponibile è quella di `SQLTableCraft`
 
 
 
@@ -282,6 +330,7 @@ Sono inoltre disponibili i seguenti metodi/variabili statiche :
   - nel caso delle stringhe ad esempio verranno aggiunti apici singoli `'`
 - `BASE_REGEX : String` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che son imposti come nome colonna, nome db o nome tabella
 - `VALUE_REGEX: STRING` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che  rappresenteranno i valori nelle query
+- `ACCENTED_LETTERS: STRING` : è una variabile che rappresenta i codici unicode delle lettere accentate 
 
 
 
@@ -317,49 +366,6 @@ estende l'interfaccia QueryCraft aggiungendo le funzioni di join. Espone i metod
 
 L'unica implementazione attuale è `SQLSelectCraft`
 
-## TableCraft 
 
-La `TableCraft` crea le istruzioni per generare, eliminare e trarre informazioni dalle tabelle a partire dalle classi java. Per farlo usa la **reflection**.
-
-Espone i seguenti metodi:
-
-| **Nome metodo**                | **Descrizione** *(***obbligatorio)*                          |
-| ------------------------------ | ------------------------------------------------------------ |
-| `DB(String) : TableCraft`      | imposta il nome del DB *                                     |
-| `table(Class) : TableCraft`    | imposta il nome della tabella *                              |
-| `suffix(String) : TableCraft`  | imposta un suffisso                                          |
-| `prefix(String) : TableCraft`  | imposta un prefisso                                          |
-| `primary(String) : TableCraft` | aggiunge una chiave primaria                                 |
-| `validate() : boolean`         | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
-| `create() : String`            | costruisce l' istruzione di creazione sotto forma di stringa |
-| `select() : String`            | ccostruisce la select sotto forma di stringa                 |
-| `drop() : String`              | costruisce l' istruzione di drop sotto forma di stringa      |
-| `insertData(Object) : String`  | costruisce l' istruzione di insert usando un istanza         |
-| `selectData(Object) : String`  | costruisce l' istruzione di select usando un istanza         |
-| `updateData(Object) : String`  | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary) |
-| `deleteData(Object) : String`  | costruisce l' istruzione di delete usando un istanza         |
-
-
-
-L'unica implementazione disponibile è quella di `SQLTableCraft`
-
-
-## DBCraft 
-
-La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni dalle tabelle a partire dalle classi java. Per farlo usa la **reflection**.
-
-Espone i seguenti metodi:
-
-| **Nome metodo**        | **Descrizione** *(***obbligatorio)*                          |
-| ---------------------- | ------------------------------------------------------------ |
-| `DB(String) : DBCraft` | imposta il nome del DB *                                     |
-| `validate() : boolean` | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
-| `create() : String`    | costruisce l' istruzione di creazione sotto forma di stringa |
-| `select() : String`    | ccostruisce la select sotto forma di stringa                 |
-| `drop() : String`      | costruisce l' istruzione di drop sotto forma di stringa      |
-
-
-
-L'unica implementazione disponibile è quella di `SQLDBCraft`
 
  
