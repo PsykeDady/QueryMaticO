@@ -235,12 +235,20 @@ Fornisce anche alcune **query**:
 | nome metodo ( parametri input ) | output         | breve spiegazione                                   |
 | ------------------------------- | -------------- | --------------------------------------------------- |
 | `existDB( String nomeDB)`       | `Boolean`      | restituisce `true` se esiste il DB                  |
-| `exec( String queryCompleta)`   | `String`       | esegue un istruzione MySql                          |
-| `query( String queryCompleta)`  | `ResultSet`    | esegue una query, restituisce il ResultSet          |
+| `exec( String queryCompleta)`   | `String`       | esegue un istruzione MySql *(sconsigliato uso con stringa diretta)* |
+| `query( String queryCompleta)`  | `ResultSet`    | esegue una query, restituisce il ResultSet *(sconsigliato uso con stringa diretta)* |
 | `listDB()`                      | `List<String>` | restituisce la Lista dei DB sotto forma di stringhe |
-| `queryList(Class<T>, String)` 	| `List<T>` 		| Esegue la query e trasforma ogni riga con un oggetto della classe passata, quindi ne costruisce una lista |
-| `queryMap(String)` 				| `Map <String,Object>`	| Esegue la query e restituisce una mappa dove la chiave rappresenta il nome della colonna e l'oggetto il valore |
+| `queryList(Class<T>, String)` 	| `List<T>` 		| Esegue la query e trasforma ogni riga con un oggetto della classe passata, quindi ne costruisce una lista *(sconsigliato uso con stringa diretta)* |
+| `queryMap(String)` 				| `Map <String,Object>`	| Esegue la query e restituisce una mappa dove la chiave rappresenta il nome della colonna e l'oggetto il valore *(sconsigliato uso con stringa diretta)* |
 | `getErrMsg()` 					| `String` 		| Restituisce, se esiste, un messaggio di errore dell'ultima query |
+
+
+
+> <u>**NOTA BENE**:</u>
+>
+> I metodi di `exec`, `query`, `queryList` e `queryMap` possono essere usati direttamente con delle Stringhe che rappresentano le query. Però non viene effettuato nessun controllo sui parametri, questo approccio è **Injection UNSAFE** 
+>
+> La politica principale di QueryCraft è di non scrivere mai sintassi del DB a mano!
 
 
 
@@ -264,7 +272,7 @@ La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni de
 
 Espone i seguenti metodi:
 
-| **Nome metodo**        | **Descrizione** *(***obbligatorio)*                          |
+| **Nome metodo**        | **Descrizione**   (*obbligatorio)                            |
 | ---------------------- | ------------------------------------------------------------ |
 | `DB(String) : DBCraft` | imposta il nome del DB *                                     |
 | `validate() : boolean` | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
@@ -284,7 +292,7 @@ La `TableCraft` crea le istruzioni per generare, eliminare e trarre informazioni
 
 Espone i seguenti metodi:
 
-| **Nome metodo**                | **Descrizione** *(***obbligatorio)*                          |
+| **Nome metodo**                | **Descrizione**   (*obbligatorio)                            |
 | ------------------------------ | ------------------------------------------------------------ |
 | `DB(String) : TableCraft`      | imposta il nome del DB *                                     |
 | `table(Class) : TableCraft`    | imposta il nome della tabella *                              |
@@ -313,7 +321,7 @@ Le istanze di `QueryCraft` sono builder che creano delle query a partire da copp
 
 L'interfaccia espone i metodi:
 
-| **Nome metodo**                                    | **Descrizione**  *(***obbligatorio)*                         |
+| **Nome metodo**                                    | **Descrizione**   (*obbligatorio)                            |
 | -------------------------------------------------- | ------------------------------------------------------------ |
 | `DB(String) : QueryCraft`                          | imposta il nome del DB*                                      |
 | `table(String) : QueryCraft`                       | imposta il nome della tabella*                               |
@@ -353,7 +361,7 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 
 estende l'interfaccia QueryCraft aggiungendo le funzioni di join. Espone i metodi:
 
-| **Nome metodo**                                              | **Descrizione** *(***obbligatorio)*                          |
+| **Nome metodo**                                              | **Descrizione**   (*obbligatorio)                            |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `alis(String) : SelectCraft`                                 | imposta un nome da usare come alias nella query              |
 | `join(SelectCraft) : SelectCraft`                            | imposta un selectCraft per la join (al momento max=1)        |

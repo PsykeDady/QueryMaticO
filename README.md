@@ -1,8 +1,12 @@
 # QueryCraft
 
-version `0.6`
+version `0.7`
 
-Java  ORM framework to semplify DB connection and to generate istruction
+Java  ORM framework to semplify DB connection and to generate istruction.
+
+Major policy of **QueryCraft** *is not to write manually queries* but use Java Object to communicate with DBMN.
+
+
 
 > **<u>ATTENTION PLEASE</u>**:
 >
@@ -18,24 +22,24 @@ Java  ORM framework to semplify DB connection and to generate istruction
 ## KNOWN BUG/ISSUE/LIMITATION
 
 - most of UNICODE character not work into querycraft methods, because of injection regex control (see [todo list](##TODO-LIST) section)
-- queryMap concept from MySqlConnection 
+- `queryMap` concept from `MySqlConnection` is bad and not functional. 
 
 
 
 ## TODO LIST
 
-- QueryCraft : Date and GregorianCalendar
-- QueryCraft : File BLOB
-- QueryCraft : UNIT TEST (to complete)
-- QueryCraft: replace into string duplicable characters for injection
-- QueryCraft: ampliate charset 
+- QueryCraft : Date and GregorianCalendar *(in version 0.9)*
+- QueryCraft : File BLOB *(in version 0.9)*
+- QueryCraft : UNIT TEST (to complete) *(in version 1.0)*
+- QueryCraft: replace into string duplicable characters for injection *(in version 0.8)*
+- QueryCraft: ampliate charset *(in version 0.8)*
 
 
 
-- MySqlConnection : UNIT TEST ( to complete )
-- MySqlConnection : queryMap bad concept
-- MySqlConnection : create an interface
+- MySqlConnection : UNIT TEST ( to complete ) *(in version 1.0)*
+- MySqlConnection : queryMap bad concept *(in version 0.8)*
+- MySqlConnection : create an interface *(in version 0.8, maybe)*
 
 
 
-- complete English Documentation
+- complete English Documentation *(in version 1.0)*
