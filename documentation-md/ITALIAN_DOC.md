@@ -272,13 +272,14 @@ La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni de
 
 Espone i seguenti metodi:
 
-| **Nome metodo**        | **Descrizione**   (*obbligatorio)                            |
-| ---------------------- | ------------------------------------------------------------ |
-| `DB(String) : DBCraft` | imposta il nome del DB *                                     |
-| `validate() : boolean` | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
-| `create() : String`    | costruisce l' istruzione di creazione sotto forma di stringa |
-| `select() : String`    | ccostruisce la select sotto forma di stringa                 |
-| `drop() : String`      | costruisce l' istruzione di drop sotto forma di stringa      |
+| **Nome metodo**         | **Descrizione**   (*obbligatorio)                            |
+| ----------------------- | ------------------------------------------------------------ |
+| `DB(String) : DBCraft`  | imposta il nome del DB *                                     |
+| `validate() : boolean`  | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
+| `create() : String`     | costruisce l' istruzione di creazione sotto forma di stringa |
+| `exists() : String`     | costruisce una query di select per prelevare il db con questo nome sotto forma di stringa |
+| `drop() : String`       | costruisce l' istruzione di drop sotto forma di stringa      |
+| `listTables() : String` | costruisce la select sotto forma di stringa                  |
 
 
 
@@ -292,21 +293,22 @@ La `TableCraft` crea le istruzioni per generare, eliminare e trarre informazioni
 
 Espone i seguenti metodi:
 
-| **Nome metodo**                | **Descrizione**   (*obbligatorio)                            |
-| ------------------------------ | ------------------------------------------------------------ |
-| `DB(String) : TableCraft`      | imposta il nome del DB *                                     |
-| `table(Class) : TableCraft`    | imposta il nome della tabella *                              |
-| `suffix(String) : TableCraft`  | imposta un suffisso                                          |
-| `prefix(String) : TableCraft`  | imposta un prefisso                                          |
-| `primary(String) : TableCraft` | aggiunge una chiave primaria                                 |
-| `validate() : boolean`         | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
-| `create() : String`            | costruisce l' istruzione di creazione sotto forma di stringa |
-| `select() : String`            | ccostruisce la select sotto forma di stringa                 |
-| `drop() : String`              | costruisce l' istruzione di drop sotto forma di stringa      |
-| `insertData(Object) : String`  | costruisce l' istruzione di insert usando un istanza         |
-| `selectData(Object) : String`  | costruisce l' istruzione di select usando un istanza         |
-| `updateData(Object) : String`  | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary) |
-| `deleteData(Object) : String`  | costruisce l' istruzione di delete usando un istanza         |
+| **Nome metodo**                    | **Descrizione**   (*obbligatorio)                            |
+| ---------------------------------- | ------------------------------------------------------------ |
+| `DB(String) : TableCraft`          | imposta il nome del DB *                                     |
+| `table(Class) : TableCraft`        | imposta il nome della tabella *                              |
+| `suffix(String) : TableCraft`      | imposta un suffisso                                          |
+| `prefix(String) : TableCraft`      | imposta un prefisso                                          |
+| `primary(String) : TableCraft`     | aggiunge una chiave primaria                                 |
+| `validate() : boolean`             | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
+| `create() : String`                | costruisce l' istruzione di creazione sotto forma di stringa |
+| `exists() : String`                | costruisce una query di select per prelevare la table con questo nome (se almeno 1 risultato: esiste) |
+| `drop() : String`                  | costruisce l' istruzione di drop sotto forma di stringa      |
+| `insertData(Object) : QueryCraft`  | costruisce l' istruzione di insert usando un istanza         |
+| `selectData(Object) : SelectCraft` | costruisce l' istruzione di select usando un istanza (se null, `select *`) |
+| `updateData(Object) : QueryCraft`  | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary) |
+| `deleteData(Object) : QueryCraft`  | costruisce l' istruzione di delete usando un istanza         |
+| `countData() :SelectCraft`         | costruisce un istruzione di di count usando un istanza (se null, `select count( *)`) |
 
 
 

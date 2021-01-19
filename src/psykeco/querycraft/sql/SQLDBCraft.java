@@ -37,7 +37,7 @@ public class SQLDBCraft implements DBCraft{
 	}
 
 	@Override
-	public String select() {
+	public String exists() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
 		return "SHOW DATABASES LIKE '"+db+"'";
@@ -48,6 +48,20 @@ public class SQLDBCraft implements DBCraft{
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
 		return "DROP DATABASE `"+db+"`";
+	}
+
+	/**
+	 * Questo metodo costruisce l'istruzione da mandare al DB per prelevare una lista di tabelle
+	 * 
+	 * @return l'istruzione con i campi impostati
+ 	 * 
+	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 */
+	@Override
+	public String listTables() {
+		String validation=validate();
+		if(! validation.equals("")) throw new IllegalArgumentException(validation);
+		return "SELECT table_name FROM information_schema.tables WHERE table_schema='"+db+"'";
 	}
 
 }

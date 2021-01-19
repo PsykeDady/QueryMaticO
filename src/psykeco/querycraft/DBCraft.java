@@ -42,7 +42,7 @@ public interface DBCraft {
 	 * 
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 */
-	public String select();
+	public String exists();
 	
 	/**
 	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare il db
@@ -52,6 +52,16 @@ public interface DBCraft {
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 */
 	public String drop();
+	
+	/**
+	 * Questo metodo costruisce l'istruzione da mandare al DB per prelevare una lista di tabelle
+	 * 
+	 * @return l'istruzione con i campi impostati
+ 	 * 
+	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 */
+	public String listTables();
+	
 	
 
 }

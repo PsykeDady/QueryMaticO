@@ -2,25 +2,48 @@ package psykeco.querycraft.sql;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Set;
 import java.util.TreeSet;
-
 import psykeco.querycraft.QueryCraft;
 import psykeco.querycraft.SelectCraft;
 import static psykeco.querycraft.utility.SQLClassParser.parseType;
 import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
 
 public class SQLSelectCraft extends SelectCraft {
+	
+	// aggregate and other operator 
+	private static enum AGGREGATE {
+		SUM,
+		AVG,
+		COUNT,
+		GROUP_CONCAT,
+		COUNT_DISTINCT,
+		DISTINCT,
+		MAX,
+		MIN
+	}
 
+	/** nome tabella */
 	private String table;
+	/** nome db */
 	private String db;
+	/** i filtri formano la where */
 	private HashMap<String,Object> filter=new HashMap<>();
+	/** insieme di chiavi da inserire nella from */
 	private Set<String> kv=new TreeSet<>();
 	/** couple join table and alias name*/
 	private SQLSelectCraft joinTable; 
 	/** map of this-column join-column filter  */
 	private HashMap<String,String> joinFilter=new HashMap<>();
 	
+	/** map of aggregate (key) and values */
+	private HashMap<AGGREGATE,String> aggregatesColumn=new HashMap<>();
+	/** column on order by clausole (key) with boolean flag to indicate if ordering is ascendenting */
+	private Entry<String,Boolean> orderBy; 
+	
+	/** column on group by clausole */ 
+	private String groupBy;
 	
 	@Override
 	public SQLSelectCraft DB(String DB) {
@@ -93,9 +116,23 @@ public class SQLSelectCraft extends SelectCraft {
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		
-		if (! table.matches(BASE_REGEX)) return " nome tabella "+table+" non valido";
+		if (! table.matches(BASE_REGEX)) return " nome tabella '"+table+"' non valido";
 			
-		if (! db   .matches(BASE_REGEX)) return " nome db "+db+" non valido";
+		if (! db   .matches(BASE_REGEX)) return " nome db '"+db+"' non valido";
+		
+		if ( groupBy!=null && ! groupBy.matches(BASE_REGEX)) 
+			return "colonna indicata da group by '"+groupBy+"' non valida";
+		
+		if ( orderBy != null && orderBy.getKey() == null )
+			return "colonna indicata da order by non pu&ograve; essere nulla";
+		
+		if ( orderBy != null && ! orderBy.getKey().matches(BASE_REGEX))
+			return "colonna indicata da order by '"+orderBy.getKey()+"' non valida";
+		
+		for (Entry<AGGREGATE,String> kv: aggregatesColumn.entrySet()) {
+			if(kv.getValue()!=null && ! kv.getValue().matches(BASE_REGEX))
+				return "colonna indicata da "+kv.getKey().name()+" '"+kv.getValue()+"' non valida";
+		}
 		
 		for (String s : this.kv) {
 			if (s==null || s.equals("")) return "Una colonna \u00e8 stata trovata vuota";
@@ -108,9 +145,9 @@ public class SQLSelectCraft extends SelectCraft {
 			String value= kv.getValue().toString();
 			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey()      .matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			if ( isString && ! value.matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
+			if (kv.getValue()== null || value      .equals("") ) return "Il valore di '"+kv.getKey()+ "' \u00e8 stata trovata vuota";
+			if ( ! kv.getKey()      .matches( BASE_REGEX) ) return "La colonna '"+kv.getKey()+"' non \u00e8 valida";
+			if ( isString && ! value.matches(VALUE_REGEX) ) return "Il valore '" +value      +"' non \u00e8 valido";
 		}
 		
 		return (joinTable!=null)?joinTable.validate():"";
@@ -122,7 +159,13 @@ public class SQLSelectCraft extends SelectCraft {
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		
 		
-		return "SELECT "+selectCraft()+" FROM "+fromCraft()+" WHERE 1=1 "+whereCraft();
+		return 
+			"SELECT "+selectCraft()+
+			" FROM "+fromCraft()+
+			" WHERE 1=1 "+whereCraft()+
+			groupByCraft()+
+			orderByCraft()
+		;
 	}
 
 	@Override
@@ -149,16 +192,24 @@ public class SQLSelectCraft extends SelectCraft {
 	public String selectCraft() {
 		StringBuilder sb=new StringBuilder();
 		
-		if (kv.size()!=0) {
-			for (String k : kv ) {
-				sb.append(attachAlias(k)+",");
-			}
-			sb.deleteCharAt(sb.length()-1);
+		for (String k : kv ) {
+			sb.append(attachAlias(k)+",");
+		}
+		
+		
+		
+		for(Entry<AGGREGATE,String> kv:aggregatesColumn.entrySet()) {
+			if(kv.getKey()==AGGREGATE.COUNT_DISTINCT)
+				sb.append(AGGREGATE.COUNT+"("+AGGREGATE.DISTINCT+"("+attachAlias(kv.getValue())+")),");
+			else 
+				sb.append(kv.getKey().name()+"("+attachAlias(kv.getValue())+"),");
 		}
 		
 		if( joinTable != null ) {
-			sb.append(","+joinTable.selectCraft());
+			sb.append(joinTable.selectCraft());
 		}
+		
+		if(sb.length()>0 && sb.charAt(sb.length()-1)==',') sb.deleteCharAt(sb.length()-1);
 		
 		String result=sb.toString();	
 		return result.equals("") ? attachAlias(null) : result.trim();
@@ -170,14 +221,14 @@ public class SQLSelectCraft extends SelectCraft {
 		
 		sb.append("`"+db+"`.`"+table+"`");
 		if(alias!=null)
-			sb.append("`"+alias+"`");
+			sb.append(" `"+alias+"`");
 		
 		if( joinTable != null ) {
 			sb.append(", "+joinTable.fromCraft());
 		}
 		
 		String result=sb.toString();	
-		return result.equals("") ? attachAlias("*") : result.trim();
+		return result.trim();
 
 	}
 
@@ -199,6 +250,58 @@ public class SQLSelectCraft extends SelectCraft {
 		String result=sb.toString();	
 		return result.trim();
 	}
+	
+	@Override
+	protected String groupByCraft() {
+		if(groupBy==null||groupBy.equals("")) return "";
+		return " GROUP BY `"+groupBy+'`';
+	}
 
+	@Override
+	protected String orderByCraft() {
+		if(orderBy==null) return "";
+		return " ORDER BY "+orderBy.getKey()+" "+(orderBy.getValue()?"ASC":"DESC");
+	}
+
+	@Override
+	public SelectCraft count(String column) {
+		String c=aggregatesColumn.get(AGGREGATE.DISTINCT);
+		if(column!=null && column.equals(c)) {
+			aggregatesColumn.put(AGGREGATE.COUNT_DISTINCT, column);
+			aggregatesColumn.remove(AGGREGATE.DISTINCT);
+		}
+		else aggregatesColumn.put(AGGREGATE.COUNT, column);
+		return this;
+	}
+
+	@Override
+	public SelectCraft distinct(String column) {
+		String c=aggregatesColumn.get(AGGREGATE.COUNT);
+		if(column!=null && column.equals(c)) {
+			aggregatesColumn.put(AGGREGATE.COUNT_DISTINCT, column);
+			aggregatesColumn.remove(AGGREGATE.COUNT);
+		}
+		else aggregatesColumn.put(AGGREGATE.DISTINCT, column);
+		return this;
+	}
+
+	@Override
+	public SelectCraft sum(String column) {
+		aggregatesColumn.put(AGGREGATE.SUM, column);
+		return this;
+	}
+
+	@Override
+	public SelectCraft groupBy(String column) {
+		groupBy=column;
+		return this;
+	}
+	
+
+	@Override
+	public SelectCraft orderBy(String column, boolean asc) {
+		orderBy=new SimpleEntry<>(column, asc);
+		return this;
+	}
 
 }

@@ -155,23 +155,34 @@ public class MySqlConnection {
 	}//query
 	
 	/**
-	 * restituisce una mappa chiave valore dove: TODO ristrutturare
+	 * restituisce un' array di mappe dove:
 	 * <ul>
 	 * 	<li>chiave = nome della colonne</li>
 	 * 	<li>valore = valore della colonna come {@link Object}</li>
 	 * </ul>
+	 * Ogni riga è rappresentata da una mappa
+	 * 
 	 * @param query la query
-	 * @return una mappa nomecolonna-valorecolonna
+	 * @return un array di mappe, ogni mappa è una riga, chiave=nomecolonna valore=valorecolonna
 	 */ 
-	public Map<String,Object> queryMap(String query){
+	@SuppressWarnings("unchecked")
+	public Map<String,Object>[] queryMap(String query){
 		ResultSet rs = query(query);
-		Map<String,Object> ris=new HashMap<>();
+		Map<String,Object>[] ris=null;
+		int count=0;
 		try {
+			
+			if(! rs.last()) return null;
+			ris=new HashMap[rs.getRow()];
+			
+			rs.beforeFirst();
 			while(rs.next()) {
+				ris[count]=new HashMap<String,Object>();
 				ResultSetMetaData rsmeta= rs.getMetaData();
 				for(int i=1;i<=rsmeta.getColumnCount();i++) {
-					ris.put(rsmeta.getColumnLabel(i),rs.getObject(i));
+					ris[count].put(rsmeta.getColumnLabel(i),rs.getObject(i));
 				}
+				count++;
 			}
 			errMsg="";
 		}catch (SQLException s){
@@ -220,7 +231,7 @@ public class MySqlConnection {
 		DBCraft craf=new SQLDBCraft().DB(nomeDB);
 		
 		try {
-			String s=craf.select();
+			String s=craf.exists();
 			ResultSet rs=query(s);
 			if(rs==null) return false;
 			return rs.next();

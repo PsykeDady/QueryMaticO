@@ -92,11 +92,28 @@ class CompleteTest {
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
-		e = new Entity(); e.identity=3; e.name="STEVEN"; e.description="strange magic mix of diamond and  kidèàòù";
+		e = new Entity(); e.identity=3; e.name="Ugly"; e.description="ugly column to delete";
 		System.out.println(tc.insertData(e).craft());
 		m.exec(tc.insertData(e).craft());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
+		System.out.println(tc.deleteData(e).craft());
+		m.exec(tc.deleteData(e).craft());
+		if (!m.getErrMsg().equals(""))
+			throw new IllegalStateException("an error occur: " + m.getErrMsg());
+
+		e = new Entity(); e.identity=3; e.name="STEVEN"; e.description="strange magic mix of diamond and  kid";
+		System.out.println(tc.insertData(e).craft());
+		m.exec(tc.insertData(e).craft());
+		if (!m.getErrMsg().equals(""))
+			throw new IllegalStateException("an error occur: " + m.getErrMsg());
+		
+		e = new Entity(); e.identity=4; e.name="Link"; e.description="he come to town Come to save the princess Zelda ";
+		System.out.println(tc.insertData(e).craft());
+		m.exec(tc.insertData(e).craft());
+		if (!m.getErrMsg().equals(""))
+			throw new IllegalStateException("an error occur: " + m.getErrMsg());
+		
 		
 		SelectCraft sel=new SQLSelectCraft().DB("DBName").table("Entity");
 		System.out.println(sel.craft());
@@ -107,11 +124,11 @@ class CompleteTest {
 			 System.out.println(ent.identity+" "+ent.name+" "+ent.description);
 		}
 		
-		Map<String,Object> map=m.queryMap(sel.craft());
+		Map<String,Object> []amap=m.queryMap(sel.craft());
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: \n" + m.getErrMsg());
-		for(Entry<String,Object> kv : map.entrySet()) {
-			 System.out.println(kv.getKey()+" "+kv.getValue().getClass());
+		for(Map<String,Object> map: amap) for(Entry<String,Object> kv : map.entrySet()) {
+			 System.out.println(kv.getKey()+" "+kv.getValue().getClass()+" "+kv.getValue());
 		}
 		
 		

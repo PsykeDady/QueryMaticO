@@ -30,6 +30,7 @@ import psykeco.querycraft.utility.SQLClassParser;
  **/
 public class SQLTableCraft implements TableCraft{
 	
+	
 	/** nome tabella (obbligatorio) */
 	private String table;
 	/** nome db (obbligatorio) */
@@ -157,7 +158,7 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public String select() {
+	public String exists() {
 		String validation=validate();
 		
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
@@ -200,11 +201,13 @@ public class SQLTableCraft implements TableCraft{
 	public SelectCraft selectData(Object o) {
 		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
 		
-		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
+		if ( o!= null ) { 
+			Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
-		for (Entry<String,Object> entry : map.entrySet()) {
-			if(entry.getValue()==null) continue;
-			qc.filter(entry);
+			for (Entry<String,Object> entry : map.entrySet()) {
+				if(entry.getValue()==null) continue;
+				qc.filter(entry);
+			}
 		}
 		
 		return qc;
@@ -247,6 +250,12 @@ public class SQLTableCraft implements TableCraft{
 		}
 		
 		return qc;
+	}
+
+	@Override
+	public SelectCraft countData(Object o) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

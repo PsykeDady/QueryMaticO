@@ -69,7 +69,7 @@ public interface TableCraft {
 	 * 
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 */
-	public String select();
+	public String exists();
 	
 	/**
 	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare la tabella
@@ -90,10 +90,13 @@ public interface TableCraft {
 	public QueryCraft insertData(Object o);
 	
 	/**
-	 * crea un istanza di QueryCraft che effettua una select in base ai parametri non null
+	 * crea un istanza di QueryCraft che effettua una select in base ai parametri 
 	 * dell'oggetto passato come parametro
 	 * 
-	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * @param o un oggetto che rappresenta 
+	 * 	i campi non null da cercare 
+	 * ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}.
+	 * Se <code>null</code>, seleziona tutte le righe 
 	 * 
 	 * @return un istanza di {@link SelectCraft} che rappresenta la select
 	 */
@@ -122,5 +125,15 @@ public interface TableCraft {
 	 * @return un istanza di {@link QueryCraft} che rappresenta la delete
 	 */
 	public QueryCraft updateData(Object o);
+	
+	/**
+	 * crea un istanza di QueryCraft che elimina le tuple con le caratteristiche 
+	 * non null dell'oggetto indicato
+	 * 
+	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * 
+	 * @return un istanza di {@link QueryCraft} che rappresenta la delete
+	 */
+	public SelectCraft countData(Object o);
 
 }

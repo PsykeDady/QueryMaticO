@@ -70,7 +70,7 @@ class TableCraftTest {
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave");
 		
-		assertEquals(expected,s.select().trim());
+		assertEquals(expected,s.exists().trim());
 	}
 	
 	@Test
@@ -127,7 +127,7 @@ class TableCraftTest {
 	void testUpdateData () {
 		String expected =
 				  "UPDATE `TestDB`.`Entita` "
-				+ "SET `campo`='un campo generico',`anotherCampo`='Another campo generico'  "
+				+ "SET `campo`='un campo generico',`anotherCampo`='Another campo generico' "
 				+ "WHERE 1=1 AND `chiave`=123"
 				
 		;

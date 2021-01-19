@@ -86,6 +86,6 @@ public class SQLDeleteCraft implements QueryCraft{
 			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );
 		}
 		
-		return values.toString();
+		return values.toString().trim();
 	}
 }

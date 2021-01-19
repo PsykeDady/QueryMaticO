@@ -101,7 +101,7 @@ public class SQLUpdateCraft implements QueryCraft {
 			column.append("`"+kv.getKey()+"`="+QueryCraft.str(kv.getValue())+"," );
 		}
 		
-		column.setCharAt(column.length()-1,' ');
+		column.deleteCharAt(column.length()-1);
 		
 		values.append(" WHERE 1=1 ");
 		
@@ -109,7 +109,7 @@ public class SQLUpdateCraft implements QueryCraft {
 			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );
 		}
 		
-		return column.toString()+values.toString();
+		return (column.toString()+values.toString()).trim();
 	}
 
 }
