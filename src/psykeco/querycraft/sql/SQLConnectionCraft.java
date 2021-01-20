@@ -119,9 +119,8 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	 */
 	@Override
 	public Connection connect() {
-		String validate = validation() ;
-		if (!validate.equals("")) throw new IllegalArgumentException(validate);
-		String URL=URL_INIT+url+':'+port+((db!=null)?'/'+db:"");
+		
+		String URL=craft();
 		Connection connessione=null;
 		try{
 			connessione=DriverManager.getConnection(URL,user,psk);
@@ -151,5 +150,15 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 				(psk!=null && psk.equals( other.psk)))
 		;
 	}
+
+	@Override
+	public String craft() {
+		String validate = validation() ;
+		if (!validate.equals("")) throw new IllegalArgumentException(validate);
+		
+		return URL_INIT+url+':'+port+((db!=null)?'/'+db:"");
+	}
+
+	
 
 }

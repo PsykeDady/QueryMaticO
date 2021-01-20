@@ -71,6 +71,16 @@ public interface ConnectionCraft {
 	 * altrimenti il messaggio dell'errore
 	 */
 	public String validation();
+	
+	/**
+	 * 
+	 * genera la stringa di connessione, eventualmente chiamando prima la {@link #validation}
+	 * 
+	 * @return la stringa di connessione
+	 * 
+	 * @throws IllegalArgumentException se la validazione non finisce con successo
+	 */
+	public String craft();
 
 
 }

@@ -127,12 +127,14 @@ public interface TableCraft {
 	public QueryCraft updateData(Object o);
 	
 	/**
-	 * crea un istanza di QueryCraft che elimina le tuple con le caratteristiche 
+	 * crea un istanza di QueryCraft che conta le tuple con le caratteristiche 
 	 * non null dell'oggetto indicato
 	 * 
-	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * @param o un oggetto che rappresenta i campi non null da cercare (
+	 *  deve essere un oggetto della stessa classe passata al metodo 
+	 *  {@link #table(Class)}
 	 * 
-	 * @return un istanza di {@link QueryCraft} che rappresenta la delete
+	 * @return un istanza di {@link QueryCraft} che rappresenta la select count
 	 */
 	public SelectCraft countData(Object o);
 

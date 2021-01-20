@@ -198,7 +198,7 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public SelectCraft selectData(Object o) {
+	public SelectCraft selectData(Object o) { //TODO testare una selectAll con null
 		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
 		
 		if ( o!= null ) { 
@@ -254,8 +254,19 @@ public class SQLTableCraft implements TableCraft{
 
 	@Override
 	public SelectCraft countData(Object o) {
-		// TODO Auto-generated method stub
-		return null;
+		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
+		
+		if ( o!= null ) { 
+			Map<String,Object> map=SQLClassParser.parseInstance(type, o);
+		
+			for (Entry<String,Object> entry : map.entrySet()) {
+				if(entry.getValue()==null) continue;
+				qc.filter(entry);
+			}
+		} 
+		qc.count(null);
+		
+		return qc;
 	}
 	
 }

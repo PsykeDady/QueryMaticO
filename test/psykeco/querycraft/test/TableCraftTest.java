@@ -42,7 +42,6 @@ class TableCraftTest {
 		
 		TableCraft s = new SQLTableCraft().DB("TestDB").
 				table(Entita.class).primary("chiave").primary("anotherCampo");
-		
 		assertEquals(expected,s.create().trim());
 	}
 	
@@ -105,6 +104,37 @@ class TableCraftTest {
 				table(Entita.class).primary("chiave");
 		
 		assertEquals(expected,s.selectData(ins).craft());
+	}
+	
+	@Test
+	void testSelectAll () {
+		String expected =
+				  "SELECT * "
+				+ "FROM `TestDB`.`Entita` "
+				+ "WHERE 1=1"
+		;
+		
+		
+		TableCraft s = new SQLTableCraft().DB("TestDB").
+				table(Entita.class).primary("chiave");
+		
+		assertEquals(expected,s.selectData(null).craft());
+	}
+	
+	@Test
+	void testCountData () {
+		String expected =
+				  "SELECT COUNT(*) "
+				+ "FROM `TestDB`.`Entita` "
+				+ "WHERE 1=1 AND `campo`='un campo generico'";
+		;
+		
+		Entita ins=new Entita();
+		ins.setCampo("un campo generico");
+		
+		TableCraft s = new SQLTableCraft().DB("TestDB").
+				table(Entita.class).primary("chiave");
+		assertEquals(expected,s.countData(ins).craft());
 	}
 	
 	@Test

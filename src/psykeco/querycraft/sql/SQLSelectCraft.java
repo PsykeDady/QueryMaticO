@@ -160,11 +160,11 @@ public class SQLSelectCraft extends SelectCraft {
 		
 		
 		return 
-			"SELECT "+selectCraft()+
+			("SELECT "+selectCraft()+
 			" FROM "+fromCraft()+
 			" WHERE 1=1 "+whereCraft()+
 			groupByCraft()+
-			orderByCraft()
+			orderByCraft()).trim()
 		;
 	}
 

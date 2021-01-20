@@ -128,7 +128,6 @@ class SelectCraftTest {
 					+ "AND `e`.`STRINGA`='ciao' "
 					+ "AND `e`.`INTERO`=123 "
 					+ "AND `c`.`saluto`=`e`.`nome`";
-		System.out.println(expected);
 		assertEquals(expected, s.craft() );
 	}
 
