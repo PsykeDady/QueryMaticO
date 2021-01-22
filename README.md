@@ -19,12 +19,6 @@ Major policy of **QueryCraft** *is not to write manually queries* but use Java O
 - [ :it: ita ](documentation-md/ITALIAN_DOC.md)   
 - [ :gb: en ](documentation-md/ENGLISH_DOC.md) [ *not complete yet* ]  
 
-## KNOWN BUG/ISSUE/LIMITATION
-
-- most of UNICODE character not work into querycraft methods, because of injection regex control (see [todo list](##TODO-LIST) section)
-
-
-
 ## TODO LIST
 
 - QueryCraft : Date and GregorianCalendar *(in version 0.9)*
