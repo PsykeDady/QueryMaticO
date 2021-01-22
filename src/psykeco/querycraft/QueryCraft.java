@@ -1,5 +1,6 @@
 package psykeco.querycraft;
 
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
@@ -10,25 +11,47 @@ import java.util.Map.Entry;
  */
 public interface QueryCraft {
 	
-	/** set of accented letters*/
-	public static String ACCENTED_LETTERS=""
-			+ "\u00C0\u00c1"
-			+ "\u00c8\u00c9"
-			+ "\u00cc\u00cd"
-			+ "\u00d2\u00d3"
-			+ "\u00d9\u00da"
-			+ "\u00e0\u00e1"
-			+ "\u00e8\u00e9"
-			+ "\u00ec\u00ed"
-			+ "\u00f2\u00f3"
-			+ "\u00f9\u00fa"
-	;	
-
-	/** Regex per validare i singoli valori delle query */
-	public static String VALUE_REGEX="([A-Za-z0-9_-"+ACCENTED_LETTERS+"]| )*";
+	public static String validateBase(String base) {
+		if(base==null) return null;
+		StringBuilder sb=new StringBuilder(base);
+		final char dupl='`';
+		int i=0, end = sb.length(); 
+		if((sb.charAt(i)<'A'||'Z'<sb.charAt(i)) &&  (sb.charAt(i)<'a' || 'z' < sb.charAt(i)))
+			return null; //start with a letters
+		for (;i<end;i++) {
+			char cur=sb.charAt(i);
+			if (cur<32 || cur ==127) return null;
+			if(cur==dupl) {
+				i++;
+				if((i==end)|| sb.charAt(i)!=dupl ) {
+					sb.insert(i-1,dupl); 
+					end++; 
+				} 
+			}
+				
+		}
+		return sb.toString();
+	}
 	
-	/** Regex per validare i singoli componenti delle query */
-	public static String BASE_REGEX="[A-Za-z]("+VALUE_REGEX+"[A-Za-z0-9])?";
+	public static String validateValue(String value) {
+		if(value.length()>60) return null;
+		StringBuilder sb=new StringBuilder(value);
+		final char dupl='\'';
+		int i=0, end = sb.length(); 
+		for (;i<end;i++) {
+			char cur=sb.charAt(i);
+			if ((cur<32 && cur!=9 && cur!=10 ) || cur ==127) return null;
+			
+			if(cur==dupl) {
+				i++;
+				if((i==end)|| sb.charAt(i)!=dupl ) {
+					sb.insert(i-1,dupl); 
+					end++; 
+				} 
+			}
+		}
+		return sb.toString();
+	}
 	
 	/**
 	 * ritorna una versione "stringa" dell'oggetto da usare nelle query.
@@ -46,7 +69,7 @@ public interface QueryCraft {
 		
 		//TODO gestire le date
 		
-		return "'"+o.toString()+"'";
+		return "'"+validateValue(o.toString())+"'";
 	}
 	
 	/** indica il nome del DB alla query

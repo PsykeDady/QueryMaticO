@@ -10,10 +10,20 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
 
+import psykeco.querycraft.DBCraft;
+import psykeco.querycraft.QueryCraft;
+import psykeco.querycraft.TableCraft;
 import psykeco.querycraft.sql.MySqlConnection;
 import psykeco.querycraft.sql.SQLConnectionCraft;
+import psykeco.querycraft.sql.SQLDBCraft;
+import psykeco.querycraft.sql.SQLTableCraft;
 
 class MySQLConnectionTest {
+	
+	class Ciao{
+		int id;
+		String nome;
+	}
 
 	@Test
 	void test() {
@@ -36,12 +46,12 @@ class MySQLConnectionTest {
 		System.out.println(actual);
 		assertEquals(expected, actual);
 		
-		assertFalse(MySqlConnection.statoConnessione());
+		assertFalse(MySqlConnection.existConnection());
 		
 		MySqlConnection.createConnection(s);
 		MySqlConnection m=new MySqlConnection();
 		
-		assertTrue(MySqlConnection.statoConnessione());
+		assertTrue(MySqlConnection.existConnection());
 		
 		List<String>listdb=m.listDB();
 		
@@ -52,6 +62,33 @@ class MySQLConnectionTest {
 		for (String x: listdb) {
 			System.out.println(x);
 		}
+		
+		StringBuilder sb=new StringBuilder();
+		
+		for(int i =33;i<127;i++) if( (i<'a' || i>'z') && (i<'A' || i>'Z') )sb.append((char)i);
+		String nomedb="DB"+QueryCraft.validateBase(sb.toString());
+		DBCraft db =new SQLDBCraft().DB(nomedb);
+		System.out.println(db.create());
+		m.exec(db.create());
+		System.out.println(m.getErrMsg());
+		
+		sb.append((char)9);
+		sb.append((char)10);
+		sb.append("ciao");
+		
+		TableCraft tc= new SQLTableCraft().DB(nomedb).table(Ciao.class);
+		m.exec(tc.create());
+		System.out.println(m.getErrMsg());
+		
+		Ciao c=new Ciao();
+		c.id=1;
+		c.nome=QueryCraft.validateValue(sb.toString());
+		
+		System.out.println(tc.insertData(c).craft());
+		m.exec(tc.insertData(c).craft());
+		System.out.println(m.getErrMsg());
+		
+		
 		System.out.println("#### FINE   MYSQLCONNECTION TEST ####");
 	}
 

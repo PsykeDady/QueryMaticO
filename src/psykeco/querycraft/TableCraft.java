@@ -2,9 +2,6 @@ package psykeco.querycraft;
 
 public interface TableCraft {
 	
-	/** Regex per validare i singoli componenti delle query */
-	public static String BASE_REGEX=QueryCraft.BASE_REGEX;
-	
 	/**
 	 * imposta il nome del db
 	 * @param db : nuovo nome del db

@@ -1,5 +1,6 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.QueryCraft.*;
 import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
 import static psykeco.querycraft.utility.SQLClassParser.parseType;
 
@@ -58,19 +59,28 @@ public class SQLUpdateCraft implements QueryCraft {
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		
-		if (! table.matches(BASE_REGEX)) return " nome tabella "+table+" non valido";
-			
-		if (! db   .matches(BASE_REGEX)) return " nome db "+db+" non valido";
+		String tmp=QueryCraft.validateBase(table);
+		if (tmp==null) return " nome tabella "+table+" non valido";
+		table=tmp;
+		
+		tmp=QueryCraft.validateBase(db);
+		if (tmp==null) return " nome db "+db+" non valido";
+		db=tmp;		
 		
 		if ( kv.size() < 1 ) return "lista entry vuota. Serve almeno una coppia colonna-valore";
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
-			String val=kv.getValue().toString();
+			String type=parseType((getTrueName(kv.getValue().getClass())),false);
+			boolean isString= parseType("String",false).equals(type);
+			String value= kv.getValue().toString();
 			
-			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una chiave \u00e8 stata trovata vuota";
-			if (kv.getValue()== null || val        .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey().matches( BASE_REGEX) ) return "La chiave "+kv.getKey()+" non \u00e8 valida";
-			if ( ! val        .matches(VALUE_REGEX) ) return "Il valore "+val        +" non \u00e8 valido";
+			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
+			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
+			
+			tmp=validateBase(kv.getKey());
+			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			tmp= isString ? validateValue(value): value;
+			if ( tmp==null ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
 		for (Entry<String,Object> kv : this.filter.entrySet()) {
@@ -80,8 +90,11 @@ public class SQLUpdateCraft implements QueryCraft {
 			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
 			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey().matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			if ( isString && ! value      .matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
+			
+			tmp=QueryCraft.validateBase(kv.getKey());
+			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			String tmpV= isString ? QueryCraft.validateValue(value): value;
+			if ( tmpV==null ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
 		return "";
@@ -92,13 +105,16 @@ public class SQLUpdateCraft implements QueryCraft {
 		StringBuilder column=new StringBuilder(kv.size()*20);		
 		StringBuilder values=new StringBuilder(filter.size()*20);
 		
+		String db=validateBase(this.db), table=validateBase(this.table);
+		
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		
 		column.append("UPDATE `"+db+"`.`"+table+"` SET ");
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
-			column.append("`"+kv.getKey()+"`="+QueryCraft.str(kv.getValue())+"," );
+			String key=validateBase(kv.getKey()),value=str(kv.getValue());
+			column.append("`"+key+"`="+value+"," );
 		}
 		
 		column.deleteCharAt(column.length()-1);
@@ -106,7 +122,8 @@ public class SQLUpdateCraft implements QueryCraft {
 		values.append(" WHERE 1=1 ");
 		
 		for (Entry<String,Object> f : filter.entrySet()) {
-			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );
+			String key=validateBase(f.getKey()),value=str(f.getValue());
+			values.append("AND `"+key +"`="+value+" " );
 		}
 		
 		return (column.toString()+values.toString()).trim();

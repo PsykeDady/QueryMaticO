@@ -2,7 +2,7 @@ package psykeco.querycraft.sql;
 
 import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
 import static psykeco.querycraft.utility.SQLClassParser.parseType;
-
+import static psykeco.querycraft.QueryCraft.*;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -54,10 +54,11 @@ public class SQLDeleteCraft implements QueryCraft{
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		
-		if (! table.matches(BASE_REGEX)) return " nome tabella "+table+" non valido";
-			
-		if (! db   .matches(BASE_REGEX)) return " nome db "+db+" non valido";
+		String tmp=validateBase(table);
+		if (tmp==null) return " nome tabella "+table+" non valido";
 		
+		tmp=validateBase(db);
+		if (tmp==null) return " nome db "+db+" non valido";
 		
 		for (Entry<String,Object> kv : this.filter.entrySet()) {
 			String type=parseType((getTrueName(kv.getValue().getClass())),false);
@@ -66,8 +67,11 @@ public class SQLDeleteCraft implements QueryCraft{
 			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
 			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey()            .matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			if ( isString && ! value      .matches(VALUE_REGEX) ) return "Il valore " +value      +" non \u00e8 valido";
+			
+			tmp=validateBase(kv.getKey());
+			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			tmp= isString ? validateValue(value): value;
+			if ( tmp==null ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
 		return "";
@@ -80,10 +84,14 @@ public class SQLDeleteCraft implements QueryCraft{
 		String validation=validate();
 		if( ! validation.equals("")) throw new IllegalArgumentException(validation);
 		
+		String db=validateBase(this.db),table=validateBase(this.table);
+		
 		values.append("DELETE FROM `"+db+"`.`"+table+"` WHERE 1=1 ");
 		
 		for (Entry<String,Object> f : filter.entrySet()) {
-			values.append("AND `"+f.getKey() +"`="+QueryCraft.str(f.getValue())+" " );
+			String key=validateBase(f.getKey()),
+				value=str(f.getValue());
+			values.append("AND `"+key+"`="+value+" " );
 		}
 		
 		return values.toString().trim();

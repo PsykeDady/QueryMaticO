@@ -1,6 +1,7 @@
 package psykeco.querycraft.sql;
 
 import psykeco.querycraft.DBCraft;
+import static psykeco.querycraft.QueryCraft.*;
 
 /**
  * SQLDBCraft costruisceì istruzioni SQL 
@@ -16,7 +17,7 @@ public class SQLDBCraft implements DBCraft{
 
 	@Override
 	public DBCraft DB(String db) {
-		this.db=db;
+		this.db=validateBase(db);
 		return this;
 	}
 
@@ -24,7 +25,8 @@ public class SQLDBCraft implements DBCraft{
 	public String validate() {
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		
-		if (! db   .matches(BASE_REGEX)) return " nome db "+db+" non valido";
+		String tmp=validateBase(db);
+		if (tmp==null) return " nome db "+db+" non valido";
 		
 		return "";
 	}
@@ -33,21 +35,22 @@ public class SQLDBCraft implements DBCraft{
 	public String create() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "CREATE DATABASE `"+db+"`";
+		
+		return "CREATE DATABASE `"+validateBase(db)+"`";
 	}
 
 	@Override
 	public String exists() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "SHOW DATABASES LIKE '"+db+"'";
+		return "SHOW DATABASES LIKE '"+validateValue(db)+"'";
 	}
 
 	@Override
 	public String drop() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "DROP DATABASE `"+db+"`";
+		return "DROP DATABASE `"+validateBase(db)+"`";
 	}
 
 	/**
@@ -61,7 +64,7 @@ public class SQLDBCraft implements DBCraft{
 	public String listTables() {
 		String validation=validate();
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "SELECT table_name FROM information_schema.tables WHERE table_schema='"+db+"'";
+		return "SELECT table_name FROM information_schema.tables WHERE table_schema='"+validateBase(db)+"'";
 	}
 
 }

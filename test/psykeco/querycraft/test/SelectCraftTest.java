@@ -1,10 +1,9 @@
 package psykeco.querycraft.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import psykeco.querycraft.QueryCraft;
 import psykeco.querycraft.SelectCraft;
 import psykeco.querycraft.sql.SQLSelectCraft;
 

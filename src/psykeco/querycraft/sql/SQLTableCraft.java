@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import psykeco.querycraft.QueryCraft;
+import static psykeco.querycraft.QueryCraft.*;
 import psykeco.querycraft.SelectCraft;
 import psykeco.querycraft.TableCraft;
 import psykeco.querycraft.utility.SQLClassParser;
@@ -54,7 +55,7 @@ public class SQLTableCraft implements TableCraft{
 	 * @return prefisso+what+suffisso
 	 */
 	private String attachPreSuf(String what) {
-		return prefix+what+suffix;
+		return validateBase(prefix+what+suffix);
 	}
 	
 	/** costruttore vuoto */
@@ -113,17 +114,25 @@ public class SQLTableCraft implements TableCraft{
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		if ( kv.size() < 1 ) return "Questa classe non ha parametri, non puo' essere trasformata";
-
 		
-		if (! table.matches(BASE_REGEX)) return " nome tabella "+table+" non valido";
-		if (! db   .matches(BASE_REGEX)) return " nome db "+db+" non valido";
+		String tmp=validateBase(db);
+		if (tmp==null) return "nome db "+db+" non valido";
+		db=tmp;		
 		
-		if (! (table+suffix).matches(BASE_REGEX) ) return " suffisso "+ suffix +" scelto non valido";
-		if (! (prefix+table).matches(BASE_REGEX) ) return " prefisso "+ prefix +" scelto non valido";
+		tmp=validateBase(table);
+		if (tmp==null) return "nome tabella "+table+" non valido";
+		
+		String tmp2=validateBase(prefix+table);
+		if (tmp2==null) return "prefisso "+ prefix +" scelto non valido";
+		
+		tmp2=validateBase(table+suffix);
+		if (tmp2==null) return "suffisso "+ suffix +" scelto non valido";
+		
+		table=tmp;
 		
 		for (Entry<String,String> kv : kv.entrySet()) {
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if ( ! kv.getKey().matches(BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			if ( validateBase(kv.getKey())==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
 		}
 		
 		return "";
@@ -133,22 +142,25 @@ public class SQLTableCraft implements TableCraft{
 	public String create() {
 		
 		StringBuilder sb=new StringBuilder(kv.size()*20);
+		String db=validateBase(this.db), table =attachPreSuf(this.table);
 		
 		String validation=validate();
 		
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
 		
-		sb.append("CREATE TABLE `"+db+"`.`"+attachPreSuf(table)+"` (");
+		sb.append("CREATE TABLE `"+db+"`.`"+table+"` (");
 		
 		for (Entry<String,String> kv :this.kv.entrySet() ) {
 			boolean isPrimary=primary.contains(kv.getKey());
 			String parsedType=parseType(kv.getValue(),isPrimary);
-			sb.append(attachPreSuf(kv.getKey())+' '+parsedType+",");
+			String key=validateBase(kv.getKey());
+			sb.append(key+' '+parsedType+",");
 		}
 		
 		if(! primary.isEmpty()) {
 			sb.append("PRIMARY KEY(");
-			for (String k : primary) sb.append(k+',');
+
+			for (String k : primary) sb.append(validateBase(k)+',');
 			sb.setCharAt(sb.length()-1,')');
 			sb.append(',');
 		}
@@ -160,14 +172,15 @@ public class SQLTableCraft implements TableCraft{
 	@Override
 	public String exists() {
 		String validation=validate();
-		
+		String db=validateBase(this.db),table =attachPreSuf(this.table);
+
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
 		
 		String sb="SELECT * "
 				+ "FROM information_schema.tables "
 				+ "WHERE "
 					+ "table_schema='"+db+"' "
-					+ "AND table_name='"+attachPreSuf(table)+"'";
+					+ "AND table_name='"+table+"'";
 		
 		return sb;
 	}
@@ -175,18 +188,20 @@ public class SQLTableCraft implements TableCraft{
 	@Override
 	public String drop() {
 		String validation=validate();
-		
+		String db=validateBase(this.db), table =attachPreSuf(this.table);
+
 		if(!validation.equals("")) throw new IllegalArgumentException(validation);
 		
-		String sb="DROP TABLE IF EXISTS `"+db+"`.`"+attachPreSuf(table)+"`";
+		String sb="DROP TABLE IF EXISTS `"+db+"`.`"+table+"`";
 		
 		return sb;
 	}
 
 	@Override
 	public QueryCraft insertData(Object o) {
+		String db=validateBase(this.db), table= attachPreSuf(this.table); 
+
 		QueryCraft qc=new SQLInsertCraft().DB(db).table(table);
-		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
 		for (Entry<String,Object> entry : map.entrySet()) {
@@ -198,9 +213,10 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public SelectCraft selectData(Object o) { //TODO testare una selectAll con null
-		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
+	public SelectCraft selectData(Object o) { 
+		String table= attachPreSuf(this.table);
 		
+		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
 		if ( o!= null ) { 
 			Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
@@ -215,6 +231,8 @@ public class SQLTableCraft implements TableCraft{
 
 	@Override
 	public QueryCraft deleteData(Object o) {
+		String table= attachPreSuf(this.table);
+
 		QueryCraft qc=new SQLDeleteCraft().DB(db).table(table);
 		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
@@ -229,16 +247,15 @@ public class SQLTableCraft implements TableCraft{
 
 	@Override
 	public QueryCraft updateData(Object o) {
-		if (primary.isEmpty())
-			throw new IllegalArgumentException("deve essere presente almeno una chiave primaria");
-		
+		String table= attachPreSuf(this.table);
+
 		QueryCraft qc=new SQLUpdateCraft().DB(db).table(table);
 		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
 		for (Entry<String,Object> entry : map.entrySet()) {
 			if(primary.contains(entry.getKey()) ) {
-				if( entry.getValue()==null  ) 
+				if(entry.getValue()==null) 
 					throw new IllegalArgumentException("Gli elementi nella chiave primaria non possono essere null");
 				
 				qc.filter(entry);

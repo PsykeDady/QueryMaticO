@@ -74,7 +74,7 @@ public class MySqlConnection {
 	 *@return stringa vuota se il comando &egrave; andato a buon fine. il messaggio di errore altrimenti
 	 */
 	public String exec(String comando){
-		if(!statoConnessione()) {
+		if(!existConnection()) {
 			errMsg= "Connessione Chiusa";
 			return errMsg;
 		}
@@ -101,7 +101,7 @@ public class MySqlConnection {
 	 * 
 	 */
 	public ResultSet query(String query){
-		if(!statoConnessione()) {
+		if(!existConnection()) {
 			errMsg= "Connessione Chiusa";
 			return null;
 		}
@@ -223,7 +223,7 @@ public class MySqlConnection {
 	 */
 	public Boolean existDB(String nomeDB){
 		
-		if(!statoConnessione()) {
+		if(!existConnection()) {
 			errMsg="connessione chiusa";
 			return null;
 		}
@@ -319,7 +319,7 @@ public class MySqlConnection {
 	/**
 	 * @return true se connesso
 	 */
-	public static boolean statoConnessione(){
+	public static boolean existConnection(){
 		return connessione!=null;
 	}
 	
@@ -344,7 +344,7 @@ public class MySqlConnection {
 	 * commit delle transizioni
 	 */
 	public static void commit() {
-		if(!statoConnessione()) return;
+		if(!existConnection()) return;
 		try{
 			connessione.commit();
 			statement=null;
@@ -355,7 +355,7 @@ public class MySqlConnection {
 	 * rollback delle transizioni
 	 */
 	public static void rollback() {
-		if(!statoConnessione()) return;
+		if(!existConnection()) return;
 		try{
 			connessione.rollback();
 			statement=null;
@@ -368,7 +368,7 @@ public class MySqlConnection {
 	 * Chiusura della connessione
 	 */
 	public static void close(){
-		if(!statoConnessione()) return;
+		if(!existConnection()) return;
 		try{
 			connessione.close();
 		}catch(SQLException s){}

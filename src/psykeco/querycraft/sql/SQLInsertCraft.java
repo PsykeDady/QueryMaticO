@@ -5,6 +5,10 @@ import java.util.Map.Entry;
 
 import psykeco.querycraft.QueryCraft;
 
+import static psykeco.querycraft.QueryCraft.*;
+import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.utility.SQLClassParser.parseType;
+
 /**
  * Costruisce la insert per le query di tipo SQL<br>
  * implementa {@link QueryCraft}
@@ -50,20 +54,27 @@ public class SQLInsertCraft implements QueryCraft {
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		
-		if (! table.matches(BASE_REGEX)) return " nome tabella "+table+" non valido";
-			
-		if (! db   .matches(BASE_REGEX)) return " nome db "+db+" non valido";
+		String tmp=QueryCraft.validateBase(table);
+		if (tmp==null) return " nome tabella "+table+" non valido";
+		
+		tmp=QueryCraft.validateBase(db);
+		if (tmp==null) return " nome db "+db+" non valido";
 		
 		if ( kv.size() < 1 ) return "lista entry vuota. Serve almeno una coppia colonna-valore";
 		
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
-			String val=kv.getValue().toString();
+			String type=parseType((getTrueName(kv.getValue().getClass())),false);
+			boolean isString= parseType("String",false).equals(type);
+			String value= kv.getValue().toString();
 			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if (kv.getValue()== null || val        .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
-			if ( ! kv.getKey().matches( BASE_REGEX) ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			if ( ! val        .matches(VALUE_REGEX) ) return "Il valore " +val        +" non \u00e8 valido";
+			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
+			
+			tmp=validateBase(kv.getKey());
+			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			tmp= isString ? validateValue(value): value;
+			if ( tmp==null ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
 		return "";
@@ -76,13 +87,16 @@ public class SQLInsertCraft implements QueryCraft {
 		
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
+		String db=validateBase(this.db), table=validateBase(this.table);
 		
 		values.append("INSERT INTO "+'`'+db+"`.`"+table+'`'+" ( ");
 		column.append(" VALUES (");
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
-			values.append( '`'+kv.getKey()  +"`," );
-			column.append(QueryCraft.str(kv.getValue())+"," );
+			String key=validateBase(kv.getKey()),
+					value=str(kv.getValue());
+			values.append( '`'+key+"`," );
+			column.append(value+"," );
 		}
 		
 		values.setCharAt(values.length()-1, ')');

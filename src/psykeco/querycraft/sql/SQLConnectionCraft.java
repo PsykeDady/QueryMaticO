@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import psykeco.querycraft.ConnectionCraft;
 import psykeco.querycraft.DBCraft;
+import static psykeco.querycraft.QueryCraft.*;
 
 public class SQLConnectionCraft  implements ConnectionCraft{
 	
@@ -101,13 +102,12 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	}
 	
 	@Override
-	public String validation() {
+	public String validate() {
 		if(url==null) return "url vuoto";
 		if(port < 1024 || 49151 < port) return "valore della porta errato";
 		if(user==null) return "utente non valido";
 		if(psk==null) return "psk non valida";
-		if (db!=null && ! db.matches(DBCraft.BASE_REGEX)) return "nome db non valido";
-		
+
 		return "";
 	}
 	
@@ -153,8 +153,11 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 
 	@Override
 	public String craft() {
-		String validate = validation() ;
+		String validate = validate() ;
+		String db=validateBase(this.db);
 		if (!validate.equals("")) throw new IllegalArgumentException(validate);
+		if (this.db!=null&&db==null) throw new IllegalArgumentException("nome db"+this.db+"non valido");
+		
 		
 		return URL_INIT+url+':'+port+((db!=null)?'/'+db:"");
 	}

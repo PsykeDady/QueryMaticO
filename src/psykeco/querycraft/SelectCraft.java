@@ -1,6 +1,7 @@
 package psykeco.querycraft;
 
 import java.util.Map.Entry;
+import static psykeco.querycraft.QueryCraft.*;
 
 /**
  * SelectCraft estende QueryCraft per l'uso delle join nelle select
@@ -35,10 +36,10 @@ public abstract class SelectCraft implements QueryCraft{
 	 * @return la stringa con l'alias ( se esiste) in prefisso
 	 */
 	protected String attachAlias(String what) {
-		what=(what==null)?"*":"`"+what+"`";
+		what=(what==null)?"*":"`"+validateBase(what)+"`";
 		if(alias==null || alias.equals("")) 
 			return what;
-		return "`"+alias+"`."+what;
+		return "`"+validateBase(alias)+"`."+what;
 	}
 	
 	/**

@@ -31,7 +31,7 @@ class AggregateTest {
 			+ "SELECT `id` "
 			+ "FROM `MyApp`.`Test` "
 			+ "WHERE 1=1 AND `descrizione`='test test' "
-			+ "ORDER BY nome ASC"
+			+ "ORDER BY `nome` ASC"
 		;
 		
 		SelectCraft scf= new SQLSelectCraft().DB("MyApp").table("Test")
@@ -46,7 +46,7 @@ class AggregateTest {
 			+ "SELECT `id` "
 			+ "FROM `MyApp`.`Test` "
 			+ "WHERE 1=1 AND `descrizione`='test test' "
-			+ "ORDER BY nome DESC"
+			+ "ORDER BY `nome` DESC"
 		;
 		
 		SelectCraft scf= new SQLSelectCraft().DB("MyApp").table("Test")

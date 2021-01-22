@@ -70,7 +70,7 @@ public interface ConnectionCraft {
 	 * @return stringa vuota (<code>""</code> se la validazione &egrave; andata a buon fine, 
 	 * altrimenti il messaggio dell'errore
 	 */
-	public String validation();
+	public String validate();
 	
 	/**
 	 * 

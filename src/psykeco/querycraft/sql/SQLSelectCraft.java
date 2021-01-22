@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Set;
 import java.util.TreeSet;
+import static psykeco.querycraft.QueryCraft.*;
 import psykeco.querycraft.QueryCraft;
 import psykeco.querycraft.SelectCraft;
 import static psykeco.querycraft.utility.SQLClassParser.parseType;
@@ -116,27 +117,32 @@ public class SQLSelectCraft extends SelectCraft {
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario";
 		
-		if (! table.matches(BASE_REGEX)) return " nome tabella '"+table+"' non valido";
-			
-		if (! db   .matches(BASE_REGEX)) return " nome db '"+db+"' non valido";
+		String tmp=validateBase(table);
+		if (tmp==null) return " nome tabella "+table+" non valido";
 		
-		if ( groupBy!=null && ! groupBy.matches(BASE_REGEX)) 
+		tmp=validateBase(db);
+		if (tmp==null) return " nome db "+db+" non valido";
+		
+		tmp=validateBase(alias);
+		if (alias!=null && tmp==null) return " nome alias "+alias+" non valido";
+		
+		if ( groupBy!=null && validateBase(groupBy)==null) 
 			return "colonna indicata da group by '"+groupBy+"' non valida";
 		
 		if ( orderBy != null && orderBy.getKey() == null )
 			return "colonna indicata da order by non pu&ograve; essere nulla";
 		
-		if ( orderBy != null && ! orderBy.getKey().matches(BASE_REGEX))
+		if ( orderBy != null && validateBase(orderBy.getKey())==null)
 			return "colonna indicata da order by '"+orderBy.getKey()+"' non valida";
 		
 		for (Entry<AGGREGATE,String> kv: aggregatesColumn.entrySet()) {
-			if(kv.getValue()!=null && ! kv.getValue().matches(BASE_REGEX))
+			if(kv.getValue()!=null && validateBase(kv.getValue())==null)
 				return "colonna indicata da "+kv.getKey().name()+" '"+kv.getValue()+"' non valida";
 		}
 		
 		for (String s : this.kv) {
 			if (s==null || s.equals("")) return "Una colonna \u00e8 stata trovata vuota";
-			if (! s.matches(BASE_REGEX)) return "La colonna "+s+" non \u00e8 valida";
+			if (validateBase(s)==null) return "La colonna "+s+" non \u00e8 valida";
 		}
 		
 		for (Entry<String,Object> kv : this.filter.entrySet()) {
@@ -145,9 +151,12 @@ public class SQLSelectCraft extends SelectCraft {
 			String value= kv.getValue().toString();
 			
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if (kv.getValue()== null || value      .equals("") ) return "Il valore di '"+kv.getKey()+ "' \u00e8 stata trovata vuota";
-			if ( ! kv.getKey()      .matches( BASE_REGEX) ) return "La colonna '"+kv.getKey()+"' non \u00e8 valida";
-			if ( isString && ! value.matches(VALUE_REGEX) ) return "Il valore '" +value      +"' non \u00e8 valido";
+			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
+			
+			tmp=QueryCraft.validateBase(kv.getKey());
+			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			String tmpV= isString ? QueryCraft.validateValue(value): value;
+			if ( tmpV==null ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
 		return (joinTable!=null)?joinTable.validate():"";
@@ -196,8 +205,6 @@ public class SQLSelectCraft extends SelectCraft {
 			sb.append(attachAlias(k)+",");
 		}
 		
-		
-		
 		for(Entry<AGGREGATE,String> kv:aggregatesColumn.entrySet()) {
 			if(kv.getKey()==AGGREGATE.COUNT_DISTINCT)
 				sb.append(AGGREGATE.COUNT+"("+AGGREGATE.DISTINCT+"("+attachAlias(kv.getValue())+")),");
@@ -218,6 +225,8 @@ public class SQLSelectCraft extends SelectCraft {
 	@Override
 	public String fromCraft() {
 		StringBuilder sb=new StringBuilder();
+		String db=validateBase(this.db), table=validateBase(this.table),
+				alias=validateBase(this.alias);
 		
 		sb.append("`"+db+"`.`"+table+"`");
 		if(alias!=null)
@@ -254,13 +263,13 @@ public class SQLSelectCraft extends SelectCraft {
 	@Override
 	protected String groupByCraft() {
 		if(groupBy==null||groupBy.equals("")) return "";
-		return " GROUP BY `"+groupBy+'`';
+		return " GROUP BY "+attachAlias(groupBy);
 	}
 
 	@Override
 	protected String orderByCraft() {
 		if(orderBy==null) return "";
-		return " ORDER BY "+orderBy.getKey()+" "+(orderBy.getValue()?"ASC":"DESC");
+		return " ORDER BY "+attachAlias(orderBy.getKey())+" "+(orderBy.getValue()?"ASC":"DESC");
 	}
 
 	@Override

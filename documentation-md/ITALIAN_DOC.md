@@ -8,7 +8,7 @@ QueryCraft è un framework che include
 
 
 
-Attraverso questo framework, la persistenza con java ottiene un approccio Orientato ad Oggetti, astraendo completamente il linguaggio di connessione del DB.
+Attraverso questo framework, la persistenza con Java ottiene un approccio Orientato ad Oggetti, astraendo completamente il linguaggio di connessione del DB.
 
 - [Salta ad inizio documentazione](#ConnectionCraft)
 
@@ -38,7 +38,6 @@ con identity **chiave primaria**. Quindi di voler inserire in tabella:
 
 ```java
 public static void main(String [] main){
-	String validate = validation() ;
     String URL="jdbc:mysql://localhost:3306";
     Connection connessione=null;
     
@@ -202,7 +201,7 @@ Il framework inizia da `ConnectionCraft`, un builder che semplifica i processi d
 | `autocommit(boolean)`           |   `ConnectionCraft`   |            imposta autocommit (`true` by default)            |
 | `port(int)`                     |   `ConnectionCraft`   |         imposta numero di porta (`3306` by defautl)          |
 | `connect()`                     | `java.sql.Connection` |         connette al db e restituisce la connessione          |
-| `validation()`                  |       `String`        | restituisce stringa vuota se i parametri superano il controllo |
+| `validate()`                    |       `String`        | restituisce stringa vuota se i parametri superano il controllo |
 
 
 
@@ -334,13 +333,12 @@ L'interfaccia espone i metodi:
 
  
 
-Sono inoltre disponibili i seguenti metodi/variabili statiche :
+Sono inoltre disponibili i seguenti metodi statici :
 
 - `str(Object o):String`  :  restituisce la rappresentazione stringa dell'oggetto che verrà messa nel DB
   - nel caso delle stringhe ad esempio verranno aggiunti apici singoli `'`
-- `BASE_REGEX : String` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che son imposti come nome colonna, nome db o nome tabella
-- `VALUE_REGEX: STRING` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che  rappresenteranno i valori nelle query
-- `ACCENTED_LETTERS: STRING` : è una variabile che rappresenta i codici unicode delle lettere accentate 
+- `validateBase(String)` : restituisce `null` se la stringa non è valida da usare come nome colonna/tabella/db, altrimenti viene restituita una stringa eventualmente con i caratteri &#96;   
+- `validateValue(String)` : restituisce `null` se la stringa non è valida da usare come nome colonna/tabella/db, altrimenti viene restituita una stringa eventualmente con i caratteri '
 
 
 
@@ -361,7 +359,7 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 
 ## SelectCraft
 
-estende l'interfaccia QueryCraft aggiungendo le funzioni di join. Espone i metodi:
+estende l'interfaccia `QueryCraft` aggiungendo le funzioni di join. Espone i metodi:
 
 | **Nome metodo**                                              | **Descrizione**   (*obbligatorio)                            |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
