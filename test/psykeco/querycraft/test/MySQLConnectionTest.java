@@ -41,7 +41,7 @@ class MySQLConnectionTest {
 		} catch(Exception e) {}
 		s.psk(psk);
 		
-		expected="jdbc:mysql://localhost:3306";
+		expected="jdbc:mysql://localhost:3306?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 		actual=s.craft();
 		System.out.println(actual);
 		assertEquals(expected, actual);

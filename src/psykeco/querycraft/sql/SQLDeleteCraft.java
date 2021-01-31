@@ -96,4 +96,15 @@ public class SQLDeleteCraft implements QueryCraft{
 		
 		return values.toString().trim();
 	}
+
+	@Override
+	public QueryCraft copy() {
+		QueryCraft cf=new SQLDeleteCraft().DB(db).table(table);
+		if(filter!=null) for( Entry <String,Object > kv: filter.entrySet()) {
+			cf.filter(kv);
+		}
+		return cf;
+	}
+
+	
 }

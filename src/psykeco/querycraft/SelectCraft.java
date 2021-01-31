@@ -155,4 +155,7 @@ public abstract class SelectCraft implements QueryCraft{
 	 * @return la lista dei campi da mettere nella orderBy
 	 */
 	protected abstract String orderByCraft();
+	
+	@Override
+	public abstract SelectCraft copy();
 }

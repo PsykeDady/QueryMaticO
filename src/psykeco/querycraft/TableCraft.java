@@ -1,6 +1,6 @@
 package psykeco.querycraft;
 
-public interface TableCraft {
+public interface TableCraft extends Cloneable{
 	
 	/**
 	 * imposta il nome del db
@@ -134,5 +134,12 @@ public interface TableCraft {
 	 * @return un istanza di {@link QueryCraft} che rappresenta la select count
 	 */
 	public SelectCraft countData(Object o);
+	
+	/**
+	 * copia tutti i campi del TableCraft e ne restituisce una nuova istanza 
+	 * 
+	 * @return nuova istanza copia del craft
+	 */
+	public TableCraft copy();
 
 }

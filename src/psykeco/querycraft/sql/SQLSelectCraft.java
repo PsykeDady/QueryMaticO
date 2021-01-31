@@ -313,4 +313,30 @@ public class SQLSelectCraft extends SelectCraft {
 		return this;
 	}
 
+	@Override
+	public SelectCraft copy() {
+		SelectCraft scf=new SQLSelectCraft().DB(db).table(table).groupBy(groupBy);
+		if (orderBy!=null && orderBy.getKey()!=null) 
+				scf.orderBy(orderBy.getKey(),orderBy.getValue());
+		
+		if( filter!=null) for(Entry<String,Object> kv : filter.entrySet()) scf.filter(kv);
+		if (kv!=null) for(String entry:kv) scf.entry(entry);
+		if (joinFilter!=null) for(Entry<String,String> kv : joinFilter.entrySet()) scf.joinFilter(kv);
+		if (aggregatesColumn!=null) for(Entry<AGGREGATE,String> kv: aggregatesColumn.entrySet()) 
+			switch(kv.getKey()) {
+				case AVG : break ; 
+				case COUNT : scf.count(kv.getValue()); break ; 
+				case COUNT_DISTINCT : scf.count(kv.getValue());scf.distinct(kv.getValue()); break ; 
+				case DISTINCT : scf.distinct(kv.getValue()); break ; 
+				case GROUP_CONCAT :  break ; 
+				case MAX :  break ; 
+				case MIN :  break ; 
+				case SUM : scf.sum(kv.getValue()); break ; 
+				default : break ; 
+			}
+		if(joinTable!=null) scf.join(joinTable.copy());
+		
+		return scf;
+	}
+
 }

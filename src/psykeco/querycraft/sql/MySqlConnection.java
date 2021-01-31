@@ -1,17 +1,20 @@
 package psykeco.querycraft.sql;
 
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import psykeco.querycraft.DBCraft;
 import psykeco.querycraft.utility.SQLClassParser;
@@ -131,14 +134,28 @@ public class MySqlConnection {
 		ResultSet rs = query(query);
 		LinkedList<T> ris=new LinkedList<T>();
 		try {
+			ResultSetMetaData rsmeta=rs.getMetaData();
+			Set<String> columns=new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+			int count=rsmeta.getColumnCount();
+			for(int i=1;i<=count;i++) columns.add(rsmeta.getColumnLabel(i));
 			while(rs.next()) {
 				Field[] f= c.getDeclaredFields();
-				T istanza = c.newInstance();
-
+				Constructor<T> cons=c.getDeclaredConstructor();
+				boolean access=cons.isAccessible();
+				cons.setAccessible(true);
+				T istanza = cons.newInstance();
+				cons.setAccessible(access);
+				
 				for ( Field x : f ) {
-					boolean access=x.isAccessible();
+					access=x.isAccessible();
 					x.setAccessible(true);
-					x.set(istanza, rs.getObject(x.getName(), x.getType()));
+					Object inst=
+						columns.contains(x.getName())? 
+								rs.getObject(x.getName(), x.getType()) 
+						: SQLClassParser.nullValue(x.getType());
+					;
+					
+					x.set(istanza, inst==null? SQLClassParser.nullValue(x.getType()) : inst );
 					x.setAccessible(access);
 				}
 				ris.add(istanza);
@@ -150,6 +167,8 @@ public class MySqlConnection {
 			errMsg="costruttore non accessibile. Prevedere un costruttore vuoto!";
 		} catch (InstantiationException e) {
 			errMsg="costruttore non accessibile, classe astratta o interfaccia! Prevedere un costruttore vuoto!";
+		} catch (Exception e) {
+			errMsg="Errore chiamando il costruttore. Prevedere un costruttore vuoto!";
 		} 
 		return ris;
 	}//query
@@ -169,20 +188,20 @@ public class MySqlConnection {
 	public Map<String,Object>[] queryMap(String query){
 		ResultSet rs = query(query);
 		Map<String,Object>[] ris=null;
-		int count=0;
+		int nrow=0;
 		try {
-			
+			ResultSetMetaData rsmeta=rs.getMetaData();
+			int count=rsmeta.getColumnCount();
 			if(! rs.last()) return null;
 			ris=new HashMap[rs.getRow()];
 			
 			rs.beforeFirst();
 			while(rs.next()) {
-				ris[count]=new HashMap<String,Object>();
-				ResultSetMetaData rsmeta= rs.getMetaData();
-				for(int i=1;i<=rsmeta.getColumnCount();i++) {
-					ris[count].put(rsmeta.getColumnLabel(i),rs.getObject(i));
+				ris[nrow]=new HashMap<String,Object>();
+				for(int i=1;i<=count;i++) {
+					ris[nrow].put(rsmeta.getColumnLabel(i),rs.getObject(i));
 				}
-				count++;
+				nrow++;
 			}
 			errMsg="";
 		}catch (SQLException s){

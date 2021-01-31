@@ -55,7 +55,7 @@ class CompleteTest {
 		} catch(Exception e) {}
 		ConnectionCraft cnnf= new SQLConnectionCraft().psk(psk).autocommit(true);
 		//1st check connection
-		expected="jdbc:mysql://localhost:3306";
+		expected="jdbc:mysql://localhost:3306?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 		actual=cnnf.craft();
 		System.out.println(actual);
 		assertEquals(expected, actual);

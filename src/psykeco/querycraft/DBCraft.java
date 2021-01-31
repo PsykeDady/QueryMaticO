@@ -6,7 +6,7 @@ package psykeco.querycraft;
  * 
  * @author psykedady
  * */
-public interface DBCraft {
+public interface DBCraft{
 	
 	/**
 	 * imposta il nome del db
@@ -60,6 +60,11 @@ public interface DBCraft {
 	 */
 	public String listTables();
 	
-	
+	/**
+	 * copia tutti i campi del DBCraft e ne restituisce una nuova istanza 
+	 * 
+	 * @return nuova istanza copia del craft
+	 */
+	public DBCraft copy();
 
 }

@@ -115,4 +115,13 @@ public class SQLInsertCraft implements QueryCraft {
 		throw new UnsupportedOperationException("SqlInsertCraft does not support filter");
 	}
 
+	@Override
+	public QueryCraft copy() {
+		QueryCraft cf=new SQLInsertCraft().DB(db).table(table);
+		if (kv!=null) for( Entry <String,Object > kv: this.kv.entrySet()) {
+			cf.entry(kv);
+		}
+		return cf;
+	}
+
 }

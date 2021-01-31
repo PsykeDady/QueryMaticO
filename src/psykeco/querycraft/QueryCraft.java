@@ -133,4 +133,11 @@ public interface QueryCraft {
 	 * fallisce
 	 * */
 	public String craft();
+	
+	/**
+	 * copia tutti i campi del QueryCraft e ne restituisce una nuova istanza 
+	 * 
+	 * @return nuova istanza copia del craft
+	 */
+	public QueryCraft copy();
 }

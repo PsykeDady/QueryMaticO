@@ -159,4 +159,26 @@ public final class SQLClassParser {
 		
 		return primary ? Tipo.NVARCHAR_PRIMARY() : Tipo.TEXT.name();
 	}
-}//ParametroTabella
+	
+	/**
+	 * Dato una stringa che rappresenta una classe java, restituisce un tipo SQL
+	 * @param type una stringa rappresentate la classe
+	 * @return il tipo sql associato
+	 */
+	public static Object nullValue(Class<?> c) {
+		String type=getTrueName(c);
+		
+		switch (type) {
+			case "byte"   : case "long"   : 
+			case "short"  : case "int"    : return 0;
+			case "boolean": return false;
+			
+			case "float"  : case "double" : return 0f;
+			
+			case "char"   : return '\0';
+			
+		}
+		return null;
+		
+	}
+}

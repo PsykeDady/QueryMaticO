@@ -285,5 +285,15 @@ public class SQLTableCraft implements TableCraft{
 		
 		return qc;
 	}
+
+	@Override
+	public TableCraft copy() {
+		TableCraft tf= new SQLTableCraft().DB(db).prefix(prefix).suffix(suffix);
+		if (table!=null && kv!=null) tf.table(type);
+		if (primary!=null) for (String key : primary)
+			tf.primary(key);
+		
+		return tf;
+	}
 	
 }

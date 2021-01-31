@@ -129,4 +129,14 @@ public class SQLUpdateCraft implements QueryCraft {
 		return (column.toString()+values.toString()).trim();
 	}
 
+	@Override
+	public QueryCraft copy() {
+		QueryCraft qfc=new SQLUpdateCraft().table(table).DB(db);
+		if(filter!=null) for (Entry<String,Object> kv : filter.entrySet()) 
+			qfc.filter(kv);
+		if(kv!=null) for (Entry<String,Object> cv : kv.entrySet()) 
+			qfc.filter(cv);
+		return qfc;
+	}
+
 }

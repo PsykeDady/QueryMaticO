@@ -2,6 +2,13 @@ package psykeco.querycraft;
 
 import java.sql.Connection;
 
+/**
+ * craft for connection.<br> 
+ * it istantiate also the {@link Connection} variable to use for query
+ * 
+ * 
+ * @author PsykeDady
+ * */
 public interface ConnectionCraft {
 	
 	/**

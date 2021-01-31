@@ -66,5 +66,24 @@ public class SQLDBCraft implements DBCraft{
 		if(! validation.equals("")) throw new IllegalArgumentException(validation);
 		return "SELECT table_name FROM information_schema.tables WHERE table_schema='"+validateBase(db)+"'";
 	}
+	
+	@Override
+	protected SQLDBCraft clone(){
+		SQLDBCraft dbcf=null;
+		try {
+			dbcf= (SQLDBCraft) super.clone();
+			return dbcf;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Override
+	public DBCraft copy() {
+		DBCraft dbcf=new SQLDBCraft();
+		dbcf.DB(db);
+		
+		return dbcf;
+	}
 
 }

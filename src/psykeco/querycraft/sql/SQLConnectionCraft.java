@@ -12,6 +12,10 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	
 	
 	/**
+	 * serve in alcune implementazioni di mysql che richiedono esplicitamente la timezone
+	 */
+	public static final String TIMEZONE="useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	/**
 	 * default driver for mysql
 	 */
 	public static final String DEFAULT_DRIVER="com.mysql.jdbc.Driver";
@@ -159,7 +163,7 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 		if (this.db!=null&&db==null) throw new IllegalArgumentException("nome db"+this.db+"non valido");
 		
 		
-		return URL_INIT+url+':'+port+((db!=null)?'/'+db:"");
+		return URL_INIT+url+':'+port+((db!=null)?'/'+db:"")+"?"+TIMEZONE;
 	}
 
 	
