@@ -1,6 +1,9 @@
 package psykeco.querycraft.sql;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
@@ -149,11 +152,32 @@ public class MySqlConnection {
 				for ( Field x : f ) {
 					access=x.isAccessible();
 					x.setAccessible(true);
-					Object inst=
-						columns.contains(x.getName())? 
-								rs.getObject(x.getName(), x.getType()) 
-						: SQLClassParser.nullValue(x.getType());
-					;
+					Object inst=null;
+					if(x.getType().equals(File.class)) {
+						inst=rs.getBinaryStream(x.getName());
+					}
+					else {
+						inst=
+								columns.contains(x.getName())? 
+										rs.getObject(x.getName(), x.getType()) 
+										: SQLClassParser.nullValue(x.getType());
+					}
+					
+					if(inst!=null && inst instanceof InputStream) {
+						File file=File.createTempFile("result", "query");
+						file.deleteOnExit();
+						try(
+							InputStream is=(InputStream) inst;
+							FileOutputStream fos=new FileOutputStream(file);
+						){
+							int data=is.read();
+							while(data!=-1) {
+								fos.write(data);
+								data=is.read();
+							}
+							inst=file;
+						} catch (Exception e) {inst=null;}
+					}
 					
 					x.set(istanza, inst==null? SQLClassParser.nullValue(x.getType()) : inst );
 					x.setAccessible(access);
@@ -180,6 +204,8 @@ public class MySqlConnection {
 	 * 	<li>valore = valore della colonna come {@link Object}</li>
 	 * </ul>
 	 * Ogni riga è rappresentata da una mappa
+	 * <br><br>
+	 * In caso di BLOB, viene restituito come valore un array di byte
 	 * 
 	 * @param query la query
 	 * @return un array di mappe, ogni mappa è una riga, chiave=nomecolonna valore=valorecolonna

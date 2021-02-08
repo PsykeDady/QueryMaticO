@@ -265,7 +265,7 @@ La classe fornisce i seguenti metodi statici per interagire con la Connessione, 
 
 
 
-## DBCraft 
+## DBCraft
 
 La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni dei database.
 
@@ -356,6 +356,47 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 | `IllegalArgumentException`      | nome tabella/db necessario                                | Durante la fase di validazione, è stata trovata una tabella o db esistente ( son due messaggi diversi, a seconda di cosa non è stato trovato) |
 | `IllegalArgumentException`      | Una chiave/ il valore di una chiave è stata trovato vuoto | Durante la fase di validazione, è stata trovata una chiave o il valore di una chiave vuoti ( son due messaggi diversi, a seconda di cosa non è stato trovato) |
 | `IllegalArgumentException`      | Nome tabella/db/chiave/valore non valido                  | Durante la fase di validazione, son stati trovati dei valori di tabella/db/chiave/valore non validi () son quattro messaggi diversi, a seconda di cosa non ha passato la regex) |
+
+
+
+### MySql e File : throubleshoot
+
+Gli inserimenti dei **BLOB** vengono effettuati tramite la direttiva di MySQL `LOAD_FILE`. 
+
+Se tutti i file che caricate risultano null provate questi procedimenti
+
+
+#### linux e systemd
+Se avete a che fare con systemd, potrebbe essere necessario invece sovrascrivere alcune configurazioni del servizio. Modificate o create eventualmente il file  `/etc/systemd/system/mariadb.service.d/MY_SPECIAL.conf` scrivendo:
+
+```properties
+[Service]
+PrivateTmp=false
+```
+
+#### permessi di scrittura o dimensione dei file
+
+Potrebbe essere necessario che siano attivi alcuni parametri sul vostro processo di MySQL attivo.  Provate a rieseguire il daemon di mysql con i parametri:
+
+- `--secure-file-priv=/tmp` per linux, `--secure-file-priv=C:\Users\NomeUtente\AppData\Local\Temp\`  per windows
+- `--max-allowed-packet=1024M`  ( o un qualsiasi valore appropriato alle vostre esigenze )
+
+Ecco un esempio di chiamata su **linux**:
+`sudo mysqld --secure-file-priv=/tmp --max-allowed-packet=1024M`
+è possibile eventualmente inserire queste informazioni all'interno del file `/etc/my.cnf` o `/etc/my.cnf.d/server.cnf`. Aggiungete queste due linee:
+
+```properties
+[mysqld]
+secure-file-priv=/tmp`
+max-allowed-packet=1024M`
+```
+
+
+> **<u>ATTENZIONE</u>**:
+>
+> su windows non è stato testato.
+
+
 
 ## SelectCraft
 

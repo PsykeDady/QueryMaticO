@@ -1,7 +1,12 @@
 package psykeco.querycraft;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+
+import psykeco.querycraft.utility.SQLClassParser;
 
 /**
  * Interfaccia di generatori (builder) di istruzioni per query 
@@ -54,6 +59,33 @@ public interface QueryCraft {
 	}
 	
 	/**
+	 * create a temporary file to call native LOAD_FILE from db
+	 * @param f : origin file
+	 * @return LOAD_FILE(absolutepath of tmp file)
+	 */
+	public static String FileParsing(File f) {
+		File tmp=null;
+		try {
+			tmp=File.createTempFile("tmp", "tmp");
+		}catch(Exception e) {
+			return null;
+		}
+		try (
+			FileInputStream  fis =new FileInputStream (f);
+			FileOutputStream fos =new FileOutputStream(tmp);
+ 		){
+			while(fis.available()>0) {	
+				fos.write(fis.read());
+			}
+		} catch(Exception e) {
+			return null;
+		}
+		tmp.deleteOnExit();
+		
+		return "LOAD_FILE('"+tmp.getAbsoluteFile()+"')";
+	}
+	
+	/**
 	 * ritorna una versione "stringa" dell'oggetto da usare nelle query.
 	 * Ad esempio, le stringhe vanno racchiuse tra singoli apici
 	 * @param o : l'oggetto
@@ -67,6 +99,7 @@ public interface QueryCraft {
 		
 		if (o instanceof Boolean) return (Boolean)o ? "1":"0";
 		
+		if(o instanceof File) return FileParsing((File)o);
 		//TODO gestire le date
 		
 		return "'"+validateValue(o.toString())+"'";

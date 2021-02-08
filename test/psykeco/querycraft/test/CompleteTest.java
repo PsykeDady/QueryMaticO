@@ -116,7 +116,7 @@ class CompleteTest {
 	
 	void completeTest(TableCraft tc, MySqlConnection m) {
 		// insert data
-		Entity e = new Entity(); e.identity=1; e.name="DOGE"; e.description=("funny dog");
+		Entity e = new Entity(); e.identity=1; e.name="DOGE"; e.description="funny dog";
 		// 4th check insert data 1
 		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (1,'DOGE','funny dog')";
 		actual=tc.insertData(e).craft();

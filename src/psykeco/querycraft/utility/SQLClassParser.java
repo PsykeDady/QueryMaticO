@@ -1,5 +1,8 @@
 package psykeco.querycraft.utility;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -154,7 +157,7 @@ public final class SQLClassParser {
 			case "GregorianCalendar"      : 
 			case "LocalDateTime"          : return Tipo.DATE.name();
 			
-			case "File"   :                 return Tipo.BLOB.name();
+			case "File"                   :  return Tipo.LONGBLOB.name();
 		}
 		
 		return primary ? Tipo.NVARCHAR_PRIMARY() : Tipo.TEXT.name();
@@ -181,4 +184,5 @@ public final class SQLClassParser {
 		return null;
 		
 	}
+	
 }
