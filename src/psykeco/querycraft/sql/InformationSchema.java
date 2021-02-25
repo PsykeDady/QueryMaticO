@@ -28,6 +28,12 @@ public final class InformationSchema {
 	public final static String TABLE_NAME  ="table_name";
 	/** label for table_schema (db name) column */
 	public final static String TABLE_SCHEMA="table_schema";
+	/** reserved table_name for mysql */
+	public final static String INFORMATION_SCHEMA="information_schema";
+	/** reserved table_name for mysql (information schema) */
+	public final static String MYSQL="mysql";
+	/** reserved table_name for mysql (performance schema) */
+	public final static String PERFORMANCE_SCHEMA="performance schema";
 	
 	private final static TableCraft tcf= new SQLTableCraft().DB(DB).table(Tables.class);
 	

@@ -3,6 +3,15 @@ package psykeco.querycraft.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,18 +39,9 @@ class CompleteTest {
 		private int identity;
 		private String name;
 		private String description;
-		
-		public void setIdentity(int identity) {
-			this.identity = identity;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
+		private Date lastUpdate;
+		private GregorianCalendar nextUpdate;
+		private LocalDateTime firstUpdate;
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class CompleteTest {
 				throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
 			// 3rd check create table
-			expected="CREATE TABLE `DBName`.`Entity` (identity INT,name TEXT,description TEXT,PRIMARY KEY(identity))";
+			expected="CREATE TABLE `DBName`.`Entity` (identity INT,lastUpdate TIMESTAMP null ,name TEXT,description TEXT,firstUpdate TIMESTAMP null ,nextUpdate TIMESTAMP null ,PRIMARY KEY(identity))";
 			actual=tc.create();
 			System.out.println(actual);
 			assertEquals(expected, actual);
@@ -115,10 +115,15 @@ class CompleteTest {
 	
 	
 	void completeTest(TableCraft tc, MySqlConnection m) {
+		List<Entity>expList= new ArrayList<Entity>(4);
 		// insert data
 		Entity e = new Entity(); e.identity=1; e.name="DOGE"; e.description="funny dog";
+		e.firstUpdate=LocalDateTime.of(2020,2,24, 0, 0, 0);
+		e.lastUpdate=Date.from(LocalDateTime.of(2020,2,24, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant());
+		e.nextUpdate=GregorianCalendar.from(LocalDateTime.of(2020,2,24, 0, 0, 0).atZone(ZoneId.systemDefault()));
+		expList.add(e);
 		// 4th check insert data 1
-		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (1,'DOGE','funny dog')";
+		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`lastUpdate`,`name`,`description`,`firstUpdate`,`nextUpdate`) VALUES (1,'2020-02-24T00:00:00','DOGE','funny dog','2020-02-24T00:00:00','2020-02-24T00:00:00')";
 		actual=tc.insertData(e).craft();
 		System.out.println(actual);
 		assertEquals(expected, actual);
@@ -128,8 +133,12 @@ class CompleteTest {
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
 		e = new Entity(); e.identity=2; e.name="MARIO"; e.description="italian plumber";
+		e.firstUpdate=LocalDateTime.of(2020,2,24, 1, 2, 3);
+		e.lastUpdate=null;
+		e.nextUpdate=null;
+		expList.add(e);
 		// 5th check insert data 2
-		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (2,'MARIO','italian plumber')";
+		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`,`firstUpdate`) VALUES (2,'MARIO','italian plumber','2020-02-24T01:02:03')";
 		actual=tc.insertData(e).craft();
 		System.out.println(actual);
 		assertEquals(expected, actual);
@@ -161,6 +170,7 @@ class CompleteTest {
 
 		e = new Entity(); e.identity=3; e.name="STEVEN"; e.description="strange magic mix of diamond and  kid";
 		// 8th check insert data 4
+		expList.add(e);
 		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (3,'STEVEN','strange magic mix of diamond and  kid')";
 		actual=tc.insertData(e).craft();
 		System.out.println(actual);
@@ -172,6 +182,7 @@ class CompleteTest {
 		
 		e = new Entity(); e.identity=4; e.name="Link"; e.description="he come to town Come to save the princess Zelda";
 		// 9th check insert data 5
+		expList.add(e);
 		expected="INSERT INTO `DBName`.`Entity` ( `identity`,`name`,`description`) VALUES (4,'Link','he come to town Come to save the princess Zelda')";
 		actual=tc.insertData(e).craft();
 		System.out.println(actual);
@@ -193,15 +204,11 @@ class CompleteTest {
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: " + m.getErrMsg());
 		int i=0;
-		Entity e1=new Entity(),e2=new Entity(),e3=new Entity(),e4=new Entity();
-		e1.identity=1;e1.name="DOGE"  ;e1.description="funny dog";
-		e2.identity=2;e2.name="MARIO" ;e2.description="italian plumber";
-		e3.identity=3;e3.name="STEVEN";e3.description="strange magic mix of diamond and  kid";
-		e4.identity=4;e4.name="Link"  ;e4.description="he come to town Come to save the princess Zelda";
-		Entity[]expList= { e1,e2,e3,e4	};
+		
+		
 		for(Entity ent : res ) {
 			// 11th check list values from select 1
-			expected=expList[i].identity+" "+expList[i].name+" "+expList[i].description;
+			expected=expList.get(i).identity+" "+expList.get(i).name+" "+expList.get(i).description;
 			actual=ent.identity+" "+ent.name+" "+ent.description;
 			System.out.println(actual);
 			assertEquals(expected, actual);
@@ -225,6 +232,9 @@ class CompleteTest {
 			assertEquals(en1.identity   , en2.identity   );
 			assertEquals(en1.name       , en2.name       );
 			assertEquals(en1.description, en2.description);
+			assertEquals(en1.firstUpdate, en2.firstUpdate);
+			assertEquals(en1.lastUpdate , en2.lastUpdate );
+			assertEquals(en1.nextUpdate , en2.nextUpdate );
 		}
 		assertEquals(it.hasNext(), it2.hasNext());
 		
@@ -232,25 +242,53 @@ class CompleteTest {
 		if (!m.getErrMsg().equals(""))
 			throw new IllegalStateException("an error occur: \n" + m.getErrMsg());
 		
-		i=0; int j=0;
+		SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		String dateFormat="%04d-%02d-%02dT%02d:%02d:%02d";
 		for(Map<String,Object> map: amap) {
 			// 12th check map values from select
+			
+			Entity ent=expList.stream().filter( ente -> map.get("identity").equals(ente.identity) ).findFirst().get();
+			
 			for(Entry<String,Object> kv : map.entrySet()) {
-				switch(j) {
-					case 0 : expected="identity "   +new Integer(expList[i].identity).getClass()
-							+" "+expList[i].identity   ; break;
-					case 1 : expected="name "       +expList[i].name.getClass()                 
-							+" "+expList[i].name       ; break;
-					case 2 : expected="description "+expList[i].description.getClass()          
-							+" "+expList[i].description; break;
+				String data="";
+				switch(kv.getKey()) {
+					case "identity" 	: expected="identity "   +new Integer(ent.identity).getClass()
+							+" "+ent.identity   ; break;
+					case "name" 		: expected=ent.name==null?"null":"name "       +ent.name.getClass()                 
+							+" "+ent.name       ; break;
+					case "description" 	: expected=ent.description==null?"null":"description "+ent.description.getClass()          
+							+" "+ent.description; break;
+					case "lastUpdate" 	:
+						if(ent.lastUpdate!=null) data=sd.format(ent.lastUpdate);
+						expected=ent.lastUpdate==null? "null" : "lastUpdate "+java.sql.Timestamp.class          
+							+" "+data; 
+						break;
+					case "firstUpdate" 	: 
+						if(ent.firstUpdate!=null) data=String.format(dateFormat, ent.firstUpdate.getYear(),ent.firstUpdate.getMonthValue(),ent.firstUpdate.getDayOfMonth(),ent.firstUpdate.getHour(),ent.firstUpdate.getMinute(),ent.firstUpdate.getSecond());
+						expected=ent.firstUpdate==null?"null":"firstUpdate "+java.sql.Timestamp.class          
+							+" "+data; 
+						break;
+					case "nextUpdate" 	: 
+						if(ent.nextUpdate!=null) data=String.format(dateFormat, ent.nextUpdate.get(GregorianCalendar.YEAR),ent.nextUpdate.get(GregorianCalendar.MONTH)+1,ent.nextUpdate.get(GregorianCalendar.DAY_OF_MONTH),ent.nextUpdate.get(GregorianCalendar.HOUR_OF_DAY),ent.nextUpdate.get(GregorianCalendar.MINUTE),ent.nextUpdate.get(GregorianCalendar.SECOND));
+						expected=ent.nextUpdate==null?"null":"nextUpdate "+java.sql.Timestamp.class       
+							+" "+data; 
+						break;
 				}
 				
-				actual=kv.getKey()+" "+kv.getValue().getClass()+" "+kv.getValue();
+				if(kv.getValue()==null) actual="null";
+				else if(kv.getValue() instanceof java.sql.Timestamp) {
+					java.sql.Timestamp tm=((java.sql.Timestamp)kv.getValue());
+					Calendar c=Calendar.getInstance();
+					c.setTime(tm);
+					c.add(Calendar.HOUR,-1);
+					data=sd.format(c.getTime());
+					actual=kv.getKey()+" "+kv.getValue().getClass()+" "+data;
+				}
+				else actual=kv.getKey()+" "+kv.getValue().getClass()+" "+kv.getValue();
 				System.out.println(actual);
 				assertEquals(expected, actual);
-				j++;
 			}
-			i++;j=0;
+			
 		}
 		
 	}

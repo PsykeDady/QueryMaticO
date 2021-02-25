@@ -152,32 +152,8 @@ public class MySqlConnection {
 				for ( Field x : f ) {
 					access=x.isAccessible();
 					x.setAccessible(true);
-					Object inst=null;
-					if(x.getType().equals(File.class)) {
-						inst=rs.getBinaryStream(x.getName());
-					}
-					else {
-						inst=
-								columns.contains(x.getName())? 
-										rs.getObject(x.getName(), x.getType()) 
-										: SQLClassParser.nullValue(x.getType());
-					}
 					
-					if(inst!=null && inst instanceof InputStream) {
-						File file=File.createTempFile("result", "query");
-						file.deleteOnExit();
-						try(
-							InputStream is=(InputStream) inst;
-							FileOutputStream fos=new FileOutputStream(file);
-						){
-							int data=is.read();
-							while(data!=-1) {
-								fos.write(data);
-								data=is.read();
-							}
-							inst=file;
-						} catch (Exception e) {inst=null;}
-					}
+					Object inst=SQLClassParser.parseResultToField(rs,x,columns);
 					
 					x.set(istanza, inst==null? SQLClassParser.nullValue(x.getType()) : inst );
 					x.setAccessible(access);

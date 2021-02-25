@@ -2,11 +2,20 @@ package psykeco.querycraft.utility;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * classe di utilit&agrave; per leggere i parametri di una classe e quindi mapparli 
@@ -155,7 +164,7 @@ public final class SQLClassParser {
 			
 			case "Date"   : 
 			case "GregorianCalendar"      : 
-			case "LocalDateTime"          : return Tipo.DATE.name();
+			case "LocalDateTime"          : return Tipo.TIMESTAMP.name()+" null ";
 			
 			case "File"                   :  return Tipo.LONGBLOB.name();
 		}
@@ -184,5 +193,51 @@ public final class SQLClassParser {
 		return null;
 		
 	}
+
+	public static Object parseResultToField(ResultSet rs, Field x,Set<String> columns) throws SQLException, IOException {
+		Object inst=null;
+		boolean f=rs.wasNull();
+		if(columns.contains(x.getName()) && !f ){
+			inst=rs.getObject(x.getName());
+		}
+		if(inst==null) return SQLClassParser.nullValue(x.getType());
+		
+		if(x.getType().equals(File.class)) {
+			inst=rs.getBinaryStream(x.getName());
+			File file=File.createTempFile("result", "query");
+			file.deleteOnExit();
+			try(
+				InputStream is=(InputStream) inst;
+				FileOutputStream fos=new FileOutputStream(file);
+			){
+				int data=is.read();
+				while(data!=-1) {
+					fos.write(data);
+					data=is.read();
+				}
+				inst=file;
+			} catch (Exception e) {inst=null;}
+		} else if(x.getType().equals(Date.class) || 
+				  x.getType().equals(LocalDateTime.class) || 
+				  x.getType().equals(GregorianCalendar.class)   ) {
+			
+			Timestamp t=(Timestamp) inst;
+			
+			if(x.getType().equals(Date.class)) {
+				inst=Date.from(t.toInstant());
+			}
+			else if(x.getType().equals(LocalDateTime.class)) {
+				inst=LocalDateTime.ofInstant(t.toInstant(),ZoneId.systemDefault());
+			}
+			else if(x.getType().equals(GregorianCalendar.class)) {
+				inst=GregorianCalendar.from(t.toLocalDateTime().atZone(ZoneId.systemDefault()));
+			}
+		} else {
+			inst=rs.getObject(x.getName(), x.getType());
+		}
+		
+		return inst;
+	}
+	
 	
 }
