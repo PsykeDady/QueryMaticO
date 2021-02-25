@@ -94,6 +94,11 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	}
 	
 	@Override
+	public String getDB() {
+		return db;
+	}
+	
+	@Override
 	public ConnectionCraft port(int port) {
 		this.port=port;
 		return this;
@@ -165,7 +170,5 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 		
 		return URL_INIT+url+':'+port+((db!=null)?'/'+db:"")+"?"+TIMEZONE;
 	}
-
-	
 
 }

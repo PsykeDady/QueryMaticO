@@ -111,8 +111,8 @@ public class SQLTableCraft implements TableCraft{
 
 	public String validate() {
 		
-		if (table==null || table.equals("")) return "nome tabella necessario";
-		if (db   ==null || db   .equals("")) return "nome db necessario";
+		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
+		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario"     ;
 		if ( kv.size() < 1 ) return "Questa classe non ha parametri, non puo' essere trasformata";
 		
 		String tmp=validateBase(db);

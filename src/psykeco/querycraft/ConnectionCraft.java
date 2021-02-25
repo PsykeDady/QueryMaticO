@@ -3,7 +3,7 @@ package psykeco.querycraft;
 import java.sql.Connection;
 
 /**
- * craft for connection.<br> 
+ * Crafter for connection.<br> 
  * it istantiate also the {@link Connection} variable to use for query
  * 
  * 
@@ -12,61 +12,66 @@ import java.sql.Connection;
 public interface ConnectionCraft {
 	
 	/**
-	 * set dei driver da usare 
+	 * driver to use
 	 * 
 	 * @param driver
 	 * 
-	 * @return istanza di ConnectionCraft aggiornata
+	 * @return ConnectionCraft instance updated
 	 */
 	public ConnectionCraft driver(String driver);
 	
 	/**
 	 * set dell'url da usare
 	 * @param url
-	 * @return istanza di ConnectionCraft aggiornata
+	 * @return ConnectionCraft instance updated
 	 */
 	public ConnectionCraft url(String url);
 	
 	/**
 	 * set del nome utente da usare 
 	 * @param user
-	 * @return istanza di ConnectionCraft aggiornata
+	 * @return ConnectionCraft instance updated
 	 */
 	public ConnectionCraft user(String user);
 	
 	/**
 	 * set della password da usare 
 	 * @param psk
-	 * @return istanza di ConnectionCraft aggiornata
+	 * @return ConnectionCraft instance updated
 	 */
 	public ConnectionCraft psk (String psk);
 	
 	
 	/**
-	 * set del db a cui collegarsi
+	 * set db name for connection
 	 * @param db
-	 * @return istanza di ConnectionCraft aggiornata
+	 * @return ConnectionCraft instance updated
 	 */
 	public ConnectionCraft db (String db);
+	
+	/**
+	 * @return db name
+	 */
+	public String getDB();
 
 	/** 
 	 * se true, ogni transizione avrà l'autocommit 
 	 * @param autcommit
-	 * @return istanza di ConnectionCraft aggiornata 
+	 * @return ConnectionCraft instance updated 
 	 * */
 	ConnectionCraft autocommit(boolean autocommit);
 	
 	/**
 	 * set della porta a cui connettersi
 	 * @param port
-	 * @return istanza di ConnectionCraft aggiornata
+	 * @return ConnectionCraft instance updated
 	 */
 	public ConnectionCraft port (int port);
 	
 	/**
 	 * @return istanza di connessione da usare 
 	 * 
-	 * @throws IllegalStateException se la connessione non viene stabilita
+	 * @throws IllegalStateException if can't establish connection
 	 */
 	public Connection connect(); 
 	
@@ -85,7 +90,7 @@ public interface ConnectionCraft {
 	 * 
 	 * @return la stringa di connessione
 	 * 
-	 * @throws IllegalArgumentException se la validazione non finisce con successo
+	 * @throws IllegalArgumentException if {@link #validate()} return error
 	 */
 	public String craft();
 

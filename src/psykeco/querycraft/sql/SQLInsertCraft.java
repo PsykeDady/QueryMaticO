@@ -51,8 +51,8 @@ public class SQLInsertCraft implements QueryCraft {
 	@Override
 	public String validate() {
 		
-		if (table==null || table.equals("")) return "nome tabella necessario";
-		if (db   ==null || db   .equals("")) return "nome db necessario";
+		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
+		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario";
 		
 		String tmp=QueryCraft.validateBase(table);
 		if (tmp==null) return " nome tabella "+table+" non valido";

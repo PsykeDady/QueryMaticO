@@ -21,11 +21,11 @@ Major policy of **QueryCraft** *is not to write manually queries* but use Java O
 
 ## TODO LIST
 
-- QueryCraft : Date and GregorianCalendar *(in version 0.9)*
+- QueryCraft : ~~Date and GregorianCalendar~~ *(in version 0.9)*
 
 - QueryCraft : ~~File BLOB~~ *(in version 0.9)*
 
-- QueryCraft : no more db required if MySqlConnection has one *(in version 0.9)*
+- QueryCraft : ~~no more db required if MySqlConnection has one~~ *(in version 0.9)*
 
 - QueryCraft : UNIT TEST (to complete) *(in version 1.0)*
 

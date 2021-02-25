@@ -344,6 +344,15 @@ public class MySqlConnection {
 		return connessione!=null;
 	}
 	
+	/**
+	 * @return the connected db
+	 */
+	public static String db() {
+		return (existConnection())?
+				connCraft.getDB():
+				null; 
+	}
+	
 	/** 
 	 * reset della connessione per reimpostarne una nuova
 	 */

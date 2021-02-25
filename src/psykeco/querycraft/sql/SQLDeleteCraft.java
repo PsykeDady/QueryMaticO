@@ -51,8 +51,8 @@ public class SQLDeleteCraft implements QueryCraft{
 	@Override
 	public String validate() {
 		
-		if (table==null || table.equals("")) return "nome tabella necessario";
-		if (db   ==null || db   .equals("")) return "nome db necessario";
+		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
+		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario"     ;
 		
 		String tmp=validateBase(table);
 		if (tmp==null) return " nome tabella "+table+" non valido";
@@ -100,7 +100,7 @@ public class SQLDeleteCraft implements QueryCraft{
 	@Override
 	public QueryCraft copy() {
 		QueryCraft cf=new SQLDeleteCraft().DB(db).table(table);
-		if(filter!=null) for( Entry <String,Object > kv: filter.entrySet()) {
+		if(filter!=null) for( Entry <String,Object> kv: filter.entrySet()) {
 			cf.filter(kv);
 		}
 		return cf;

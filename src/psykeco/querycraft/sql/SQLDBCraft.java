@@ -42,7 +42,7 @@ public class SQLDBCraft implements DBCraft{
 		return "CREATE DATABASE `"+validateBase(db)+"`";
 	}
 	/**
-	 * @deprecated use {@link InformationSchema #existsDB(String)} instead
+	 * @deprecated <code>since 0.8</code> use {@link InformationSchema #existsDB(String)} instead
 	 **/
 	@Override
 	@Deprecated
