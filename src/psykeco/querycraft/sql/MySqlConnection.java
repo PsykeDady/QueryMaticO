@@ -1,12 +1,8 @@
 package psykeco.querycraft.sql;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Parameter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

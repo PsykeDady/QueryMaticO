@@ -56,8 +56,8 @@ public class SQLUpdateCraft implements QueryCraft {
 	@Override
 	public String validate() {
 		
-		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
-		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario"     ;
+		if (table==null || table.equals("")) return "nome tabella necessario";
+		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
 		
 		String tmp=QueryCraft.validateBase(table);
 		if (tmp==null) return " nome tabella "+table+" non valido";
@@ -104,7 +104,8 @@ public class SQLUpdateCraft implements QueryCraft {
 	public String craft() {
 		StringBuilder column=new StringBuilder(kv.size()*20);		
 		StringBuilder values=new StringBuilder(filter.size()*20);
-		
+		String thisdb=this.db;
+		this.db=(this.db==null)? MySqlConnection.db():this.db;
 		String db=validateBase(this.db), table=validateBase(this.table);
 		
 		String validation=validate();
@@ -126,6 +127,7 @@ public class SQLUpdateCraft implements QueryCraft {
 			values.append("AND `"+key +"`="+value+" " );
 		}
 		
+		this.db=thisdb;
 		return (column.toString()+values.toString()).trim();
 	}
 

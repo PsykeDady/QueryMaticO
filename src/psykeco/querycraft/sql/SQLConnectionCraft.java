@@ -1,12 +1,12 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.QueryCraft.validateBase;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import psykeco.querycraft.ConnectionCraft;
-import psykeco.querycraft.DBCraft;
-import static psykeco.querycraft.QueryCraft.*;
 
 public class SQLConnectionCraft  implements ConnectionCraft{
 	
@@ -64,31 +64,31 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	private boolean autocommit=DEFAULT_AUTOCOMMIT;
 	
 	@Override
-	public ConnectionCraft driver(String driver) {
+	public SQLConnectionCraft driver(String driver) {
 		this.driver=driver;
 		return this;
 	}
 
 	@Override
-	public ConnectionCraft url(String url) {
+	public SQLConnectionCraft url(String url) {
 		this.url=url;
 		return this;
 	}
 
 	@Override
-	public ConnectionCraft user(String user) {
+	public SQLConnectionCraft user(String user) {
 		this.user=user;
 		return this;
 	}
 
 	@Override
-	public ConnectionCraft psk(String psk) {
+	public SQLConnectionCraft psk(String psk) {
 		this.psk=psk;
 		return this;
 	}
 
 	@Override
-	public ConnectionCraft db(String db) {
+	public SQLConnectionCraft db(String db) {
 		this.db=db;
 		return this;
 	}
@@ -99,13 +99,13 @@ public class SQLConnectionCraft  implements ConnectionCraft{
 	}
 	
 	@Override
-	public ConnectionCraft port(int port) {
+	public SQLConnectionCraft port(int port) {
 		this.port=port;
 		return this;
 	}
 	
 	@Override
-	public ConnectionCraft autocommit(boolean autocommit) {
+	public SQLConnectionCraft autocommit(boolean autocommit) {
 		this.autocommit=autocommit;
 		return this;
 	}

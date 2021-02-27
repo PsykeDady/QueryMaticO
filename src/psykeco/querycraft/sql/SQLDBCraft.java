@@ -19,7 +19,7 @@ public class SQLDBCraft implements DBCraft{
 	private String db;
 
 	@Override
-	public DBCraft DB(String db) {
+	public SQLDBCraft DB(String db) {
 		this.db=validateBase(db);
 		return this;
 	}
@@ -88,8 +88,8 @@ public class SQLDBCraft implements DBCraft{
 	}
 
 	@Override
-	public DBCraft copy() {
-		DBCraft dbcf=new SQLDBCraft();
+	public SQLDBCraft copy() {
+		SQLDBCraft dbcf=new SQLDBCraft();
 		dbcf.DB(db);
 		
 		return dbcf;

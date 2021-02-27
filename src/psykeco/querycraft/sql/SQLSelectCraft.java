@@ -114,8 +114,8 @@ public class SQLSelectCraft extends SelectCraft {
 	@Override
 	public String validate() {
 		
-		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
-		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario"     ;
+		if (table==null || table.equals("")) return "nome tabella necessario";
+		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
 		
 		String tmp=validateBase(table);
 		if (tmp==null) return " nome tabella "+table+" non valido";
@@ -164,21 +164,25 @@ public class SQLSelectCraft extends SelectCraft {
 
 	@Override
 	public String craft() {
+		String thisdb=this.db;
+		this.db=(this.db==null)? MySqlConnection.db():this.db;
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		
 		
-		return 
+		String query= 
 			("SELECT "+selectCraft()+
 			" FROM "+fromCraft()+
 			" WHERE 1=1 "+whereCraft()+
 			groupByCraft()+
 			orderByCraft()).trim()
 		;
+		this.db=thisdb;
+		return query;
 	}
 
 	@Override
-	public SelectCraft join(SelectCraft joinTable) {
+	public SQLSelectCraft join(SelectCraft joinTable) {
 		if( ! (joinTable instanceof SelectCraft) ) 
 			throw new IllegalArgumentException("la tabella di join deve essere di tipo SQLSelectCraft");
 		this.joinTable=(SQLSelectCraft) joinTable;
@@ -186,13 +190,13 @@ public class SQLSelectCraft extends SelectCraft {
 	}
 
 	@Override
-	public SelectCraft joinFilter(Entry<String, String> thisOther) {
+	public SQLSelectCraft joinFilter(Entry<String, String> thisOther) {
 		
 		return joinFilter(thisOther.getKey(),thisOther.getValue());
 	}
 
 	@Override
-	public SelectCraft joinFilter(String columnThis, String columnOther) {
+	public SQLSelectCraft joinFilter(String columnThis, String columnOther) {
 		joinFilter.put(columnThis, columnOther);
 		return this;
 	}
@@ -273,7 +277,7 @@ public class SQLSelectCraft extends SelectCraft {
 	}
 
 	@Override
-	public SelectCraft count(String column) {
+	public SQLSelectCraft count(String column) {
 		String c=aggregatesColumn.get(AGGREGATE.DISTINCT);
 		if(column!=null && column.equals(c)) {
 			aggregatesColumn.put(AGGREGATE.COUNT_DISTINCT, column);
@@ -284,7 +288,7 @@ public class SQLSelectCraft extends SelectCraft {
 	}
 
 	@Override
-	public SelectCraft distinct(String column) {
+	public SQLSelectCraft distinct(String column) {
 		String c=aggregatesColumn.get(AGGREGATE.COUNT);
 		if(column!=null && column.equals(c)) {
 			aggregatesColumn.put(AGGREGATE.COUNT_DISTINCT, column);
@@ -295,27 +299,27 @@ public class SQLSelectCraft extends SelectCraft {
 	}
 
 	@Override
-	public SelectCraft sum(String column) {
+	public SQLSelectCraft sum(String column) {
 		aggregatesColumn.put(AGGREGATE.SUM, column);
 		return this;
 	}
 
 	@Override
-	public SelectCraft groupBy(String column) {
+	public SQLSelectCraft groupBy(String column) {
 		groupBy=column;
 		return this;
 	}
 	
 
 	@Override
-	public SelectCraft orderBy(String column, boolean asc) {
+	public SQLSelectCraft orderBy(String column, boolean asc) {
 		orderBy=new SimpleEntry<>(column, asc);
 		return this;
 	}
 
 	@Override
-	public SelectCraft copy() {
-		SelectCraft scf=new SQLSelectCraft().DB(db).table(table).groupBy(groupBy);
+	public SQLSelectCraft copy() {
+		SQLSelectCraft scf=new SQLSelectCraft().DB(db).table(table).groupBy(groupBy);
 		if (orderBy!=null && orderBy.getKey()!=null) 
 				scf.orderBy(orderBy.getKey(),orderBy.getValue());
 		

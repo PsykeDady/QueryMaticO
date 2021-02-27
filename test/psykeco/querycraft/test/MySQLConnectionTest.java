@@ -45,7 +45,7 @@ class MySQLConnectionTest {
 		actual=s.craft();
 		System.out.println(actual);
 		assertEquals(expected, actual);
-		
+
 		assertFalse(MySqlConnection.existConnection());
 		
 		MySqlConnection.createConnection(s);

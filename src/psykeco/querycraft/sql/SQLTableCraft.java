@@ -1,5 +1,6 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.QueryCraft.validateBase;
 import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
 import static psykeco.querycraft.utility.SQLClassParser.parseClass;
 import static psykeco.querycraft.utility.SQLClassParser.parseType;
@@ -10,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import psykeco.querycraft.QueryCraft;
-import static psykeco.querycraft.QueryCraft.*;
-import psykeco.querycraft.SelectCraft;
 import psykeco.querycraft.TableCraft;
 import psykeco.querycraft.utility.SQLClassParser;
 
@@ -111,8 +109,8 @@ public class SQLTableCraft implements TableCraft{
 
 	public String validate() {
 		
-		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
-		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario"     ;
+		if (table==null || table.equals("")) return "nome tabella necessario";
+		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
 		if ( kv.size() < 1 ) return "Questa classe non ha parametri, non puo' essere trasformata";
 		
 		String tmp=validateBase(db);
@@ -142,6 +140,8 @@ public class SQLTableCraft implements TableCraft{
 	public String create() {
 		
 		StringBuilder sb=new StringBuilder(kv.size()*20);
+		String thisdb=this.db;
+		this.db=(this.db==null)? MySqlConnection.db():this.db;
 		String db=validateBase(this.db), table =attachPreSuf(this.table);
 		
 		String validation=validate();
@@ -166,11 +166,18 @@ public class SQLTableCraft implements TableCraft{
 		}
 		
 		sb.setCharAt(sb.length()-1, ')');
+		
+		this.db=thisdb;
 		return sb.toString();
 	}
 
+	/**
+	 * @deprecated <code>since 0.9</code>. Use {@link InformationSchema} instead
+	 */
 	@Override
 	public String exists() {
+		String thisdb=this.db;
+		this.db=(this.db==null)? MySqlConnection.db():this.db;
 		String validation=validate();
 		String db=validateBase(this.db),table =attachPreSuf(this.table);
 
@@ -182,11 +189,15 @@ public class SQLTableCraft implements TableCraft{
 					+ "table_schema='"+db+"' "
 					+ "AND table_name='"+table+"'";
 		
+		
+		this.db=thisdb;
 		return sb;
 	}
 
 	@Override
 	public String drop() {
+		String thisdb=this.db;
+		this.db=(this.db==null)? MySqlConnection.db():this.db;
 		String validation=validate();
 		String db=validateBase(this.db), table =attachPreSuf(this.table);
 
@@ -194,14 +205,15 @@ public class SQLTableCraft implements TableCraft{
 		
 		String sb="DROP TABLE IF EXISTS `"+db+"`.`"+table+"`";
 		
+		this.db=thisdb;
 		return sb;
 	}
 
 	@Override
-	public QueryCraft insertData(Object o) {
+	public SQLInsertCraft insertData(Object o) {
 		String db=validateBase(this.db), table= attachPreSuf(this.table); 
 
-		QueryCraft qc=new SQLInsertCraft().DB(db).table(table);
+		SQLInsertCraft qc=new SQLInsertCraft().DB(db).table(table);
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
 		for (Entry<String,Object> entry : map.entrySet()) {
@@ -213,10 +225,10 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public SelectCraft selectData(Object o) { 
+	public SQLSelectCraft selectData(Object o) { 
 		String table= attachPreSuf(this.table);
 		
-		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
+		SQLSelectCraft qc=new SQLSelectCraft().DB(db).table(table);
 		if ( o!= null ) { 
 			Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
@@ -230,10 +242,10 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public QueryCraft deleteData(Object o) {
+	public SQLDeleteCraft deleteData(Object o) {
 		String table= attachPreSuf(this.table);
 
-		QueryCraft qc=new SQLDeleteCraft().DB(db).table(table);
+		SQLDeleteCraft qc=new SQLDeleteCraft().DB(db).table(table);
 		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
@@ -246,10 +258,10 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public QueryCraft updateData(Object o) {
+	public SQLUpdateCraft updateData(Object o) {
 		String table= attachPreSuf(this.table);
 
-		QueryCraft qc=new SQLUpdateCraft().DB(db).table(table);
+		SQLUpdateCraft qc=new SQLUpdateCraft().DB(db).table(table);
 		
 		Map<String,Object> map=SQLClassParser.parseInstance(type, o);
 		
@@ -270,8 +282,8 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public SelectCraft countData(Object o) {
-		SelectCraft qc=new SQLSelectCraft().DB(db).table(table);
+	public SQLSelectCraft countData(Object o) {
+		SQLSelectCraft qc=new SQLSelectCraft().DB(db).table(table);
 		
 		if ( o!= null ) { 
 			Map<String,Object> map=SQLClassParser.parseInstance(type, o);
@@ -287,8 +299,8 @@ public class SQLTableCraft implements TableCraft{
 	}
 
 	@Override
-	public TableCraft copy() {
-		TableCraft tf= new SQLTableCraft().DB(db).prefix(prefix).suffix(suffix);
+	public SQLTableCraft copy() {
+		SQLTableCraft tf= new SQLTableCraft().DB(db).prefix(prefix).suffix(suffix);
 		if (table!=null && kv!=null) tf.table(type);
 		if (primary!=null) for (String key : primary)
 			tf.primary(key);

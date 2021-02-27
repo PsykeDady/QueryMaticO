@@ -51,8 +51,8 @@ public class SQLInsertCraft implements QueryCraft {
 	@Override
 	public String validate() {
 		
-		if  (table==null || table.equals(""))                                 return "nome tabella necessario";
-		if ((db   ==null || db   .equals("")) && MySqlConnection.db()!=null ) return "nome db necessario";
+		if (table==null || table.equals("")) return "nome tabella necessario";
+		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
 		
 		String tmp=QueryCraft.validateBase(table);
 		if (tmp==null) return " nome tabella "+table+" non valido";
@@ -84,7 +84,8 @@ public class SQLInsertCraft implements QueryCraft {
 	public String craft() {
 		StringBuilder column=new StringBuilder(kv.size()*20);
 		StringBuilder values=new StringBuilder(kv.size()*10);
-		
+		String thisdb=this.db;
+		this.db=(this.db==null)? MySqlConnection.db():this.db;
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		String db=validateBase(this.db), table=validateBase(this.table);
@@ -102,22 +103,23 @@ public class SQLInsertCraft implements QueryCraft {
 		values.setCharAt(values.length()-1, ')');
 		column.setCharAt(column.length()-1, ')');
 		
+		this.db=thisdb;
 		return values.toString()+column.toString();
 	}
 
 	@Override
-	public QueryCraft filter(Entry<String, Object> filter) {
+	public SQLInsertCraft filter(Entry<String, Object> filter) {
 		throw new UnsupportedOperationException("SqlInsertCraft does not support filter");
 	}
 
 	@Override
-	public QueryCraft filter(String colonna, Object valore) {
+	public SQLInsertCraft filter(String colonna, Object valore) {
 		throw new UnsupportedOperationException("SqlInsertCraft does not support filter");
 	}
 
 	@Override
-	public QueryCraft copy() {
-		QueryCraft cf=new SQLInsertCraft().DB(db).table(table);
+	public SQLInsertCraft copy() {
+		SQLInsertCraft cf=new SQLInsertCraft().DB(db).table(table);
 		if (kv!=null) for( Entry <String,Object > kv: this.kv.entrySet()) {
 			cf.entry(kv);
 		}

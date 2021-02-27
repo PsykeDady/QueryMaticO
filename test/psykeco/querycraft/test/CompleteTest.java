@@ -3,11 +3,9 @@ package psykeco.querycraft.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
