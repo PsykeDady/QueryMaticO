@@ -38,7 +38,6 @@ class NoDBTest {
 		
 		
 		return m; 
-		
 	}
 	
 	

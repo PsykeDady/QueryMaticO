@@ -1,6 +1,6 @@
 # QueryCraft
 
-version `0.8`
+version `0.9`
 
 Java  ORM framework to semplify DB connection and to generate istruction.
 
@@ -21,13 +21,8 @@ Major policy of **QueryCraft** *is not to write manually queries* but use Java O
 
 ## TODO LIST
 
-- QueryCraft
-	- [x] Date and GregorianCalendar *(in version 0.9)*
-	- [x] File BLOB *(in version 0.9)*
-	- [x] no more db required if MySqlConnection has one *(in version 0.9)*
-	  - [ ] bug - db name is null 
 - [ ] MySqlConnection : UNIT TEST ( to complete ) *(in version 1.0)*
-- [x] Model : create Information_schema model with name of table and schema  *(in version 0.9)*
-- [x] Schema Query: create query for info schema models  *(in version 0.9)*
 - [ ] complete English Documentation *(in version 1.0)*
 - [ ] UNIT TEST (to complete) *(in version 1.0)*
+
+TODO LIST details on Projects tab of (github project)[https://github.com/PsykeDady/QueryCraft/projects]

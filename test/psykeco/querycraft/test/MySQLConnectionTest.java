@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import psykeco.querycraft.DBCraft;
@@ -26,6 +27,7 @@ class MySQLConnectionTest {
 	}
 
 	@Test
+	@Order(1)
 	void test() {
 		System.out.println("#### INIZIO MYSQLCONNECTION TEST ####");
 		
