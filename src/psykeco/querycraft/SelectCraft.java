@@ -1,7 +1,7 @@
 package psykeco.querycraft;
 
 import java.util.Map.Entry;
-import static psykeco.querycraft.QueryCraft.*;
+import static psykeco.querycraft.sql.utility.SQLClassParser.*;
 
 /**
  * SelectCraft estende QueryCraft per l'uso delle join nelle select

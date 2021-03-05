@@ -1,10 +1,9 @@
 package psykeco.querycraft.sql;
 
-import psykeco.querycraft.DBCraft;
-import psykeco.querycraft.sql.models.Tables;
-import psykeco.querycraft.utility.SQLClassParser;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateBase;
 
-import static psykeco.querycraft.QueryCraft.*;
+import psykeco.querycraft.DBCraft;
+import psykeco.querycraft.sql.runners.InformationSchema;
 
 /**
  * SQLDBCraft costruisceì istruzioni SQL 
@@ -42,14 +41,10 @@ public class SQLDBCraft implements DBCraft{
 		return "CREATE DATABASE `"+validateBase(db)+"`";
 	}
 	/**
-	 * @deprecated <code>since 0.8</code> use {@link InformationSchema #existsDB(String)} instead
 	 **/
 	@Override
-	@Deprecated
 	public String exists() {
-		String validation=validate();
-		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "SHOW DATABASES LIKE '"+validateValue(db)+"'";
+		return InformationSchema.existsDBCraft(db);
 	}
 
 	@Override
@@ -66,14 +61,11 @@ public class SQLDBCraft implements DBCraft{
  	 * 
 	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
 	 * 
-	 * @deprecated use {@link InformationSchema #listDB()} instead
 	 */
 	@Override
-	@Deprecated
 	public String listTables() {
-		String validation=validate();
-		if(! validation.equals("")) throw new IllegalArgumentException(validation);
-		return "SELECT table_name FROM "+InformationSchema.DB+"."+SQLClassParser.getTrueName(Tables.class)+" WHERE table_schema='"+validateBase(db)+"'";
+		
+		return InformationSchema.listTablesCraft(db);
 	}
 	
 	@Override

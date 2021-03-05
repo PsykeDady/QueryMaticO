@@ -1,15 +1,19 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.sql.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.sql.utility.SQLClassParser.parseType;
+import static psykeco.querycraft.sql.utility.SQLClassParser.str;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateBase;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateValue;
+
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Set;
 import java.util.TreeSet;
-import static psykeco.querycraft.QueryCraft.*;
-import psykeco.querycraft.QueryCraft;
+
 import psykeco.querycraft.SelectCraft;
-import static psykeco.querycraft.utility.SQLClassParser.parseType;
-import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
+import psykeco.querycraft.sql.runners.MySqlConnection;
 
 public class SQLSelectCraft extends SelectCraft {
 	
@@ -153,9 +157,9 @@ public class SQLSelectCraft extends SelectCraft {
 			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
 			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
 			
-			tmp=QueryCraft.validateBase(kv.getKey());
+			tmp=validateBase(kv.getKey());
 			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
-			String tmpV= isString ? QueryCraft.validateValue(value): value;
+			String tmpV= isString ? validateValue(value): value;
 			if ( tmpV==null ) return "Il valore " +value      +" non \u00e8 valido";
 		}
 		
@@ -250,7 +254,7 @@ public class SQLSelectCraft extends SelectCraft {
 		StringBuilder sb=new StringBuilder();
 		
 		for (Entry<String,Object> f : filter.entrySet()) {
-			sb.append("AND "+attachAlias(f.getKey())+"="+QueryCraft.str(f.getValue())+" " );
+			sb.append("AND "+attachAlias(f.getKey())+"="+str(f.getValue())+" " );
 		}
 		
 		if( joinTable != null ) {

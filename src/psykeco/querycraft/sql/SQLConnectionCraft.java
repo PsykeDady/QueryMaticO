@@ -1,6 +1,6 @@
 package psykeco.querycraft.sql;
 
-import static psykeco.querycraft.QueryCraft.validateBase;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateBase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

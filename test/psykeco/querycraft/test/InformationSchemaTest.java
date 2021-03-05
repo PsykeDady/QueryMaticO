@@ -11,9 +11,9 @@ import java.util.Scanner;
 import org.junit.jupiter.api.Test;
 
 import psykeco.querycraft.ConnectionCraft;
-import psykeco.querycraft.sql.InformationSchema;
-import psykeco.querycraft.sql.MySqlConnection;
 import psykeco.querycraft.sql.SQLConnectionCraft;
+import psykeco.querycraft.sql.runners.InformationSchema;
+import psykeco.querycraft.sql.runners.MySqlConnection;
 
 class InformationSchemaTest {
 	

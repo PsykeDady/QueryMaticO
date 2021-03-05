@@ -1,9 +1,9 @@
 package psykeco.querycraft.sql;
 
-import static psykeco.querycraft.QueryCraft.validateBase;
-import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
-import static psykeco.querycraft.utility.SQLClassParser.parseClass;
-import static psykeco.querycraft.utility.SQLClassParser.parseType;
+import static psykeco.querycraft.sql.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.sql.utility.SQLClassParser.parseClass;
+import static psykeco.querycraft.sql.utility.SQLClassParser.parseType;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateBase;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import psykeco.querycraft.TableCraft;
-import psykeco.querycraft.utility.SQLClassParser;
+import psykeco.querycraft.sql.runners.InformationSchema;
+import psykeco.querycraft.sql.runners.MySqlConnection;
+import psykeco.querycraft.sql.utility.SQLClassParser;
 
 /**
  * SQLTableCraft costruisce istruzioni SQL 
@@ -43,8 +45,7 @@ public class SQLTableCraft implements TableCraft{
 	/** lista delle chiavi primarie */
 	private List<String> primary = new LinkedList<>();
 	/** la classe rappresentativa della tabella */
-	@SuppressWarnings("rawtypes")
-	private Class type;
+	private Class<?> type;
 	
 	
 	/**
@@ -171,27 +172,9 @@ public class SQLTableCraft implements TableCraft{
 		return sb.toString();
 	}
 
-	/**
-	 * @deprecated <code>since 0.9</code>. Use {@link InformationSchema} instead
-	 */
 	@Override
 	public String exists() {
-		String thisdb=this.db;
-		this.db=(this.db==null)? MySqlConnection.db():this.db;
-		String validation=validate();
-		String db=validateBase(this.db),table =attachPreSuf(this.table);
-
-		if(!validation.equals("")) throw new IllegalArgumentException(validation);
-		
-		String sb="SELECT * "
-				+ "FROM information_schema.tables "
-				+ "WHERE "
-					+ "table_schema='"+db+"' "
-					+ "AND table_name='"+table+"'";
-		
-		
-		this.db=thisdb;
-		return sb;
+		return InformationSchema.existTableCraft(db, table);
 	}
 
 	@Override

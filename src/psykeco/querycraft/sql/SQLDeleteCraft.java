@@ -1,12 +1,16 @@
 package psykeco.querycraft.sql;
 
-import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
-import static psykeco.querycraft.utility.SQLClassParser.parseType;
-import static psykeco.querycraft.QueryCraft.*;
+import static psykeco.querycraft.sql.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.sql.utility.SQLClassParser.parseType;
+import static psykeco.querycraft.sql.utility.SQLClassParser.str;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateBase;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateValue;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import psykeco.querycraft.QueryCraft;
+import psykeco.querycraft.sql.runners.MySqlConnection;
 
 public class SQLDeleteCraft implements QueryCraft{
 	private String table;

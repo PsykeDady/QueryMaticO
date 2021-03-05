@@ -1,4 +1,4 @@
-package psykeco.querycraft.sql;
+package psykeco.querycraft.sql.runners;
 
 
 import java.lang.reflect.Constructor;
@@ -16,7 +16,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import psykeco.querycraft.DBCraft;
-import psykeco.querycraft.utility.SQLClassParser;
+import psykeco.querycraft.sql.SQLConnectionCraft;
+import psykeco.querycraft.sql.SQLDBCraft;
+import psykeco.querycraft.sql.utility.SQLClassParser;
 
 
 /**
@@ -212,52 +214,6 @@ public class MySqlConnection {
 		return errMsg;
 	}
 	
-	/**
-	 * restituisce una lista di database creati con l'account e la password
-	 * ricevuti
-	 * @return una lista di database
-	 */
-	public LinkedList<String> listDB (){
-		ResultSet rs;
-		LinkedList<String > ret= new LinkedList<String>();
-		try{
-			rs=query("show databases");
-			if(! errMsg.equals("")) return null;
-			while(rs.next()){
-				ret.add(rs.getString(1).trim());
-			}//while
-		}catch(SQLException s){
-			errMsg=buildSQLErrMessage(s);
-			return null;
-		}//catch
-		return ret;
-	}//listDB
-	
-	/**
-	 * verifica che esista il database passato come parametro
-	 * @param nomeDB: il nome del db da controllare
-	 * @return true se nomeDB e' un db presente, false altrimenti. null in caso di errore 
-	 */
-	public Boolean existDB(String nomeDB){
-		
-		if(!existConnection()) {
-			errMsg="connessione chiusa";
-			return null;
-		}
-		
-		DBCraft craf=new SQLDBCraft().DB(nomeDB);
-		
-		try {
-			String s=craf.exists();
-			ResultSet rs=query(s);
-			if(rs==null) return false;
-			return rs.next();
-		} catch (SQLException e) {
-			errMsg=buildSQLErrMessage(e);
-			return null;
-		}//try-catch
-	}//existDB
-	
 	// STATIC METHODS
 	
 	/**
@@ -316,7 +272,7 @@ public class MySqlConnection {
 		
 		DBCraft dbc=new SQLDBCraft().DB(TEST_ECHO);
 		
-		Boolean f=m.existDB(TEST_ECHO);
+		Boolean f=InformationSchema.existsDB(TEST_ECHO);
 		if (f==null) return m.getErrMsg();
 		else if (f) {
 			if( ! m.exec(dbc.drop()).equals("")) 

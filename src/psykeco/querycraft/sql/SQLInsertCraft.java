@@ -1,13 +1,16 @@
 package psykeco.querycraft.sql;
 
+import static psykeco.querycraft.sql.utility.SQLClassParser.getTrueName;
+import static psykeco.querycraft.sql.utility.SQLClassParser.parseType;
+import static psykeco.querycraft.sql.utility.SQLClassParser.str;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateBase;
+import static psykeco.querycraft.sql.utility.SQLClassParser.validateValue;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import psykeco.querycraft.QueryCraft;
-
-import static psykeco.querycraft.QueryCraft.*;
-import static psykeco.querycraft.utility.SQLClassParser.getTrueName;
-import static psykeco.querycraft.utility.SQLClassParser.parseType;
+import psykeco.querycraft.sql.runners.MySqlConnection;
 
 /**
  * Costruisce la insert per le query di tipo SQL<br>
@@ -54,10 +57,10 @@ public class SQLInsertCraft implements QueryCraft {
 		if (table==null || table.equals("")) return "nome tabella necessario";
 		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
 		
-		String tmp=QueryCraft.validateBase(table);
+		String tmp=validateBase(table);
 		if (tmp==null) return " nome tabella "+table+" non valido";
 		
-		tmp=QueryCraft.validateBase(db);
+		tmp=validateBase(db);
 		if (tmp==null) return " nome db "+db+" non valido";
 		
 		if ( kv.size() < 1 ) return "lista entry vuota. Serve almeno una coppia colonna-valore";

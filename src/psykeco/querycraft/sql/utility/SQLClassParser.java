@@ -1,6 +1,7 @@
-package psykeco.querycraft.utility;
+package psykeco.querycraft.sql.utility;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -239,5 +240,121 @@ public final class SQLClassParser {
 		return inst;
 	}
 	
+	public static String validateBase(String base) {
+		if(base==null) return null;
+		StringBuilder sb=new StringBuilder(base);
+		final char dupl='`';
+		int i=0, end = sb.length(); 
+		if((sb.charAt(i)<'A'||'Z'<sb.charAt(i)) &&  (sb.charAt(i)<'a' || 'z' < sb.charAt(i)))
+			return null; //start with a letters
+		for (;i<end;i++) {
+			char cur=sb.charAt(i);
+			if (cur<32 || cur ==127) return null;
+			if(cur==dupl) {
+				i++;
+				if((i==end)|| sb.charAt(i)!=dupl ) {
+					sb.insert(i-1,dupl); 
+					end++; 
+				} 
+			}
+				
+		}
+		return sb.toString();
+	}
 	
+	public static String validateValue(String value) {
+		if(value.length()>60) return null;
+		StringBuilder sb=new StringBuilder(value);
+		final char dupl='\'';
+		int i=0, end = sb.length(); 
+		for (;i<end;i++) {
+			char cur=sb.charAt(i);
+			if ((cur<32 && cur!=9 && cur!=10 ) || cur ==127) return null;
+			
+			if(cur==dupl) {
+				i++;
+				if((i==end)|| sb.charAt(i)!=dupl ) {
+					sb.insert(i-1,dupl); 
+					end++; 
+				} 
+			}
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * create a temporary file to call native LOAD_FILE from db
+	 * @param f : origin file
+	 * @return LOAD_FILE(absolutepath of tmp file)
+	 */
+	public static String FileParsing(File f) {
+		File tmp=null;
+		try {
+			tmp=File.createTempFile("tmp", "tmp");
+		}catch(Exception e) {
+			return null;
+		}
+		try (
+			FileInputStream  fis =new FileInputStream (f);
+			FileOutputStream fos =new FileOutputStream(tmp);
+ 		){
+			while(fis.available()>0) {	
+				fos.write(fis.read());
+			}
+		} catch(Exception e) {
+			return null;
+		}
+		tmp.deleteOnExit();
+		
+		return "LOAD_FILE('"+tmp.getAbsoluteFile()+"')";
+	}
+	
+	public static String DateParsing(Object o) {
+		Class<?> type=o.getClass();
+		
+		LocalDateTime l=null;
+		
+		if(type.equals(Date.class)) {
+			Date d=(Date)o;
+			
+			l=LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault());
+		} else if (type.equals(GregorianCalendar.class)) {
+			GregorianCalendar gc=(GregorianCalendar)o;
+			
+			l=gc.toZonedDateTime().toLocalDateTime();
+		} else {
+			l=(LocalDateTime)o;
+		}
+		
+		String s=String.format(
+			"%04d-%02d-%02dT%02d:%02d:%02d", 
+			l.getYear(),l.getMonthValue(),l.getDayOfMonth(),
+			l.getHour(),l.getMinute(),l.getSecond()
+		);
+		return s;
+	}
+	
+	/**
+	 * ritorna una versione "stringa" dell'oggetto da usare nelle query.
+	 * Ad esempio, le stringhe vanno racchiuse tra singoli apici
+	 * @param o : l'oggetto
+	 * @return mysql string dell'oggetto
+	 */
+	public static String str(Object o) {
+		if ( 
+			o instanceof Integer || o instanceof Double || o instanceof Float ||
+			o instanceof Short   || o instanceof Long   || o instanceof Byte 
+		) return o.toString();
+		
+		if (o instanceof Boolean) return (Boolean)o ? "1":"0";
+		
+		if(o instanceof File) return FileParsing((File)o);
+		
+		if( o instanceof Date || 
+			o instanceof GregorianCalendar ||
+			o instanceof LocalDateTime )
+			return "'"+DateParsing(o)+"'";
+		
+		return "'"+validateValue(o.toString())+"'";
+	}
 }

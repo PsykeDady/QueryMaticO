@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import psykeco.querycraft.ConnectionCraft;
 import psykeco.querycraft.DBCraft;
 import psykeco.querycraft.TableCraft;
-import psykeco.querycraft.sql.MySqlConnection;
 import psykeco.querycraft.sql.SQLConnectionCraft;
 import psykeco.querycraft.sql.SQLDBCraft;
 import psykeco.querycraft.sql.SQLTableCraft;
+import psykeco.querycraft.sql.runners.MySqlConnection;
 
 class FileTest {
 	

@@ -1,4 +1,4 @@
-package psykeco.querycraft.sql;
+package psykeco.querycraft.sql.runners;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import psykeco.querycraft.TableCraft;
+import psykeco.querycraft.sql.SQLTableCraft;
 import psykeco.querycraft.sql.models.Tables;
-import psykeco.querycraft.utility.SQLClassParser;
+import psykeco.querycraft.sql.utility.SQLClassParser;
 
 /**
  * InformationSchema perform query on `information_schema` db and `tables` table in order to receive tables and schemas 
@@ -37,12 +38,45 @@ public final class InformationSchema {
 	
 	private final static TableCraft tcf= new SQLTableCraft().DB(DB).table(Tables.class);
 	
+	/* * STATIC METHODS * */
+	
+	/* queries */
 	/**
 	 * get a copy of InformationSchema's TableCraft 
 	 * @return
 	 */
 	public static TableCraft getCraftCopy() {
 		return tcf.copy();
+	}
+	
+	public static String listDBCraft() {
+		return tcf.selectData(null).distinct(TABLE_SCHEMA).craft();
+	}
+	
+	public static String existsDBCraft(String db) {
+		Tables tab=new Tables();
+		tab.setTableSchema(db);
+		
+		return tcf.copy().primary(TABLE_SCHEMA).selectData(tab).distinct(TABLE_SCHEMA).craft();
+	}
+	
+	public static String listTablesCraft(String db) {
+		Tables tab=new Tables();
+		tab.setTableSchema(db);
+		
+		return	tcf.copy().primary(TABLE_SCHEMA).selectData(tab).craft();
+	}
+	
+	public static  String existTableCraft(String db, Class<?> table) {
+		return existTableCraft(db,  SQLClassParser.getTrueName(table));
+	}
+	
+	public static  String existTableCraft(String db, String table) {
+		Tables tab=new Tables();
+		tab.setTableSchema(db);
+		tab.setTableName(table);
+		
+		return	tcf.copy().primary(TABLE_SCHEMA).primary(TABLE_NAME).selectData(tab).craft();
 	}
 	
 	/**
@@ -54,7 +88,7 @@ public final class InformationSchema {
 		
 		MySqlConnection mysql= new MySqlConnection(); 		
 		
-		String query= tcf.selectData(null).distinct(TABLE_SCHEMA).craft();
+		String query= listDBCraft();
 		List<Tables> list=mysql.queryList(Tables.class, query);
 		
 		List<String> dbs= new ArrayList<String>(list.size());
@@ -72,11 +106,7 @@ public final class InformationSchema {
 		
 		MySqlConnection mysql= new MySqlConnection(); 
 		
-		Tables tab=new Tables();
-		tab.setTableSchema(db);
-		
-		List<Tables> list=mysql.queryList(Tables.class, 
-				tcf.copy().primary(TABLE_SCHEMA).selectData(tab).distinct(TABLE_SCHEMA).craft());
+		List<Tables> list=mysql.queryList(Tables.class, existsDBCraft(db));
 		
 		
 		return list!=null && list.size()>0;
@@ -92,11 +122,8 @@ public final class InformationSchema {
 		if(!MySqlConnection.existConnection()) return null; 
 		
 		MySqlConnection mysql= new MySqlConnection(); 		
-		Tables tab=new Tables();
-		tab.setTableSchema(db);
 		
-		List<Tables> list=mysql.queryList(Tables.class, 
-				tcf.copy().primary(TABLE_SCHEMA).selectData(tab).craft());
+		List<Tables> list=mysql.queryList(Tables.class, listTablesCraft(db));
 		List<String> tables= new ArrayList<String>(list.size());
 		for(Tables t: list) tables.add(t.getTableSchema());
 		
@@ -120,12 +147,9 @@ public final class InformationSchema {
 		
 		MySqlConnection mysql= new MySqlConnection(); 
 		
-		Tables tab=new Tables();
-		tab.setTableSchema(db);
-		tab.setTableName(table);
 		
-		List<Tables> list=mysql.queryList(Tables.class, 
-				tcf.copy().primary(TABLE_SCHEMA).primary(TABLE_NAME).selectData(tab).craft());
+		
+		List<Tables> list=mysql.queryList(Tables.class, existTableCraft(db, table));
 		
 		
 		return list!=null && list.size()>0;

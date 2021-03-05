@@ -14,8 +14,6 @@ Attraverso questo framework, la persistenza con Java ottiene un approccio Orient
 
 
 
-
-
 ## MYSQL : speed start e confronto con le metodologie classiche
 
 Ancora prima di mostrare la documentazione, ecco una piccola anteprima di come facilmente si pu&ograve; impostare una connessione MySql con il QueryCraft.
@@ -186,6 +184,54 @@ E molto altro
 
 
 
+## Struttura generale dei package
+
+```
+workspace/QueryCraft/QueryCraft/src
+└── psykeco
+    └── querycraft
+        ├── err
+        │   ├── dict
+        │   │   ├── ENErrMsg.java
+        │   │   └── ITErrMsg.java
+        │   └── ErrMsg.java
+        ├── sql
+        │   ├── models
+        │   │   └── Tables.java
+        │   ├── runners
+        │   │   ├── InformationSchema.java
+        │   │   └── MySqlConnection.java
+        │   ├── utility
+        │   │   └── SQLClassParser.java
+        │   ├── SQLConnectionCraft.java
+        │   ├── SQLDBCraft.java
+        │   ├── SQLDeleteCraft.java
+        │   ├── SQLInsertCraft.java
+        │   ├── SQLSelectCraft.java
+        │   ├── SQLTableCraft.java
+        │   └── SQLUpdateCraft.java
+        ├── ConnectionCraft.java
+        ├── DBCraft.java
+        ├── QueryCraft.java
+        ├── SelectCraft.java
+        └── TableCraft.java
+
+```
+
+
+
+### package querycraft
+
+Contiene le interfacce del framework di QueryCraft: 
+
+- ConnectionCraft : gestisce e crea la connessione
+- DBCraft : genera query per la creazione e gestione di un database
+- TableCraft : genera query per la creazione e gestione di una tabella, comprese insert, select, ecc..
+- QueryCraft : ogni implementazione genera una tipologia di istruzioni sql
+- SelectCraft :  estende QueryCraft, genera query di selezione dei dati
+
+ 
+
 ## ConnectionCraft
 
 Il framework inizia da `ConnectionCraft`, un builder che semplifica i processi di connessione.
@@ -206,6 +252,14 @@ Il framework inizia da `ConnectionCraft`, un builder che semplifica i processi d
 
 
 L'unica implementazione attualmente disponibile di **ConnectionCraft** è `SQLConnectionCraft`
+
+### SQLConnectionCraft
+
+Ecco un esempio di connessione con SQLConnectionCraft:
+
+```java
+
+```
 
 
 
@@ -233,10 +287,8 @@ Fornisce anche alcune **query**:
 
 | nome metodo ( parametri input ) | output         | breve spiegazione                                   |
 | ------------------------------- | -------------- | --------------------------------------------------- |
-| `existDB( String nomeDB)`       | `Boolean`      | restituisce `true` se esiste il DB                  |
 | `exec( String queryCompleta)`   | `String`       | esegue un istruzione MySql *(sconsigliato uso con stringa diretta)* |
 | `query( String queryCompleta)`  | `ResultSet`    | esegue una query, restituisce il ResultSet *(sconsigliato uso con stringa diretta)* |
-| `listDB()`                      | `List<String>` | restituisce la Lista dei DB sotto forma di stringhe |
 | `queryList(Class<T>, String)` 	| `List<T>` 		| Esegue la query e trasforma ogni riga con un oggetto della classe passata, quindi ne costruisce una lista *(sconsigliato uso con stringa diretta)* |
 | `queryMap(String)` 				| `Map <String,Object>`	| Esegue la query e restituisce una mappa dove la chiave rappresenta il nome della colonna e l'oggetto il valore *(sconsigliato uso con stringa diretta)* |
 | `getErrMsg()` 					| `String` 		| Restituisce, se esiste, un messaggio di errore dell'ultima query |
