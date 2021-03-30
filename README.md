@@ -1,16 +1,16 @@
-# QueryCraft
+# QueryMaticO - Query autoMatic Object-oriented builder
 
-version `0.9.1`
+version `0.9.2`
 
-Java  ORM framework to semplify DB connection and to generate istruction.
+A Java ORM framework to semplify DB connection and to generate istruction.
 
-Major policy of **QueryCraft** *is not to write manually queries* but use Java Object to communicate with DBMN.
+Major policy of **QueryMaticO** *is not to write manually queries* but use Java Object to communicate with DBMN.
 
 
 
 > **<u>ATTENTION PLEASE</u>**:
 >
-> QueryCraft is under development. Do not use in production.
+> QueryMaticO is under development. Do not use in production.
 
 
 
@@ -26,4 +26,4 @@ Major policy of **QueryCraft** *is not to write manually queries* but use Java O
 - [ ] UNIT TEST (to complete) *(in version 1.0)*
 - [x] Reorder, clean and restructurate packages and methods *(in version 1.0)*
 
-TODO LIST details on Projects tab of (github project)[https://github.com/PsykeDady/QueryCraft/projects]
+TODO LIST details on Projects tab of (github project)[https://github.com/PsykeDady/QueryMaticO/projects]

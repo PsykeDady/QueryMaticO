@@ -1,6 +1,6 @@
 classDiagram
- QueryCraft  <|.. SQLInsertCraft
- QueryCraft  <|.. SQLUpdateCraft
- QueryCraft  <|.. SQLDeleteCraft
- QueryCraft  <|-- SelectCraft
- SelectCraft <|.. SQLSelectCraft
+ QueryMaticO  <|.. SQLInsertMaticO
+ QueryMaticO  <|.. SQLUpdateMaticO
+ QueryMaticO  <|.. SQLDeleteMaticO
+ QueryMaticO  <|-- SelectMaticO
+ SelectMaticO <|.. SQLSelectMaticO
