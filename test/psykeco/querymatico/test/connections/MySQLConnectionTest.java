@@ -1,7 +1,9 @@
-package psykeco.querymatico.test;
+package psykeco.querymatico.test.connections;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateValue;
@@ -58,7 +60,7 @@ class MySQLConnectionTest {
 		StringBuilder sb=new StringBuilder();
 		
 		for(int i =33;i<127;i++) if( (i<'a' || i>'z') && (i<'A' || i>'Z') )sb.append((char)i);
-		String nomedb="DB"+validateBase(sb.toString());
+		String nomedb="DB"+sb.toString();
 		DBMaticO db =new SQLDBMaticO().DB(nomedb);
 		System.out.println(db.create());
 		m.exec(db.create());
@@ -80,6 +82,7 @@ class MySQLConnectionTest {
 		m.exec(tc.insertData(c).build());
 		System.out.println(m.getErrMsg());
 		
+		m.exec(db.drop());
 		
 		System.out.println("#### FINE   MYSQLCONNECTION TEST ####");
 	}

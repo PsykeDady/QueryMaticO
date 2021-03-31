@@ -1,6 +1,6 @@
-# Documentazione di QueryCraft
+# Documentazione di QueryMaticO
 
-QueryCraft è un framework che include 
+QueryMaticO è un framework che include 
 
 - un sistema di costruzione dinamica delle query 
 - costruzione e gestione del socket di connessione con il DBMN
@@ -10,13 +10,13 @@ QueryCraft è un framework che include
 
 Attraverso questo framework, la persistenza con Java ottiene un approccio Orientato ad Oggetti, astraendo completamente il linguaggio di connessione del DB.
 
-- [Salta ad inizio documentazione](#ConnectionCraft)
+- [Salta ad inizio documentazione](##ConnectionMaticO)
 
 
 
 ## MYSQL : speed start e confronto con le metodologie classiche
 
-Ancora prima di mostrare la documentazione, ecco una piccola anteprima di come facilmente si pu&ograve; impostare una connessione MySql con il QueryCraft.
+Ancora prima di mostrare la documentazione, ecco una piccola anteprima di come facilmente si pu&ograve; impostare una connessione MySql con il QueryMaticO.
 
 Supponiamo di voler creare la seguente tabella :
 
@@ -32,7 +32,7 @@ con identity **chiave primaria**. Quindi di voler inserire in tabella:
 
 
 
-### senza QueryCraft
+### senza QueryMaticO
 
 ```java
 public static void main(String [] main){
@@ -89,7 +89,7 @@ public static void main(String [] main){
 
 
 
-### con QueryCraft
+### con QueryMaticO
 
 Crea una classe che rappresenti la tabella:
 
@@ -115,39 +115,39 @@ Quindi in un programma esegui:
 
 ```java
 public static void main(String []args){
-	MySqlConnection.createConnection((SQLConnectionCraft) 
-				new SQLConnectionCraft().psk(psk));
+	MySqlConnection.createConnection((SQLConnectionMaticO) 
+				new SQLConnectionMaticO().psk(psk));
 	MySqlConnection m = new MySqlConnection();
 
     // create db
-    DBCraft dbc = new SQLDBCraft().DB("DBName");
+    DBMaticO dbc = new SQLDBMaticO().DB("DBName");
     m.exec(dbc.create());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     // create table
-    TableCraft tc = new SQLTableCraft().DB("DBName").table(Entity.class).primary("identity");
+    TableMaticO tc = new SQLTableMaticO().DB("DBName").table(Entity.class).primary("identity");
     m.exec(tc.create());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     // insert data
     Entity e = new Entity(1, "DOGE", "funny dog");
-    m.exec(tc.insertData(e).craft());
+    m.exec(tc.insertData(e).build());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     e = new Entity(2, "MARIO", "italian plumber"); 
-    m.exec(tc.insertData(e).craft());
+    m.exec(tc.insertData(e).build());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     e = new Entity(3, "STEVEN", "strange magic mix of diamond and a kid");
-    m.exec(tc.insertData(e).craft());
+    m.exec(tc.insertData(e).build());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
     
-    List<Entity> res=m.queryList(Entity.class, sel.craft());
+    List<Entity> res=m.queryList(Entity.class, sel.build());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
     for(Entity ent : res ) {
@@ -163,7 +163,7 @@ public static void main(String []args){
 
 
 
-|                              |                      Senza Query Craft                       |                       Con Query Craft                        |
+|                              |                      Senza Query MaticO                       |                       Con Query MaticO                        |
 | ---------------------------- | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | *verbosità*                  | il codice è più lungo, contiene più elementi di distrazione e risulta meno pulito |              il codice è più corto, più pulito               |
 | *riusabilità e manutenzione* | il codice dipende strettamente dall'esempio, non è riadattabile facilmente né facilmente aggiornabile | il codice preleva dalle classi automaticamente le informazioni che servono, il che rende l'approccio facilmente aggiornabile e più manutenibile |
@@ -174,7 +174,7 @@ public static void main(String []args){
 ### Tutto qua? 
 
 No, non è tutto qua. 
-Con query craft puoi:
+Con QueryMaticO puoi:
 
 - generare facilmente update a partire dalle istanze
 - creare più istanze di select diverse e farne la join su determinati campi.
@@ -187,9 +187,9 @@ E molto altro
 ## Struttura generale dei package
 
 ```
-workspace/QueryCraft/QueryCraft/src
+QueryMaticO/src
 └── psykeco
-    └── querycraft
+    └── querymatico
         ├── err
         │   ├── dict
         │   │   ├── ENErrMsg.java
@@ -203,59 +203,59 @@ workspace/QueryCraft/QueryCraft/src
         │   │   └── MySqlConnection.java
         │   ├── utility
         │   │   └── SQLClassParser.java
-        │   ├── SQLConnectionCraft.java
-        │   ├── SQLDBCraft.java
-        │   ├── SQLDeleteCraft.java
-        │   ├── SQLInsertCraft.java
-        │   ├── SQLSelectCraft.java
-        │   ├── SQLTableCraft.java
-        │   └── SQLUpdateCraft.java
-        ├── ConnectionCraft.java
-        ├── DBCraft.java
-        ├── QueryCraft.java
-        ├── SelectCraft.java
-        └── TableCraft.java
+        │   ├── SQLConnectionMaticO.java
+        │   ├── SQLDBMaticO.java
+        │   ├── SQLDeleteMaticO.java
+        │   ├── SQLInsertMaticO.java
+        │   ├── SQLSelectMaticO.java
+        │   ├── SQLTableMaticO.java
+        │   └── SQLUpdateMaticO.java
+        ├── ConnectionMaticO.java
+        ├── DBMaticO.java
+        ├── QueryMaticO.java
+        ├── SelectMaticO.java
+        └── TableMaticO.java
 
 ```
 
 
 
-### package querycraft
+### package querymatico
 
-Contiene le interfacce del framework di QueryCraft: 
+Contiene le interfacce del framework di QueryMaticO: 
 
-- ConnectionCraft : gestisce e crea la connessione
-- DBCraft : genera query per la creazione e gestione di un database
-- TableCraft : genera query per la creazione e gestione di una tabella, comprese insert, select, ecc..
-- QueryCraft : ogni implementazione genera una tipologia di istruzioni sql
-- SelectCraft :  estende QueryCraft, genera query di selezione dei dati
+- ConnectionMaticO : gestisce e crea la connessione
+- DBMaticO : genera query per la creazione e gestione di un database
+- TableMaticO : genera query per la creazione e gestione di una tabella, comprese insert, select, ecc..
+- QueryMaticO : ogni implementazione genera una tipologia di istruzioni sql
+- SelectMaticO :  estende QueryMaticO, genera query di selezione dei dati
 
  
 
-## ConnectionCraft
+## ConnectionMaticO
 
-Il framework inizia da `ConnectionCraft`, un builder che semplifica i processi di connessione.
+Il framework inizia da `ConnectionMaticO`, un builder che semplifica i processi di connessione.
 
 
 | nome metodo ( parametri input ) |        output         |                      breve spiegazione                       |
 | ------------------------------- | :-------------------: | :----------------------------------------------------------: |
-| `driver(String)`                |   `ConnectionCraft`   |          imposta il nome dei driver (se necessario)          |
-| `url(String)`                   |   `ConnectionCraft`   |         imposta nome url (`localhost` predefinito )          |
-| `user(String)`                  |   `ConnectionCraft`   |          imposta nome utente  (`root` predefinito )          |
-| `psk(String)`                   |   `ConnectionCraft`   |            imposta password (`blank` by default)             |
-| `db(String)`                    |   `ConnectionCraft`   |          imposta nome database  (`null` by default)          |
-| `autocommit(boolean)`           |   `ConnectionCraft`   |            imposta autocommit (`true` by default)            |
-| `port(int)`                     |   `ConnectionCraft`   |         imposta numero di porta (`3306` by defautl)          |
+| `driver(String)`                |   `ConnectionMaticO`   |          imposta il nome dei driver (se necessario)          |
+| `url(String)`                   |   `ConnectionMaticO`   |         imposta nome url (`localhost` predefinito )          |
+| `user(String)`                  |   `ConnectionMaticO`   |          imposta nome utente  (`root` predefinito )          |
+| `psk(String)`                   |   `ConnectionMaticO`   |            imposta password (`blank` by default)             |
+| `db(String)`                    |   `ConnectionMaticO`   |          imposta nome database  (`null` by default)          |
+| `autocommit(boolean)`           |   `ConnectionMaticO`   |            imposta autocommit (`true` by default)            |
+| `port(int)`                     |   `ConnectionMaticO`   |         imposta numero di porta (`3306` by defautl)          |
 | `connect()`                     | `java.sql.Connection` |         connette al db e restituisce la connessione          |
 | `validate()`                    |       `String`        | restituisce stringa vuota se i parametri superano il controllo |
 
 
 
-L'unica implementazione attualmente disponibile di **ConnectionCraft** è `SQLConnectionCraft`
+L'unica implementazione attualmente disponibile di **ConnectionMaticO** è `SQLConnectionMaticO`
 
-### SQLConnectionCraft
+### SQLConnectionMaticO
 
-Ecco un esempio di connessione con SQLConnectionCraft:
+Ecco un esempio di connessione con SQLConnectionMaticO:
 
 ```java
 
@@ -265,15 +265,15 @@ Ecco un esempio di connessione con SQLConnectionCraft:
 
 ## MySqlConnection
 
-Crea un istanza singleton di `SQLConnectionCraft` e di `java.sql.Connection` e la usa per le query
+Crea un istanza singleton di `SQLConnectionMaticO` e di `java.sql.Connection` e la usa per le query
 
 Instanziazione in due fasi:
 
 ```java
 // creazione della connessione, una tantum nel codice fino a chiusura connessione
 MySqlConnection.createConnection(
-    (SQLConnectionCraft) 
-	new SQLConnectionCraft().url(url).port(nport)
+    (SQLConnectionMaticO) 
+	new SQLConnectionMaticO().url(url).port(nport)
     .psk(psk).user(user).db(db).autocommit(true)
 );
 
@@ -299,14 +299,14 @@ Fornisce anche alcune **query**:
 >
 > I metodi di `exec`, `query`, `queryList` e `queryMap` possono essere usati direttamente con delle Stringhe che rappresentano le query. Però non viene effettuato nessun controllo sui parametri, questo approccio è **Injection UNSAFE** 
 >
-> La politica principale di QueryCraft è di non scrivere mai sintassi del DB a mano!
+> La politica principale di QueryMaticO è di non scrivere mai sintassi del DB a mano!
 
 
 
 La classe fornisce i seguenti metodi statici per interagire con la Connessione, il suo stato ed eventualmente effettuarne reset e controlli:
 | nome metodo ( parametri input ) | output         | breve spiegazione                                   |
 | ------------------------------- | -------------- | --------------------------------------------------- |
-|`createConnection(SQLConnectionCraft)` 		 | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate 	|
+|`createConnection(SQLConnectionMaticO)` 		 | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate 	|
 |`createConnection(String url, int port, String user, String psk)` | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate (versione con parametri) |
 |`statoConnessione()`	 						 | `boolean` | restituisce true se &egrave; connesso 										|
 |`reset()` 										 | `void` 	 | imposta a null l'istanza statica di connessione								|
@@ -317,15 +317,15 @@ La classe fornisce i seguenti metodi statici per interagire con la Connessione, 
 
 
 
-## DBCraft
+## DBMaticO
 
-La `DBCraft` crea le istruzioni per generare, eliminare e trarre informazioni dei database.
+La `DBMaticO` crea le istruzioni per generare, eliminare e trarre informazioni dei database.
 
 Espone i seguenti metodi:
 
 | **Nome metodo**         | **Descrizione**   (*obbligatorio)                            |
 | ----------------------- | ------------------------------------------------------------ |
-| `DB(String) : DBCraft`  | imposta il nome del DB *                                     |
+| `DB(String) : DBMaticO`  | imposta il nome del DB *                                     |
 | `validate() : boolean`  | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
 | `create() : String`     | costruisce l' istruzione di creazione sotto forma di stringa |
 | `exists() : String`     | costruisce una query di select per prelevare il db con questo nome sotto forma di stringa |
@@ -334,54 +334,54 @@ Espone i seguenti metodi:
 
 
 
-L'unica implementazione disponibile è quella di `SQLDBCraft`
+L'unica implementazione disponibile è quella di `SQLDBMaticO`
 
 
 
-## TableCraft
+## TableMaticO
 
-La `TableCraft` crea le istruzioni per generare, eliminare e trarre informazioni dalle tabelle a partire dalle classi java. Per farlo usa la **reflection**.
+La `TableMaticO` crea le istruzioni per generare, eliminare e trarre informazioni dalle tabelle a partire dalle classi java. Per farlo usa la **reflection**.
 
 Espone i seguenti metodi:
 
 | **Nome metodo**                    | **Descrizione**   (*obbligatorio)                            |
 | ---------------------------------- | ------------------------------------------------------------ |
-| `DB(String) : TableCraft`          | imposta il nome del DB *                                     |
-| `table(Class) : TableCraft`        | imposta il nome della tabella *                              |
-| `suffix(String) : TableCraft`      | imposta un suffisso                                          |
-| `prefix(String) : TableCraft`      | imposta un prefisso                                          |
-| `primary(String) : TableCraft`     | aggiunge una chiave primaria                                 |
+| `DB(String) : TableMaticO`          | imposta il nome del DB *                                     |
+| `table(Class) : TableMaticO`        | imposta il nome della tabella *                              |
+| `suffix(String) : TableMaticO`      | imposta un suffisso                                          |
+| `prefix(String) : TableMaticO`      | imposta un prefisso                                          |
+| `primary(String) : TableMaticO`     | aggiunge una chiave primaria                                 |
 | `validate() : boolean`             | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
 | `create() : String`                | costruisce l' istruzione di creazione sotto forma di stringa |
 | `exists() : String`                | costruisce una query di select per prelevare la table con questo nome (se almeno 1 risultato: esiste) |
 | `drop() : String`                  | costruisce l' istruzione di drop sotto forma di stringa      |
-| `insertData(Object) : QueryCraft`  | costruisce l' istruzione di insert usando un istanza         |
-| `selectData(Object) : SelectCraft` | costruisce l' istruzione di select usando un istanza (se null, `select *`) |
-| `updateData(Object) : QueryCraft`  | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary) |
-| `deleteData(Object) : QueryCraft`  | costruisce l' istruzione di delete usando un istanza         |
-| `countData() :SelectCraft`         | costruisce un istruzione di di count usando un istanza (se null, `select count( *)`) |
+| `insertData(Object) : QueryMaticO`  | costruisce l' istruzione di insert usando un istanza         |
+| `selectData(Object) : SelectMaticO` | costruisce l' istruzione di select usando un istanza (se null, `select *`) |
+| `updateData(Object) : QueryMaticO`  | costruisce l' istruzione di update usando un istanza  (la where viene impostata sui campi indicati con primary) |
+| `deleteData(Object) : QueryMaticO`  | costruisce l' istruzione di delete usando un istanza         |
+| `countData() :SelectMaticO`         | costruisce un istruzione di di count usando un istanza (se null, `select count( *)`) |
 
 
 
-L'unica implementazione disponibile è quella di `SQLTableCraft`
+L'unica implementazione disponibile è quella di `SQLTableMaticO`
 
 
 
-## QueryCraft
+## QueryMaticO
 
-Nel package `psykeco.ioeasier.db.querycraft`  si può trovare un sottosistema di creazione delle query da mandare al DB.
-Le istanze di `QueryCraft` sono builder che creano delle query a partire da coppia **chiave-valore** che gli vengono date in pasto.
+Nel package `psykeco.ioeasier.db.QueryMaticO`  si può trovare un sottosistema di creazione delle query da mandare al DB.
+Le istanze di `QueryMaticO` sono builder che creano delle query a partire da coppia **chiave-valore** che gli vengono date in pasto.
 
 L'interfaccia espone i metodi:
 
 | **Nome metodo**                                    | **Descrizione**   (*obbligatorio)                            |
 | -------------------------------------------------- | ------------------------------------------------------------ |
-| `DB(String) : QueryCraft`                          | imposta il nome del DB*                                      |
-| `table(String) : QueryCraft`                       | imposta il nome della tabella*                               |
-| `entry(String column, String value) : QueryCraft`  | imposta una coppia colonna-valore all'operatore principale (select, update, insert, etc...) |
-| `filter(String column, String value) : QueryCraft` | imposta una coppia colonna-valore alla where                 |
+| `DB(String) : QueryMaticO`                          | imposta il nome del DB*                                      |
+| `table(String) : QueryMaticO`                       | imposta il nome della tabella*                               |
+| `entry(String column, String value) : QueryMaticO`  | imposta una coppia colonna-valore all'operatore principale (select, update, insert, etc...) |
+| `filter(String column, String value) : QueryMaticO` | imposta una coppia colonna-valore alla where                 |
 | `validate() : boolean`                             | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
-| `craft() : String`                                 | costruisce la query sotto forma di stringa                   |
+| `build() : String`                                 | costruisce la query sotto forma di stringa                   |
 
  
 
@@ -394,17 +394,17 @@ Sono inoltre disponibili i seguenti metodi statici :
 
 
 
-Al momento son presenti le seguenti implementazioni di QueryCraft:
+Al momento son presenti le seguenti implementazioni di QueryMaticO:
 
-![](diagrams/QueryCraft_Hierarchy.png)
+![](diagrams/QueryMaticO_Hierarchy.png)
 
 
 ### exception
 
 | Eccezione                       | messaggio                                                 | quando                                                       |
 | ------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------ |
-| `UnsupportedOperationException` | SqlInsertCraft does not support filter                    | uso dei metodi filter su SqlInsertCraft (non  ha una where)  |
-| `UnsupportedOperationException` | SqlDeleteCraft does not support entry                     | uso dei metodi entry su SqlDeleteCraft ( non ha campi di selezione ) |
+| `UnsupportedOperationException` | SqlInsertMaticO does not support filter                    | uso dei metodi filter su SqlInsertMaticO (non  ha una where)  |
+| `UnsupportedOperationException` | SqlDeleteMaticO does not support entry                     | uso dei metodi entry su SqlDeleteMaticO ( non ha campi di selezione ) |
 | `IllegalArgumentException`      | nome tabella/db necessario                                | Durante la fase di validazione, è stata trovata una tabella o db esistente ( son due messaggi diversi, a seconda di cosa non è stato trovato) |
 | `IllegalArgumentException`      | Una chiave/ il valore di una chiave è stata trovato vuoto | Durante la fase di validazione, è stata trovata una chiave o il valore di una chiave vuoti ( son due messaggi diversi, a seconda di cosa non è stato trovato) |
 | `IllegalArgumentException`      | Nome tabella/db/chiave/valore non valido                  | Durante la fase di validazione, son stati trovati dei valori di tabella/db/chiave/valore non validi () son quattro messaggi diversi, a seconda di cosa non ha passato la regex) |
@@ -450,22 +450,22 @@ max-allowed-packet=1024M`
 
 
 
-## SelectCraft
+## SelectMaticO
 
-estende l'interfaccia `QueryCraft` aggiungendo le funzioni di join. Espone i metodi:
+estende l'interfaccia `QueryMaticO` aggiungendo le funzioni di join. Espone i metodi:
 
 | **Nome metodo**                                              | **Descrizione**   (*obbligatorio)                            |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `alis(String) : SelectCraft`                                 | imposta un nome da usare come alias nella query              |
-| `join(SelectCraft) : SelectCraft`                            | imposta un selectCraft per la join (al momento max=1)        |
-| `joinFilter(Entry<String,String>) : SelectCraft`             | imposta una coppia di colonne che deve essere uguale tra la select this (primo valore) e la select in join |
-| `joinFilter(String columntThis,String columnOther) : SelectCraft` | come sopra, ma preleva due stringhe in ingresso              |
-| `selectCraft() : String`                                     | restituzione dei campi nella select                          |
-| `fromCraft() : String`                                       | restituzione dei campi nella from                            |
-| `whereCraft() : String`                                      | restituzione dei campi nella where                           |
+| `alis(String) : SelectMaticO`                                 | imposta un nome da usare come alias nella query              |
+| `join(SelectMaticO) : SelectMaticO`                            | imposta un selectMaticO per la join (al momento max=1)        |
+| `joinFilter(Entry<String,String>) : SelectMaticO`             | imposta una coppia di colonne che deve essere uguale tra la select this (primo valore) e la select in join |
+| `joinFilter(String columntThis,String columnOther) : SelectMaticO` | come sopra, ma preleva due stringhe in ingresso              |
+| `selectMaticO() : String`                                     | restituzione dei campi nella select                          |
+| `fromMaticO() : String`                                       | restituzione dei campi nella from                            |
+| `whereMaticO() : String`                                      | restituzione dei campi nella where                           |
 
 
-L'unica implementazione attuale è `SQLSelectCraft`
+L'unica implementazione attuale è `SQLSelectMaticO`
 
 
 

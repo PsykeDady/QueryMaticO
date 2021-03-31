@@ -1,4 +1,4 @@
-package psykeco.querymatico.test;
+package psykeco.querymatico.test.connections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

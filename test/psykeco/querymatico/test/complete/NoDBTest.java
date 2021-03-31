@@ -1,4 +1,4 @@
-package psykeco.querymatico.test;
+package psykeco.querymatico.test.complete;
 
 import static org.junit.Assert.fail;
 

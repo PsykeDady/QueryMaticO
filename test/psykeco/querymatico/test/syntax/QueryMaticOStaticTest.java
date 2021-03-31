@@ -1,4 +1,4 @@
-package psykeco.querymatico.test;
+package psykeco.querymatico.test.syntax;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

@@ -1,4 +1,4 @@
-package psykeco.querymatico.test;
+package psykeco.querymatico.test.complete;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -64,6 +64,10 @@ class CompleteTest {
 		DBMaticO dbc = new SQLDBMaticO().DB("DBName");
 		TableMaticO tc = new SQLTableMaticO().DB("DBName").table(Entity.class).primary("identity");
 		try {
+			
+			//eventually drop database
+			m.exec(dbc.drop());
+			
 			//2nd check create database
 			expected="CREATE DATABASE `DBName`";
 			actual=dbc.create();

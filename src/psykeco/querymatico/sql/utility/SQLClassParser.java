@@ -109,6 +109,7 @@ public final class SQLClassParser {
 		Field[] f= c.getDeclaredFields();
 		
 		for ( Field x : f ) {
+			if(x.getName().contains("this$")) continue;
 			String s = getTrueName(x.getType());
 			map.put(x.getName(), s);
 		}
@@ -135,6 +136,7 @@ public final class SQLClassParser {
 		
 		for ( Field x : f ) {
 			boolean acc=x.isAccessible();
+			if(x.getName().contains("this$")) continue;
 			x.setAccessible(true);
 			Object value=null;
 			try {value = x.get(instance);} catch (Exception e) {}

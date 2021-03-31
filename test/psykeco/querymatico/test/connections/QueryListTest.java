@@ -1,4 +1,4 @@
-package psykeco.querymatico.test;
+package psykeco.querymatico.test.connections;
 
 import java.io.File;
 import java.util.List;
