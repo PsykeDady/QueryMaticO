@@ -81,15 +81,15 @@ public class SQLSelectMaticO extends SelectMaticO {
 	/**
 	 * Aggiunge un campo alla select, ignora il parametro valore. Richiama {@link #entry(String)}
 	 * 
-	 * @param colonna : campo da aggiungere alla select
+	 * @param column : campo da aggiungere alla select
 	 * 
-	 * @param valore : ignorato
+	 * @param value : ignorato
 	 * 
 	 * @return un istanza di SQLSelectMaticO con il campo aggiunto alla select
 	 * */
 	@Override
-	public SQLSelectMaticO entry(String colonna, Object valore) {
-		return entry(colonna);
+	public SQLSelectMaticO entry(String column, Object value) {
+		return entry(column);
 	}
 	
 	/**
@@ -112,8 +112,8 @@ public class SQLSelectMaticO extends SelectMaticO {
 	}
 	
 	@Override
-	public SQLSelectMaticO filter(String colonna, Object valore) {
-		this.filter.putIfAbsent(colonna, valore);
+	public SQLSelectMaticO filter(String column, Object value) {
+		this.filter.putIfAbsent(column, value);
 		return this;
 	}
 
@@ -188,10 +188,10 @@ public class SQLSelectMaticO extends SelectMaticO {
 	}
 
 	@Override
-	public SQLSelectMaticO join(SelectMaticO joinTable) {
-		if( ! (joinTable instanceof SelectMaticO) ) 
+	public SQLSelectMaticO join(SelectMaticO joinSelect) {
+		if( ! (joinSelect instanceof SelectMaticO) ) 
 			throw new IllegalArgumentException("la tabella di join deve essere di tipo SQLSelectMaticO");
-		this.joinTable=(SQLSelectMaticO) joinTable;
+		this.joinTable=(SQLSelectMaticO) joinSelect;
 		return this;
 	}
 

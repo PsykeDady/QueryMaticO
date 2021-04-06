@@ -2,68 +2,73 @@ package psykeco.querymatico;
 
 
 /**
- * DBMatic0 genera una serie di query che riguardano il database
+ * DBMaticO builds istructions to create, delete or query db's (or schemas) 
  * 
- * @author psykedady
+ * @author PsykeDady (psdady@msn.com)
  * */
 public interface DBMaticO{
 	
 	/**
-	 * imposta il nome del db
-	 * @param db : nuovo nome del db
-	 * @return istanza di DBMatic0 con db aggiornato
+	 * set db name
+	 * @param db : db new name
+	 * @return updated DBMaticO instance
 	 */
 	public DBMaticO DB(String db);
 	
 	/**
-	 * analizza i campi della query e quindi ne valida il contenuto, restituendo eventualmente un messaggio di errore che 
-	 * esplicita quale &egrave; stato il problema riscontrato. <br><br>
-	 * Se tutto va bene restituisce una stringa vuota
-	 * @return Una stringa vuota se non c'&egrave; alcun problema, altrimenti un messaggio di errore
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value rappresent a String with encountered 
+	 * error or empty string if every controls passes
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
 	 */
 	public String validate();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per creare il db.
+	 * Build statement to create a new schema, only if 
+	 * {@link #validate()} passes with success.
 	 * 
-	 * @return l'istruzione con tutti i campi impostati
+	 * @return String of instruction 
 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String create();
 	
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per sapere se esiste (con una select) il db
+	 * Build statement to check if a schema exists, only if 
+	 * {@link #validate()} passes with success.
 	 * 
-	 * @return l'istruzione con tutti i campi impostati
+	 * @return String of instruction 
 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String exists();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare il db
+	 * Build statement to delete a schema, only if 
+	 * {@link #validate()} passes with success.
 	 * 
-	 * @return l'istruzione con tutti i campi impostati
+	 * @return String of instruction 
 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String drop();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per prelevare una lista di tabelle
+	 * Build statement to list db of a schema, only if 
+	 * {@link #validate()} passes with success.
 	 * 
-	 * @return l'istruzione con i campi impostati
- 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @return String of instruction 
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String listTables();
 	
 	/**
-	 * copia tutti i campi del DBMatic0 e ne restituisce una nuova istanza 
+	 * create a DBMaticO as new object with same data of this.
 	 * 
-	 * @return nuova istanza copia del builder
+	 * @return the new instance
 	 */
 	public DBMaticO copy();
 

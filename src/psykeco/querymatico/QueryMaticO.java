@@ -1,88 +1,76 @@
 package psykeco.querymatico;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map.Entry;
 
 /**
- * Interfaccia di generatori (builder) di istruzioni per query 
+ * Query Builders generic interface 
  * 
  * 
- * @author archdady
+ * @author PsykeDady (psdady@msn.com)
  */
 public interface QueryMaticO {
 	
-	/** indica il nome del DB alla query
-	 *  @param il nome del DB 
-	 *  @return l'istanza di QueryMaticO a cui è aggiunto il nome del DB 
+	/** Set db name
+	 *  @param name of db
+	 *  @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO DB(String DB);
 	
-	/** indica il nome della tabella alla query
-	 *  @param il nome della tabella
-	 *  @return l'istanza di QueryMaticO a cui è aggiunto il nome della tabella
+	/** set table name
+	 *  @param name of table
+	 *  @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO table(String table);
 	
-	/** aggiunge una coppia "nome colonna"-"valore" ai campi "insert", "select", "update" oppure create
-	 *  @param  Una coppia scritta con classe {@link java.util.Map.Entry Entry}
-	 *  @return l'istanza di QueryMaticO a cui è aggiunta la coppia
+	/** add "column name-column value" into insert, select or update fields
+	 * 
+	 *  @param  Couple name-value as {@link java.util.Map.Entry Entry} class
+	 *  @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO entry(Entry<String,Object> kv);
 	
-	/** aggiunge una coppia "nome colonna"-"valore" ai campi "insert", "select", "update" oppure create
-	 *  @param  colonna
-	 *  @param  valore
-	 *  @return l'istanza di QueryMaticO a cui è aggiunta la coppia
-	 *  */
-	public QueryMaticO entry(String colonna, Object valore);
-	
-	/** aggiunge una coppia "nome colonna"-"valore" che serve a filtrare la query 
-	 * ( nelle where ) 
+	/** add "column name-column value" into insert, select or update fields
 	 * 
-	 * @param  Una coppia scritta con classe {@link java.util.Map.Entry Entry}
-	 * @return l'istanza di QueryMaticO a cui è aggiunto il fitro
+	 *  @param  column : column name
+	 *  @param  value : column value
+	 *  @return QueryMaticO updated reference
+	 *  */
+	public QueryMaticO entry(String column, Object value);
+	
+	/** add "column name-column value" as filter of query (into where clausole or similar) 
+	 * 
+	 * @param   Couple name-value as {@link java.util.Map.Entry Entry} class
+	 * @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO filter(Entry<String,Object> filter);
 	
-	/** aggiunge una coppia "nome colonna"-"valore" che serve a filtrare la query
-	 * ( nelle where ) 
+	/** add "column name-column value" as filter of query (into where clausole or similar) 
 	 * 
-	 *  @param  colonna
-	 *  @param  valore
-	 *  @return l'istanza di QueryMaticO a cui è aggiunta la coppia
+	 *  @param  column : column name
+	 *  @param  value : column value
+	 *  @return QueryMaticO updated reference
 	 *  */
-	public QueryMaticO filter(String colonna, Object valore);
+	public QueryMaticO filter(String column, Object value);
 	
-	/** necessaria per validare la query prima che sia stato fatto il build.<br>
-	 * Nel pi&ugrave; generico dei casi &egrave; necessario che siano definiti, 
-	 * non nulli e validati dalla regex i parametri:<br>
-	 * <ul>
-	 * 	<li>nome db</li>
-	 * 	<li>nome tabella</li>
-	 * 	<li>elenco parametri ( ne deve esistere almeno uno. Eccetto alcuni contesti)</li>
-	 * </ul>
+	/** <b>needed to validate query before a build operation.</b><br>
+	 * Perform a check on all needed fields for a query. If an error occur 
+	 * a String with a description is returned, otherwise an empty string was <br>
 	 *  
 	 *  @return una stringa vuota se la query può essere costruita 
 	 *  */
 	public String validate();
 	
 	/**
-	 * costruisce la query e la manda sotto forma di stringa
-	 * @return La query, sotto forma di stringa. <code>null</code> se la {@link #validate() validazione}
-	 * fallisce
+	 * Build query and return it as String
+	 * @return query, as String, <code>null</code> if {@link #validate() validazione} fail
+	 * 
 	 * */
 	public String build();
 	
 	/**
-	 * copia tutti i campi del QueryMaticO e ne restituisce una nuova istanza 
+	 * create a QueryMaticO as new object with same data of this.
 	 * 
-	 * @return nuova istanza copia del builder
+	 * @return the new instance
 	 */
 	public QueryMaticO copy();
 }

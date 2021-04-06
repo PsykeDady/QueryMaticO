@@ -1,6 +1,16 @@
 package psykeco.querymatico;
 
-public interface TableMaticO extends Cloneable{
+/**
+ * TableMaticO can map a class directly into a Database Table thanks to java reflection mechanism. 
+ * it needs only Class, db name and optionally primary keys list.<br>
+ * <b>Class is need to have almost one empty constructor</b> <br>
+ * This class build String version of query to <i>create</i>, <i>drop</i> and <i>query existance</i> of Tables, but not only!<br>
+ * It can easily provide build from its self other QueryMaticO instance to 
+ * <i>insert</i>, <i>select</i>, <i>update</i>, <i>delete</i> or <i>count</i> 
+ * records of existent table!
+ * 
+ * @author PsykeDady (psdady@msn.com) */
+public interface TableMaticO {
 	
 	/**
 	 * imposta il nome del db
@@ -12,7 +22,7 @@ public interface TableMaticO extends Cloneable{
 	/**
 	 * Imposta nome tabella e parametri o colonne
 	 * @param c classe da cui prelevare i dati (nome tabella, attributi)
-	 * @return istanza di TableMaticO con i campi aggioranti
+	 * @return TableMaticO updated reference
 	 */
 	@SuppressWarnings("rawtypes")
 	public TableMaticO table(Class c);
@@ -20,7 +30,7 @@ public interface TableMaticO extends Cloneable{
 	/**
 	 * imposta un nuovo valore al suffisso
 	 * @param suffix : nuovo suffisso 
-	 * @return l'istanza di SQLCreateTableMaticO col suffisso
+	 * @return TableMaticO updated reference
 	 */
 	public TableMaticO suffix(String suffix);
 	
@@ -35,7 +45,7 @@ public interface TableMaticO extends Cloneable{
 	 * aggiunge (se esiste) una nuova chiave primaria 
 	 * 
 	 * @param key : colonna da far diventare chiave primaria. Deve essere una variabile della classe esistente
-	 * @return l'istanza di SQLCreateTableMaticO con la chiave primaria aggiunta
+	 * @return TableMaticO updated reference
 	 * 
 	 * @throws IllegalArgumentException se il parametro passato non è un attributo della classe 
 	 */

@@ -5,10 +5,11 @@ import static psykeco.querymatico.sql.utility.SQLClassParser.*;
 import java.util.Map.Entry;
 
 /**
- * SelectMaticO estende QueryMaticO per l'uso delle join nelle select
- * @author psykedady
- *
- */
+ * SelectMaticO class extends {@link QueryMaticO} 
+ * to implements special features of select query as 
+ * join or filter on join
+ * 
+ * @author PsykeDady (psdady@msn.com) */
 public abstract class SelectMaticO implements QueryMaticO{
 	
 	/**
@@ -18,11 +19,11 @@ public abstract class SelectMaticO implements QueryMaticO{
 	
 	
 	/**
-	 * imposta il nome alias da usare per le query nella select, 
-	 * per evitare che in join i nomi si sovrappongono
+	 * set alias name for table to use in queries
+	 * in order to avoid name overlapping of same tables in join
 	 * 
-	 * @param alias il nome da usare 
-	 * @return l'istanza di SelectMaticO aggiornata
+	 * @param alias 
+	 * @return SelectMaticO updated reference
 	 */
 	public SelectMaticO alias(String alias) {
 		this.alias=alias;
@@ -30,11 +31,11 @@ public abstract class SelectMaticO implements QueryMaticO{
 	}
 	
 	/**
-	 * attacca a what l'alias, utile per i campi della where e della select
+	 * append to alias a column name 
 	 * 
-	 * @param what a cosa attaccare l'alias. Se null, mette *
+	 * @param what : the column*
 	 * 
-	 * @return la stringa con l'alias ( se esiste) in prefisso
+	 * @return `alias`.`what` 
 	 */
 	protected String attachAlias(String what) {
 		what=(what==null)?"*":"`"+validateBase(what)+"`";
@@ -44,31 +45,32 @@ public abstract class SelectMaticO implements QueryMaticO{
 	}
 	
 	/**
-	 * imposta un campo nella select.
-	 * @param valore
-	 * @return istanza aggiornata di SelectMaticO
+	 * add a column to select 
+	 * @param value : column
+	 * @return SelectMaticO updated reference
 	 */
-	public abstract SelectMaticO entry (String valore);
+	public abstract SelectMaticO entry (String value);
 	
 	/**
-	 * aggiunge una SelectMaticO in join
-	 * @param joinTable
-	 * @return istanza aggiornata di SelectMaticO
+	 * add a SelectMaticO in join with this. 
+	 * 
+	 * @param joinSelect 
+	 * @return SelectMaticO updated reference
 	 */
-	public abstract SelectMaticO join(SelectMaticO joinTable);
+	public abstract SelectMaticO join(SelectMaticO joinSelect);
 	
 	/**
-	 * aggiunge nei filtri della where una coppia di colonne
-	 * @param thisOther coppia chiave (colonna di this) valore (colonna della tabella in join)
-	 * @return istanza aggiornata di SelectMaticO
+	 * add a couple <code>column of this</code>-<code>column of other</code> as filter of join
+	 * @param thisOther couple column-column as {@link Entry} class
+	 * @return SelectMaticO updated reference
 	 */
 	public abstract SelectMaticO joinFilter (Entry<String,String> thisOther);
 	
 	/**
-	 * aggiunge nei filtri della where una coppia di colonne
-	 * @param columnThis colonna di this 
-	 * @param columnOther colonna della tabella in join
-	 * @return istanza aggiornata di SelectMaticO
+	 * add a couple <code>column of this</code>-<code>column of other</code> as filter of join
+	 * @param columnThis column of this SelectMaticO
+	 * @param columnOther column of SelectMaticO in join 
+	 * @return SelectMaticO updated reference
 	 */
 	public abstract SelectMaticO joinFilter (String columnThis, String columnOther);
 	
@@ -99,7 +101,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	public abstract SelectMaticO sum(String column);
 	
 	/**
-	 * query will be aggregate on specified column<br>
+	 * query will be group on specified column<br>
 	 * 
 	 * @param   column to specify in group by clausole 
 	 * @return  updated instance of SelectMaticO
@@ -128,35 +130,52 @@ public abstract class SelectMaticO implements QueryMaticO{
 	}
 	
 	/**
-	 * 
-	 * @return la lista dei campi da mettere nella select
+	 * build only <i>select part</i> of query<br>
+	 * example:<br>
+	 * <pre>Select field1,field2,field3...
+	 * </pre>
+	 *  
+	 * @return word "select" and fields to select
 	 */
 	protected abstract String selectBuild();
 	
 	/**
-	 * 
-	 * @return la lista dei campi da mettere nella from
+	 * build only <i>from part</i> of query 
+	 * example:<br>
+	 * <pre>from table1,table2,table3...</pre>
+	 * @return word "from" and tables field to join
 	 */
 	protected abstract String   fromBuild();
 	
 	/**
-	 * 
-	 * @return la lista dei campi da mettere nella where
+	 * build only <i>where part</i> of query 
+	 * example:<br>
+	 * <pre>where field1=value1,field2=other.field2,field3 is null...</pre>
+	 * @return "where" word and all couple field=value to filter
 	 */
 	protected abstract String  whereBuild();
 	
 	/**
-	 * 
-	 * @return la lista dei campi da mettere nella groupBy
+	 * build only <i>groupby part</i> of query 
+	 * example:<br>
+	 * <pre>groupby field1</pre>
+	 * @return "group By" words and column that group others fields
 	 */
 	protected abstract String groupByBuild();
 	
 	/**
-	 * 
-	 * @return la lista dei campi da mettere nella orderBy
+	 * build only <i>order by part</i> of query 
+	 * example:<br>
+	 * <pre>order by field1</pre>
+	 * @return "order By" words and column needed to order results
 	 */
 	protected abstract String orderByBuild();
 	
+	/**
+	 * create a SelectMaticO as new object with same data of this.
+	 * 
+	 * @return the new instance
+	 */
 	@Override
 	public abstract SelectMaticO copy();
 }

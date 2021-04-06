@@ -36,7 +36,7 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	}
 	
 	@Override
-	public SQLDeleteMaticO entry(String colonna, Object valore) {
+	public SQLDeleteMaticO entry(String column, Object value) {
 		throw new UnsupportedOperationException("SqlDeleteMaticO does not support entry");
 	}
 
@@ -47,8 +47,8 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	}
 	
 	@Override
-	public SQLDeleteMaticO filter(String colonna, Object valore) {
-		this.filter.putIfAbsent(colonna, valore);
+	public SQLDeleteMaticO filter(String column, Object value) {
+		this.filter.putIfAbsent(column, value);
 		return this;
 	}
 

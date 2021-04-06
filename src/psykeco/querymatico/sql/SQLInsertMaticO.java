@@ -46,8 +46,8 @@ public class SQLInsertMaticO implements QueryMaticO {
 	}
 	
 	@Override
-	public SQLInsertMaticO entry(String colonna, Object valore) {
-		this.kv.putIfAbsent(colonna, valore);
+	public SQLInsertMaticO entry(String column, Object value) {
+		this.kv.putIfAbsent(column, value);
 		return this;
 	}
 
@@ -116,7 +116,7 @@ public class SQLInsertMaticO implements QueryMaticO {
 	}
 
 	@Override
-	public SQLInsertMaticO filter(String colonna, Object valore) {
+	public SQLInsertMaticO filter(String column, Object value) {
 		throw new UnsupportedOperationException("SqlInsertMaticO does not support filter");
 	}
 

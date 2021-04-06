@@ -39,8 +39,8 @@ public class SQLUpdateMaticO implements QueryMaticO {
 	}
 	
 	@Override
-	public SQLUpdateMaticO entry(String colonna, Object valore) {
-		this.kv.putIfAbsent(colonna, valore);
+	public SQLUpdateMaticO entry(String column, Object value) {
+		this.kv.putIfAbsent(column, value);
 		return this;
 	}
 
@@ -51,8 +51,8 @@ public class SQLUpdateMaticO implements QueryMaticO {
 	}
 	
 	@Override
-	public SQLUpdateMaticO filter(String colonna, Object valore) {
-		this.filter.putIfAbsent(colonna, valore);
+	public SQLUpdateMaticO filter(String column, Object value) {
+		this.filter.putIfAbsent(column, value);
 		return this;
 	}
 
