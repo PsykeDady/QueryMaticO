@@ -27,3 +27,6 @@ Major policy of **QueryMaticO** *is not to write manually queries* but use Java 
 - [x] Reorder, clean and restructurate packages and methods *(in version 1.0)*
 
 TODO LIST details on Projects tab of (github project)[https://github.com/PsykeDady/QueryMaticO/projects]
+
+
+<meta name="google-site-verification" content="bBIodFOPOkSpk6cFXnJrtG3eujip6PNZPTgqPRUWGMs" />
