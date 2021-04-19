@@ -17,7 +17,7 @@ public interface DBMaticO{
 	
 	/**
 	 * check all the fields in order to validate a possible query. <br>
-	 * Returned value rappresent a String with encountered 
+	 * Returned value represent a String with encountered 
 	 * error or empty string if every controls passes
 	 * 
 	 * @return empty string if all check is passed, an error message otherwise

@@ -52,12 +52,13 @@ public interface QueryMaticO {
 	 *  */
 	public QueryMaticO filter(String column, Object value);
 	
-	/** <b>needed to validate query before a build operation.</b><br>
-	 * Perform a check on all needed fields for a query. If an error occur 
-	 * a String with a description is returned, otherwise an empty string was <br>
-	 *  
-	 *  @return una stringa vuota se la query può essere costruita 
-	 *  */
+	/**
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	public String validate();
 	
 	/**

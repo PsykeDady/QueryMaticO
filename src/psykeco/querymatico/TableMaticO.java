@@ -13,142 +13,137 @@ package psykeco.querymatico;
 public interface TableMaticO {
 	
 	/**
-	 * imposta il nome del db
-	 * @param db : nuovo nome del db
-	 * @return istanza di TableMaticO con db aggiornato
+	 * set db name
+	 * @param db 
+	 * @return TableMaticO updated reference
 	 */
 	public TableMaticO DB(String db);
 	
 	/**
-	 * Imposta nome tabella e parametri o colonne
-	 * @param c classe da cui prelevare i dati (nome tabella, attributi)
+	 * Parse the Class in input, set name of table and create columns from attribute
+	 * @param c the class to parse
 	 * @return TableMaticO updated reference
 	 */
 	@SuppressWarnings("rawtypes")
 	public TableMaticO table(Class c);
 	
 	/**
-	 * imposta un nuovo valore al suffisso
-	 * @param suffix : nuovo suffisso 
+	 * set a table name suffix. If class name is "name" and suffix is "_oftable", table name will be 
+	 * "name_oftable"
+	 * @param suffix 
 	 * @return TableMaticO updated reference
 	 */
 	public TableMaticO suffix(String suffix);
 	
 	/**
-	 * 
+	 * set a table name prefix. If class name is "name" and prefix is "the_", table name will be 
+	 * "the_name"
 	 * @param prefix : nuovo prefisso 
-	 * @return l'instanza di SQLCreateTableMaticO col prefisso
+	 * @return TableMaticO updated reference
 	 */
 	public TableMaticO prefix(String prefix);
 	
 	/**
-	 * aggiunge (se esiste) una nuova chiave primaria 
+	 * Specify a primary key. <br>
+	 * The value must be name of class variable you want as primary key.<br>
+	 * You can call this method more time in order to specify multiple primary keys
 	 * 
-	 * @param key : colonna da far diventare chiave primaria. Deve essere una variabile della classe esistente
+	 * @param key : Name of primary key column. 
+	 * It must be a variable of class and not null
 	 * @return TableMaticO updated reference
 	 * 
-	 * @throws IllegalArgumentException se il parametro passato non è un attributo della classe 
+	 * @throws IllegalArgumentException If the key not exists as class variable
 	 */
 	public TableMaticO primary(String key);
 	
 	/**
-	 * analizza i campi della query e quindi ne valida il contenuto, restituendo eventualmente un messaggio di errore che 
-	 * esplicita quale &egrave; stato il problema riscontrato. <br><br>
-	 * Se tutto va bene restituisce una stringa vuota
-	 * @return Una stringa vuota se non c'&egrave; alcun problema, altrimenti un messaggio di errore
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
 	 */
 	public String validate();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per costruire la tabella.
+	 * Build query to create a Table
 	 * 
-	 * @return l'istruzione con tutti i campi impostati
+	 * @return string representation of table creation istruction
 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String create();
 	
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per sapere se esiste (con una select) la tabella
+	 * Build query to query a Table existance 
 	 * 
-	 * @return l'istruzione con tutti i campi impostati
+	 * @return string representation of table existence query
 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String exists();
 	
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per eliminare la tabella
+	 * Build query to query a Table remove instruction
 	 * 
-	 * @return l'istruzione con tutti i campi impostati
+	 * @return string representation of table remove istruction
 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	public String drop();
 	
 	/**
-	 * crea un istanza di QueryMaticO che inserisce una tupla dell'oggetto indicato
+	 * create a {@link QueryMaticO} instance to insert record of input object
 	 * 
-	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * @param istance of Object to insert into table ( it must be of the same class setted with {@link #table(Class)} method
 	 * 
-	 * @return un istanza di {@link QueryMaticO} che rappresenta la insert
+	 * @return {@link QueryMaticO} instance to perform an insert on table 
 	 */
 	public QueryMaticO insertData(Object o);
 	
 	/**
-	 * crea un istanza di QueryMaticO che effettua una select in base ai parametri 
-	 * dell'oggetto passato come parametro
+	 * create a {@link SelectMaticO} instance to select records filtering by field specified by input object
 	 * 
-	 * @param o un oggetto che rappresenta 
-	 * 	i campi non null da cercare 
-	 * ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}.
-	 * Se <code>null</code>, seleziona tutte le righe 
+	 * @param istance of Object to filter query ( it must be of the same class setted with {@link #table(Class)} method or <code>null</code> to select all fields
 	 * 
-	 * @return un istanza di {@link SelectMaticO} che rappresenta la select
+	 * @return {@link SelectMaticO} instance to perform a select on table 
 	 */
 	public SelectMaticO selectData(Object o);
 	
 	/**
-	 * crea un istanza di QueryMaticO che elimina le tuple con le caratteristiche 
-	 * non null dell'oggetto indicato
+	 * create a {@link QueryMaticO} instance to delete records of input object
 	 * 
-	 * @param o un oggetto che rappresenta i campi non null da cercare ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}
+	 * @param istance of Object needed to filter rows to delete from table 
+	 * ( it must be of the same class setted with {@link #table(Class)} method
 	 * 
-	 * @return un istanza di {@link QueryMaticO} che rappresenta la delete
+	 * @return {@link QueryMaticO} insert instance to perform a delete on table 
 	 */
 	public QueryMaticO deleteData(Object o);
 	
 	/**
-	 * crea un istanza di QueryMaticO che aggiorna le tuple con le informazioni dell'istanza passata.
-	 * Per farlo, utilizza come chiave di ricerca il campo indicato da {@link #primary}
+	 * create a {@link QueryMaticO} instance to update records of input object.<br>
+	 * Primary keys fields (see {@link #primary}) , if present, are required as not null value to filter records to update
 	 * 
-	 * @param o un oggetto che rappresenta i campi non null da aggiornare 
-	 * ( deve essere un oggetto della stessa classe passata al metodo {@link #table(Class)}. 
-	 * Il campo primario è obbligatorio
+	 * @param istance of Object needed to filter rows to update table's records ( it must be of the same class setted with {@link #table(Class)} method.
 	 * 
-	 * @throws IllegalArgumentException se primary non &egrave; stato specificato
-	 * 
-	 * @return un istanza di {@link QueryMaticO} che rappresenta la delete
+	 * @return {@link QueryMaticO} instance to perform an update on table 
 	 */
 	public QueryMaticO updateData(Object o);
 	
 	/**
-	 * crea un istanza di QueryMaticO che conta le tuple con le caratteristiche 
-	 * non null dell'oggetto indicato
+	 * create a {@link SelectMaticO} instance that count rows with same value of not null fields of input object. If input is null, all records are selected
 	 * 
-	 * @param o un oggetto che rappresenta i campi non null da cercare (
-	 *  deve essere un oggetto della stessa classe passata al metodo 
-	 *  {@link #table(Class)}
+	 * @param istance of Object to filter query ( it must be of the same class setted with {@link #table(Class)} method or <code>null</code> to select all fields
 	 * 
-	 * @return un istanza di {@link QueryMaticO} che rappresenta la select count
+	 * @return {@link SelectMaticO} instance to perform a count on table 
 	 */
 	public SelectMaticO countData(Object o);
 	
 	/**
-	 * copia tutti i campi del TableMaticO e ne restituisce una nuova istanza 
+	 * create a TableMaticO as new object with same data of this.
 	 * 
-	 * @return nuova istanza copia del builder
+	 * @return the new instance
 	 */
 	public TableMaticO copy();
 
