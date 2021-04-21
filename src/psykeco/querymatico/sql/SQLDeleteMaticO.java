@@ -12,46 +12,103 @@ import java.util.Map.Entry;
 import psykeco.querymatico.QueryMaticO;
 import psykeco.querymatico.sql.runners.MySqlConnection;
 
+/**
+ * MySQL implementation of {@link QueryMaticO}.<br>   
+ * 
+ * Perform delete operations on database,
+ * table name and db name are required! <br>   
+ * 
+ * filters are used into <code>where</code> clausole
+ * 
+ * @author PsykeDady (psdady@msn.com) 
+ * */
 public class SQLDeleteMaticO implements QueryMaticO{
+
+	/** table name */
 	private String table;
+
+	/** db name */
 	private String db;
+
+	/** map of filter */
 	private HashMap<String,Object> filter=new HashMap<>();
 	
+	/** Set db name
+	 *  @param name of db
+	 *  @return SQLDeleteMaticO updated reference
+	 *  */
 	@Override
 	public SQLDeleteMaticO DB(String DB) {
 		this.db=DB;
 		return this;
 	}
 	
+	/** set table name
+	 *  @param name of table
+	 *  @return SQLDeleteMaticO updated reference
+	 *  */
 	@Override
 	public SQLDeleteMaticO table(String table) {
 		this.table=table;
 		return this;
 	}
 	
-	
+	/**
+	 * entries are not supported in delete operations
+	 * 
+	 * @throws UnsupportedOperationException : always, entries are not supported on SQLDeleteMaticO
+	 */
 	@Override
 	public SQLDeleteMaticO entry(Entry<String, Object> kv) {
 		throw new UnsupportedOperationException("SqlDeleteMaticO does not support entry");
 	}
 	
+	/**
+	 * entries are not supported in delete operations
+	 * 
+	 * @throws UnsupportedOperationException : always, entries are not supported on SQLDeleteMaticO
+	 */
 	@Override
 	public SQLDeleteMaticO entry(String column, Object value) {
 		throw new UnsupportedOperationException("SqlDeleteMaticO does not support entry");
 	}
 
-	
+	/** add "column name-column value" as filter of query (into where clausole or similar) 
+	 * 
+	 * @param   Couple name-value as {@link java.util.Map.Entry Entry} class
+	 * @return SQLDeleteMaticO updated reference
+	 *  */
 	@Override
 	public SQLDeleteMaticO filter(Entry<String, Object> filter) {
 		return filter(filter.getKey(),filter.getValue());
 	}
 	
+	/** add "column name-column value" as filter of query (into where clausole or similar) 
+	 * 
+	 *  @param  column : column name
+	 *  @param  value : column value
+	 *  @return SQLDeleteMaticO updated reference
+	 *  */
 	@Override
 	public SQLDeleteMaticO filter(String column, Object value) {
 		this.filter.putIfAbsent(column, value);
 		return this;
 	}
 
+	/**
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes.<br>  
+	 * Field required:
+	 * <ul>
+	 * 		<li>db</li>
+	 * 		<li>table</li>
+	 * </ul>
+	 * 
+	 * Every couple value-key needed to be valid and not null
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	@Override
 	public String validate() {
 		
@@ -81,6 +138,11 @@ public class SQLDeleteMaticO implements QueryMaticO{
 		return "";
 	}
 
+	/**
+	 * Build delete istruction and return it as String
+	 * @return DELETE istruction, as String, <code>null</code> if {@link #validate() validazione} fail
+
+	 * */
 	@Override
 	public String build() {
 		StringBuilder values=new StringBuilder(filter.size()*20);
@@ -102,9 +164,14 @@ public class SQLDeleteMaticO implements QueryMaticO{
 		return values.toString().trim();
 	}
 
+	/**
+	 * create a SQLDeleteMaticO as new object with same data of this.
+	 * 
+	 * @return the new instance
+	 */
 	@Override
-	public QueryMaticO copy() {
-		QueryMaticO cf=new SQLDeleteMaticO().DB(db).table(table);
+	public SQLDeleteMaticO copy() {
+		SQLDeleteMaticO cf=new SQLDeleteMaticO().DB(db).table(table);
 		if(filter!=null) for( Entry <String,Object> kv: filter.entrySet()) {
 			cf.filter(kv);
 		}

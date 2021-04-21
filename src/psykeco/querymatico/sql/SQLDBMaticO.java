@@ -6,23 +6,33 @@ import psykeco.querymatico.DBMaticO;
 import psykeco.querymatico.sql.runners.InformationSchema;
 
 /**
- * SQLDBMaticO costruisceì istruzioni SQL 
- * per creare, distruggere o chiedere se esiste
- *  un db
+ * MySQL implementation of {@link DBMaticO}
  * 
- * @author psykedady
- **/
+  * @author PsykeDady (psdady@msn.com)
+ * */
 public class SQLDBMaticO implements DBMaticO{
 	
-	/** nome db (obbligatorio) */
+	/** db name (required) */
 	private String db;
 
+	/**
+	 * set db name
+	 * @param db : db new name
+	 * @return updated SQLDBMaticO instance
+	 */
 	@Override
 	public SQLDBMaticO DB(String db) {
 		this.db=validateBase(db);
 		return this;
 	}
-
+	
+	/**
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	@Override
 	public String validate() {
 		if (db   ==null || db   .equals("")) return "nome db necessario";
@@ -32,7 +42,15 @@ public class SQLDBMaticO implements DBMaticO{
 		
 		return "";
 	}
-
+	
+	/**
+	 * Build statement to create a new schema, only if 
+	 * {@link #validate()} passes with success.
+	 * 
+	 * @return String of instruction 
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
+	 */
 	@Override
 	public String create() {
 		String validation=validate();
@@ -40,13 +58,28 @@ public class SQLDBMaticO implements DBMaticO{
 		
 		return "CREATE DATABASE `"+validateBase(db)+"`";
 	}
+
 	/**
-	 **/
+	 * Build statement to check if a schema exists, only if 
+	 * {@link #validate()} passes with success.
+	 * 
+	 * @return String of instruction 
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
+	 */
 	@Override
 	public String exists() {
 		return InformationSchema.existsDBBuild(db);
 	}
 
+	/**
+	 * Build statement to delete a schema, only if 
+	 * {@link #validate()} passes with success.
+	 * 
+	 * @return String of instruction 
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
+	 */
 	@Override
 	public String drop() {
 		String validation=validate();
@@ -55,12 +88,12 @@ public class SQLDBMaticO implements DBMaticO{
 	}
 
 	/**
-	 * Questo metodo costruisce l'istruzione da mandare al DB per prelevare una lista di tabelle
+	 * Build statement to list db of a schema, only if 
+	 * {@link #validate()} passes with success.
 	 * 
-	 * @return l'istruzione con i campi impostati
- 	 * 
-	 * @throws IllegalArgumentException se i campi non hanno passato il controllo di validazione
+	 * @return String of instruction 
 	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
 	 */
 	@Override
 	public String listTables() {
@@ -68,17 +101,11 @@ public class SQLDBMaticO implements DBMaticO{
 		return InformationSchema.listTablesBuild(db);
 	}
 	
-	@Override
-	protected SQLDBMaticO clone(){
-		SQLDBMaticO dbcf=null;
-		try {
-			dbcf= (SQLDBMaticO) super.clone();
-			return dbcf;
-		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
+	/**
+	 * create a DBMaticO as new object with same data of this.
+	 * 
+	 * @return the new instance
+	 */
 	@Override
 	public SQLDBMaticO copy() {
 		SQLDBMaticO dbcf=new SQLDBMaticO();

@@ -8,11 +8,16 @@ import java.sql.SQLException;
 
 import psykeco.querymatico.ConnectionMaticO;
 
+/**
+ * MySQL implementation of {@link ConnectionMaticO}
+ * 
+ * @author PsykeDady (psdady@msn.com) 
+ * */
 public class SQLConnectionMaticO  implements ConnectionMaticO{
 	
 	
 	/**
-	 * serve in alcune implementazioni di mysql che richiedono esplicitamente la timezone
+	 * Some implementation of mysql client require timezone settings
 	 */
 	public static final String TIMEZONE="useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	/**
@@ -41,15 +46,15 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 	public static final boolean DEFAULT_AUTOCOMMIT=true;
 	
 	/**
-	 * semi-URL standard della connessione con jdbc. <br>
-	 * Va completato con : <br>
+	 * a part of jdbc url. <br>
+	 * it must be completed with : <br>
 	 * <ul>
-	 * 	<li> il link (obbligatorio) </li>
-	 * 	<li> portadi connessione (non obbligatoria) </li>
-	 * 	<li> il nome del database (non obbligatorio) </li>
+	 * 	<li> ip address (required) </li>
+	 * 	<li> connection port (not required) </li>
+	 * 	<li> schema or database name (not required) </li>
 	 * </ul>
 	 * <br> 
-	 * ecco un esempio di forma completa:<br>
+	 * an example of entire form:<br>
 	 * <code>jdbc:mysql://localhost:3306/TestDB</code>
 	 */
 	public static final String URL_INIT="jdbc:mysql://";
@@ -63,53 +68,96 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 	private String psk="";
 	private boolean autocommit=DEFAULT_AUTOCOMMIT;
 	
+/**
+	 * set driver to use
+	 * 
+	 * @param driver
+	 * 
+	 * @return SQLConnectionMaticO instance updated
+	 */
 	@Override
 	public SQLConnectionMaticO driver(String driver) {
 		this.driver=driver;
 		return this;
 	}
-
+/**
+	 * set connection URL
+	 * @param url
+	 * @return SQLConnectionMaticO instance updated
+	 */
 	@Override
 	public SQLConnectionMaticO url(String url) {
 		this.url=url;
 		return this;
 	}
-
+	/**
+	 * set user name for authentication
+	 * @param user
+	 * @return SQLConnectionMaticO instance updated
+	 */
 	@Override
 	public SQLConnectionMaticO user(String user) {
 		this.user=user;
 		return this;
 	}
-
+	/**
+	 * set password for authentication
+	 * @param psk
+	 * @return SQLConnectionMaticO instance updated
+	 */
 	@Override
 	public SQLConnectionMaticO psk(String psk) {
 		this.psk=psk;
 		return this;
 	}
-
+	/**
+	 * set db name to establish  connection
+	 * @param db
+	 * @return SQLConnectionMaticO instance updated
+	 */
 	@Override
 	public SQLConnectionMaticO db(String db) {
 		this.db=db;
 		return this;
 	}
-	
+	/**
+	 * get db Name 
+	 * 
+	 * @return db name
+	 */
 	@Override
 	public String getDB() {
 		return db;
 	}
-	
+	/**
+	 * set port number to establish connection
+	 * @param port
+	 * @return SQLConnectionMaticO instance updated
+	 */
 	@Override
 	public SQLConnectionMaticO port(int port) {
 		this.port=port;
 		return this;
 	}
-	
+	/** 
+	 * set on/off autocommit settings for add/update/delete 
+	 * 
+	 * @param autocommit
+	 * @return SQLConnectionMaticO instance updated 
+	 * */
 	@Override
 	public SQLConnectionMaticO autocommit(boolean autocommit) {
 		this.autocommit=autocommit;
 		return this;
 	}
-	
+
+	/**
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	@Override
 	public String validate() {
 		if(url==null) return "url vuoto";
@@ -121,10 +169,11 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 	}
 	
 	/**
-	 * @return istanza di connessione da usare 
+	 * Connect to database, {@link #build()} is called before to generate url
 	 * 
-	 * @throws    IllegalStateException se la connessione non viene stabilita
-	 * @throws IllegalArgumentException se i parametri non passano la validazione
+	 * @return connection instance
+	 * 
+	 * @throws IllegalStateException if can't establish connection
 	 */
 	@Override
 	public Connection connect() {
@@ -159,7 +208,14 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 				(psk!=null && psk.equals( other.psk)))
 		;
 	}
-
+	/**
+	 * 
+	 * Build connection url string, {@link #validation} is called before to check parameters
+	 * 
+	 * @return url connection string
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} return error
+	 */
 	@Override
 	public String build() {
 		String validate = validate() ;
