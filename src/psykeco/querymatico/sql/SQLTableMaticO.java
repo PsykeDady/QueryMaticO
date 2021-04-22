@@ -17,39 +17,30 @@ import psykeco.querymatico.sql.runners.MySqlConnection;
 import psykeco.querymatico.sql.utility.SQLClassParser;
 
 /**
- * SQLTableMaticO costruisce istruzioni SQL 
- * per creare, distruggere o chiedere se esiste
- *  una tabella a partire da una classe java.
+ * MySQL implementation of {@link TableMaticO}
  * 
- * Per farlo, usa le reflection e legge tutti i campi, ogni 
- * campo diventa una colonna e il nome delle classe viene 
- * usato come nome per la tabella <br><br>
- * 
- * &Egrave; Possibile specificare alcuni dettagli come la chiave primaria oppure modificare il nome dei campi con suffissi e prefissi
- * 
- * @author psykedady
- **/
+ * @author PsykeDady (psdady@msn.com) */
 public class SQLTableMaticO implements TableMaticO{
 	
 	
-	/** nome tabella (obbligatorio) */
+	/** table name */
 	private String table;
-	/** nome db (obbligatorio) */
+	/** db name */
 	private String db;
-	/** suffisso, si agginge dopo i nomi */
+	/** added after names */
 	private String suffix="";
-	/** prefisso, si agginge dopo i nomi */
+	/** added before names */
 	private String prefix="";
-	/** mappa <nome,tipo> che viene usata per creare le colonne della tabella */
+	/** Map <field name,field type> contains column name-column type */
 	private Map<String,String> kv =new HashMap<>();
-	/** lista delle chiavi primarie */
+	/** list of primaries keys */
 	private List<String> primary = new LinkedList<>();
-	/** la classe rappresentativa della tabella */
+	/** java Class representation of table */
 	private Class<?> type;
 	
 	
 	/**
-	 * data una stringa, attacca prefisso e suffisso per generare il nuovo nome
+	 * concatenate prefix, an input string and suffix
 	 * @param what stringa in input
 	 * @return prefisso+what+suffisso
 	 */
@@ -57,14 +48,13 @@ public class SQLTableMaticO implements TableMaticO{
 		return validateBase(prefix+what+suffix);
 	}
 	
-	/** costruttore vuoto */
 	public SQLTableMaticO() {}
 	
 	/**
-	 * costruttore che , prende in input il db e la classe da trasformare in tabella
+	 * use input db as db name and convert input class with {@link #table} into name of table and map of columns with their types 
 	 * 
-	 * @param db nome db
-	 * @param c la classe che diventer&agrave tabella 
+	 * @param db db name
+	 * @param c Class to convert  
 	 */
 	@SuppressWarnings("rawtypes")
 	public SQLTableMaticO(String db, Class c) {
@@ -72,12 +62,22 @@ public class SQLTableMaticO implements TableMaticO{
 		table(c);
 	}
 	
+	/**
+	 * set db name
+	 * @param db 
+	 * @return SQLTableMaticO updated reference
+	 */
 	@Override
 	public SQLTableMaticO DB(String db) {
 		this.db=db;
 		return this;
 	}
 
+	/**
+	 * Parse the Class in input, set name of table and create columns from attribute
+	 * @param c the class to parse
+	 * @return SQLTableMaticO updated reference
+	 */
 	@SuppressWarnings("rawtypes")
 	@Override
 	public SQLTableMaticO table(Class c) {
@@ -87,27 +87,61 @@ public class SQLTableMaticO implements TableMaticO{
 		return this;
 	}
 	
-	
+	/**
+	 * set a table name suffix. If class name is "name" and suffix is "_oftable", table name will be 
+	 * "name_oftable"
+	 * @param suffix 
+	 * @return SQLTableMaticO updated reference
+	 */
 	public SQLTableMaticO suffix(String suffix) { 
 		if(suffix!=null)
 			this.suffix=suffix; 
 		return this; 
 	}
 	
-	
+	/**
+	 * set a table name prefix. If class name is "name" and prefix is "the_", table name will be 
+	 * "the_name"
+	 * @param prefix : nuovo prefisso 
+	 * @return SQLTableMaticO updated reference
+	 */
 	public SQLTableMaticO prefix(String prefix) { 
 		if(prefix!=null)
 			this.prefix=prefix; 
 		return this; 
 	}
 
-	
+	/**
+	 * Specify a primary key. <br>
+	 * The value must be name of class variable you want as primary key.<br>
+	 * You can call this method more time in order to specify multiple primary keys
+	 * 
+	 * @param key : Name of primary key column. 
+	 * It must be a variable of class and not null
+	 * @return SQLTableMaticO updated reference
+	 * 
+	 * @throws IllegalArgumentException If the key not exists as class variable
+	 */
 	public SQLTableMaticO primary(String key) { 
 		if(! kv.containsKey(key) ) throw new IllegalArgumentException("La chiave primaria deve riferirsi ad una colonna reale");
 		primary.add(key);
 		return this;
 	}
 
+	/**
+	 * check all the fields in order to validate table creation. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes.<br>  
+	 * Field required:
+	 * <ul>
+	 * 		<li>db</li>
+	 * 		<li>table</li>
+	 * 		<li>class must be almost one field</li>
+	 * </ul>
+	 * 
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	public String validate() {
 		
 		if (table==null || table.equals("")) return "nome tabella necessario";
@@ -137,7 +171,13 @@ public class SQLTableMaticO implements TableMaticO{
 		return "";
 	}
 	
-	
+	/**
+	 * Build instruction to create a Table
+	 * 
+	 * @return string representation of table creation istruction
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
+	 */
 	public String create() {
 		
 		StringBuilder sb=new StringBuilder(kv.size()*20);
@@ -172,11 +212,25 @@ public class SQLTableMaticO implements TableMaticO{
 		return sb.toString();
 	}
 
+	/**
+	 * Build query of Table existance 
+	 * 
+	 * @return string representation of table existence query
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
+	 */
 	@Override
 	public String exists() {
 		return InformationSchema.existTableBuild(db, table);
 	}
 
+	/**
+	 * Build Table remove instruction
+	 * 
+	 * @return string representation of table remove istruction
+	 * 
+	 * @throws IllegalArgumentException if {@link #validate()} fail
+	 */
 	@Override
 	public String drop() {
 		String thisdb=this.db;
@@ -192,6 +246,13 @@ public class SQLTableMaticO implements TableMaticO{
 		return sb;
 	}
 
+	/**
+	 * create a {@link SQLInsertMaticO} instance to insert record of input object
+	 * 
+	 * @param istance of Object to insert into table ( it must be of the same class setted with {@link #table(Class)} method
+	 * 
+	 * @return {@link SQLInsertMaticO} instance to perform an insert on table 
+	 */
 	@Override
 	public SQLInsertMaticO insertData(Object o) {
 		String db=validateBase(this.db), table= attachPreSuf(this.table); 
@@ -207,6 +268,13 @@ public class SQLTableMaticO implements TableMaticO{
 		return qc;
 	}
 
+	/**
+	 * create a {@link SQLSelectMaticO} instance to select records filtering by field specified by input object
+	 * 
+	 * @param istance of Object to filter query ( it must be of the same class setted with {@link #table(Class)} method or <code>null</code> to select all fields
+	 * 
+	 * @return {@link SQLSelectMaticO} instance to perform a select on table 
+	 */
 	@Override
 	public SQLSelectMaticO selectData(Object o) { 
 		String table= attachPreSuf(this.table);
@@ -224,6 +292,14 @@ public class SQLTableMaticO implements TableMaticO{
 		return qc;
 	}
 
+	/**
+	 * create a {@link QueryMSQLDeleteMaticOaticO} instance to delete records of input object
+	 * 
+	 * @param istance of Object needed to filter rows to delete from table 
+	 * ( it must be of the same class setted with {@link #table(Class)} method
+	 * 
+	 * @return {@link SQLDeleteMaticO} insert instance to perform a delete on table 
+	 */
 	@Override
 	public SQLDeleteMaticO deleteData(Object o) {
 		String table= attachPreSuf(this.table);
@@ -240,6 +316,14 @@ public class SQLTableMaticO implements TableMaticO{
 		return qc;
 	}
 
+	/**
+	 * create a {@link SQLUpdateMaticO} instance to update records of input object.<br>
+	 * Primary keys fields (see {@link #primary}) , if present, are required as not null value to filter records to update
+	 * 
+	 * @param istance of Object is intended to update table's records ( it must be of the same class setted with {@link #table(Class)} method, primary keys corrisponding field (if primary keys are present ) are used to filter what records update
+	 * 
+	 * @return {@link SQLUpdateMaticO} instance to perform an update on table 
+	 */
 	@Override
 	public SQLUpdateMaticO updateData(Object o) {
 		String table= attachPreSuf(this.table);
@@ -264,6 +348,13 @@ public class SQLTableMaticO implements TableMaticO{
 		return qc;
 	}
 
+	/**
+	 * create a {@link SQLSelectMaticO} instance that count rows with same value of not null fields of input object. If input is null, all records are selected
+	 * 
+	 * @param istance of Object to filter query ( it must be of the same class setted with {@link #table(Class)} method or <code>null</code> to select all fields
+	 * 
+	 * @return {@link SQLSelectMaticO} instance to perform a count on table 
+	 */
 	@Override
 	public SQLSelectMaticO countData(Object o) {
 		SQLSelectMaticO qc=new SQLSelectMaticO().DB(db).table(table);
@@ -281,6 +372,11 @@ public class SQLTableMaticO implements TableMaticO{
 		return qc;
 	}
 
+	/**
+	 * create a SQLTableMaticO as new object with same data of this.
+	 * 
+	 * @return the new instance
+	 */
 	@Override
 	public SQLTableMaticO copy() {
 		SQLTableMaticO tf= new SQLTableMaticO().DB(db).prefix(prefix).suffix(suffix);

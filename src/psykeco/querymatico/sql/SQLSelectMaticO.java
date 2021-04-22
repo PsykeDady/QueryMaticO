@@ -19,7 +19,10 @@ import java.util.TreeSet;
 
 public class SQLSelectMaticO extends SelectMaticO {
 	
-	// aggregate and other operator 
+	/**  
+	 * aggregate and other select specific operators
+	 * 
+	 */
 	private static enum AGGREGATE {
 		SUM,
 		AVG,
@@ -31,13 +34,13 @@ public class SQLSelectMaticO extends SelectMaticO {
 		MIN
 	}
 
-	/** nome tabella */
+	/** table name */
 	private String table;
-	/** nome db */
-	private String db;
-	/** i filtri formano la where */
+	/** db namme */
+	private String db;                  
+	/** filters, needed for <code>where</code> */
 	private HashMap<String,Object> filter=new HashMap<>();
-	/** insieme di chiavi da inserire nella from */
+	/** set of field name, needed <code>select</code> in  statement */
 	private Set<String> kv=new TreeSet<>();
 	/** couple join table and alias name*/
 	private SQLSelectMaticO joinTable; 
@@ -46,18 +49,26 @@ public class SQLSelectMaticO extends SelectMaticO {
 	
 	/** map of aggregate (key) and values */
 	private HashMap<AGGREGATE,String> aggregatesColumn=new HashMap<>();
-	/** column on order by clausole (key) with boolean flag to indicate if ordering is ascendenting */
+
+	/** needed in orderby, this couple name-boolean indicate column name used to sort query result, true is ascendenting */
 	private Entry<String,Boolean> orderBy; 
 	
-	/** column on group by clausole */ 
+	/** column name in group by clausole */ 
 	private String groupBy;
 	
+	/** Set db name
+	 *  @param DB name of db
+	 *  @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
 	public SQLSelectMaticO DB(String DB) {
 		this.db=DB;
 		return this;
 	}
-	
+	/** set table name
+	 *  @param table name of table
+	 *  @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
 	public SQLSelectMaticO table(String table) {
 		this.table=table;
@@ -65,58 +76,75 @@ public class SQLSelectMaticO extends SelectMaticO {
 	}
 	
 	
-	/**
-	 * Aggiunge un campo alla select.
+	/** add "column name" into select clausole. (value will be ignored)
 	 * 
-	 * @param colonna : campo da aggiungere alla select
-	 * 
-	 * @return un istanza di SQLSelectMaticO con il campo aggiunto alla select
-	 * */
+	 *  @param  column : column name
+	 *  @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
-	public SQLSelectMaticO entry(String colonna) {
-		this.kv.add(colonna);
+	public SQLSelectMaticO entry(String column) {
+		this.kv.add(column);
 		return this;
 	}
 	
-	/**
-	 * Aggiunge un campo alla select, ignora il parametro valore. Richiama {@link #entry(String)}
+	/** add "column name" into select clausole. (value will be ignored)
 	 * 
-	 * @param column : campo da aggiungere alla select
-	 * 
-	 * @param value : ignorato
-	 * 
-	 * @return un istanza di SQLSelectMaticO con il campo aggiunto alla select
-	 * */
+	 *  @param  column : column name
+	 *  @param  value : column value
+	 *  @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
 	public SQLSelectMaticO entry(String column, Object value) {
 		return entry(column);
 	}
 	
-	/**
-	 * Aggiunge un campo alla select, ignora il parametro valore. <br>
-	 * Leggere {@link #entry(String)}
+	/** add "column name" (key) into select clausole. (value will be ignored)
 	 * 
-	 * @param kv : un istanza chiave valore di {@link Entry} di cui viene ignorato il valore.
-	 * 
-	 * @return un istanza di SQLSelectMaticO con il campo aggiunto alla select
-	 * */
+	 *  @param  kv name-value as {@link java.util.Map.Entry Entry} class
+	 *  
+	 *  @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
 	public SQLSelectMaticO entry(Entry<String, Object> kv) {
 		return entry(kv.getKey());
 	}
 
-	
+	/** add "column name-column value" as filter of where clausole
+	 *
+	 * @param   filter name-value as {@link java.util.Map.Entry Entry} class
+	 * @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
 	public SQLSelectMaticO filter(Entry<String, Object> filter) {
 		return filter(filter.getKey(),filter.getValue());
 	}
-	
+
+	/** add "column name-column value" as filter of where clausole
+	 * 
+	 *  @param  column : column name
+	 *  @param  value : column value
+	 *  @return SQLSelectMaticO updated reference
+	 *  */
 	@Override
 	public SQLSelectMaticO filter(String column, Object value) {
 		this.filter.putIfAbsent(column, value);
 		return this;
 	}
 
+	/**
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes.<br>  
+	 * Field required:
+	 * <ul>
+	 * 		<li>db</li>
+	 * 		<li>table</li>
+	 * </ul>
+	 * 
+	 * Every couple value-key needed to be valid and not null
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	@Override
 	public String validate() {
 		
@@ -168,6 +196,11 @@ public class SQLSelectMaticO extends SelectMaticO {
 		return (joinTable!=null)?joinTable.validate():"";
 	}
 
+	/**
+	 * Build query and return it as String
+	 * @return query, as String, <code>null</code> if {@link #validate() validazione} fail
+	 * 
+	 * */
 	@Override
 	public String build() {
 		String thisdb=this.db;
@@ -187,6 +220,12 @@ public class SQLSelectMaticO extends SelectMaticO {
 		return query;
 	}
 
+	/**
+	 * add a SelectMaticO in join with this. 
+	 * 
+	 * @param joinSelect 
+	 * @return SelectMaticO updated reference
+	 */
 	@Override
 	public SQLSelectMaticO join(SelectMaticO joinSelect) {
 		if( ! (joinSelect instanceof SelectMaticO) ) 
@@ -195,18 +234,37 @@ public class SQLSelectMaticO extends SelectMaticO {
 		return this;
 	}
 
+	/**
+	 * add a couple <code>column of this</code>-<code>column of other</code> as filter of join
+	 * @param thisOther couple column-column (this-other) as {@link Entry} class
+	 * @return SelectMaticO updated reference
+	 */
 	@Override
 	public SQLSelectMaticO joinFilter(Entry<String, String> thisOther) {
 		
 		return joinFilter(thisOther.getKey(),thisOther.getValue());
 	}
 
+	/**
+	 * add a couple <code>column of this</code>-<code>column of other</code> as filter of join
+	 * @param columnThis column of this SelectMaticO
+	 * @param columnOther column of SelectMaticO in join 
+	 * @return SelectMaticO updated reference
+	 */
 	@Override
 	public SQLSelectMaticO joinFilter(String columnThis, String columnOther) {
 		joinFilter.put(columnThis, columnOther);
 		return this;
 	}
-
+	 
+	/**
+	 * build only <i>select clausole</i> of query<br>
+	 * example:<br>
+	 * <pre>Select field1,field2,field3...
+	 * </pre>
+	 *  
+	 * @return word "select" and fields to select
+	 */
 	@Override
 	public String selectBuild() {
 		StringBuilder sb=new StringBuilder();
@@ -231,7 +289,13 @@ public class SQLSelectMaticO extends SelectMaticO {
 		String result=sb.toString();	
 		return result.equals("") ? attachAlias(null) : result.trim();
 	}
-
+	 
+	/**
+	 * build only <i>from clausole</i> of query 
+	 * example:<br>
+	 * <pre>from table1,table2,table3...</pre>
+	 * @return word "from" and tables field to join
+	 */
 	@Override
 	public String fromBuild() {
 		StringBuilder sb=new StringBuilder();
@@ -250,7 +314,13 @@ public class SQLSelectMaticO extends SelectMaticO {
 		return result.trim();
 
 	}
-
+	 
+	/**
+	 * build only <i>where clausole</i> of query 
+	 * example:<br>
+	 * <pre>where field1=value1,field2=other.field2,field3 is null...</pre>
+	 * @return "where" word and all couple field=value to filter
+	 */
 	@Override
 	public String whereBuild() {
 		StringBuilder sb=new StringBuilder();
@@ -269,19 +339,38 @@ public class SQLSelectMaticO extends SelectMaticO {
 		String result=sb.toString();	
 		return result.trim();
 	}
-	
+	 
+	/**
+	 * build only <i>groupby clausole</i> of query 
+	 * example:<br>
+	 * <pre>groupby field1</pre>
+	 * @return "group By" words and column that group others fields
+	 */
 	@Override
 	protected String groupByBuild() {
 		if(groupBy==null||groupBy.equals("")) return "";
 		return " GROUP BY "+attachAlias(groupBy);
 	}
-
+	 
+	/**
+	 * build only <i>order by clausole</i> of query 
+	 * example:<br>
+	 * <pre>order by field1</pre>
+	 * @return "order By" words and column needed to order results
+	 */
 	@Override
 	protected String orderByBuild() {
 		if(orderBy==null) return "";
 		return " ORDER BY "+attachAlias(orderBy.getKey())+" "+(orderBy.getValue()?"ASC":"DESC");
 	}
 
+	/**
+	 * add count aggregate on a column name<br>
+	 * if the same column is in distinct clausole, <code>count</code> become a <code>count(distinct())</code>
+	 * 
+	 * @param   column to count
+	 * @return  updated instance of SelectMaticO
+	 */
 	@Override
 	public SQLSelectMaticO count(String column) {
 		String c=aggregatesColumn.get(AGGREGATE.DISTINCT);
@@ -293,6 +382,13 @@ public class SQLSelectMaticO extends SelectMaticO {
 		return this;
 	}
 
+	/**
+	 * add distinct aggregate on a column name<br>
+	 * if the same column is in count clausole, <code>distinct</code> become a <code>count(distinct())</code>
+	 * 
+	 * @param   column to distinct
+	 * @return  updated instance of SelectMaticO
+	 */
 	@Override
 	public SQLSelectMaticO distinct(String column) {
 		String c=aggregatesColumn.get(AGGREGATE.COUNT);
@@ -304,25 +400,48 @@ public class SQLSelectMaticO extends SelectMaticO {
 		return this;
 	}
 
+	/**
+	 * add sum aggregate on a column name<br>
+	 * 
+	 * @param   column to sum
+	 * @return  updated instance of SelectMaticO
+	 */
 	@Override
 	public SQLSelectMaticO sum(String column) {
 		aggregatesColumn.put(AGGREGATE.SUM, column);
 		return this;
 	}
 
+	/**
+	 * query will be group on specified column<br>
+	 * 
+	 * @param   column to specify in group by clausole 
+	 * @return  updated instance of SelectMaticO
+	 */
 	@Override
 	public SQLSelectMaticO groupBy(String column) {
 		groupBy=column;
 		return this;
 	}
 	
-
+	/**
+	 * query will be order on specified column<br>
+	 * 
+	 * @param   column to use in ordering 
+	 * @param   asc if <code>false</code>, order will be descendant
+	 * @return  updated instance of SelectMaticO
+	 */
 	@Override
 	public SQLSelectMaticO orderBy(String column, boolean asc) {
 		orderBy=new SimpleEntry<>(column, asc);
 		return this;
 	}
-
+	 
+	/**
+	 * create a SelectMaticO as new object with same data of this.
+	 * 
+	 * @return the new instance
+	 */
 	@Override
 	public SQLSelectMaticO copy() {
 		SQLSelectMaticO scf=new SQLSelectMaticO().DB(db).table(table).groupBy(groupBy);

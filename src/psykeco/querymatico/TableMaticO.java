@@ -57,16 +57,22 @@ public interface TableMaticO {
 	public TableMaticO primary(String key);
 	
 	/**
-	 * check all the fields in order to validate a possible query. <br>
+	 * check all the fields in order to validate table creation. <br>
 	 * Returned value represent a String with encountered 
-	 * error or empty string if every controls passes
+	 * error or empty string if every controls passes.<br>  
+	 * Field required:
+	 * <ul>
+	 * 		<li>db</li>
+	 * 		<li>table</li>
+	 * </ul>
+	 * 
 	 * 
 	 * @return empty string if all check is passed, an error message otherwise
 	 */
 	public String validate();
 	
 	/**
-	 * Build query to create a Table
+	 * Build instruction to create a Table
 	 * 
 	 * @return string representation of table creation istruction
 	 * 
@@ -76,7 +82,7 @@ public interface TableMaticO {
 	
 	
 	/**
-	 * Build query to query a Table existance 
+	 * Build query of Table existance 
 	 * 
 	 * @return string representation of table existence query
 	 * 
@@ -85,7 +91,7 @@ public interface TableMaticO {
 	public String exists();
 	
 	/**
-	 * Build query to query a Table remove instruction
+	 * Build Table remove instruction
 	 * 
 	 * @return string representation of table remove istruction
 	 * 
@@ -125,7 +131,7 @@ public interface TableMaticO {
 	 * create a {@link QueryMaticO} instance to update records of input object.<br>
 	 * Primary keys fields (see {@link #primary}) , if present, are required as not null value to filter records to update
 	 * 
-	 * @param istance of Object needed to filter rows to update table's records ( it must be of the same class setted with {@link #table(Class)} method.
+	 * @param istance of Object is intended to update table's records ( it must be of the same class setted with {@link #table(Class)} method, primary keys corrisponding field (if primary keys are present ) are used to filter what records update
 	 * 
 	 * @return {@link QueryMaticO} instance to perform an update on table 
 	 */

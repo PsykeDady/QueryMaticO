@@ -13,12 +13,12 @@ import psykeco.querymatico.QueryMaticO;
 import psykeco.querymatico.sql.runners.MySqlConnection;
 
 /**
- * MySQL implementation of {@link QueryMaticO}.<br>   
+ * MySQL delete implementation of {@link QueryMaticO}.<br>   
  * 
  * Perform delete operations on database,
  * table name and db name are required! <br>   
  * 
- * filters are used into <code>where</code> clausole
+ * filters are used into <code>where</code> clausole.
  * 
  * @author PsykeDady (psdady@msn.com) 
  * */
@@ -34,7 +34,7 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	private HashMap<String,Object> filter=new HashMap<>();
 	
 	/** Set db name
-	 *  @param name of db
+	 *  @param DB name of db
 	 *  @return SQLDeleteMaticO updated reference
 	 *  */
 	@Override
@@ -44,7 +44,7 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	}
 	
 	/** set table name
-	 *  @param name of table
+	 *  @param table name of table
 	 *  @return SQLDeleteMaticO updated reference
 	 *  */
 	@Override
@@ -55,7 +55,7 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	
 	/**
 	 * entries are not supported in delete operations
-	 * 
+	 * @param kv 
 	 * @throws UnsupportedOperationException : always, entries are not supported on SQLDeleteMaticO
 	 */
 	@Override
@@ -65,6 +65,8 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	
 	/**
 	 * entries are not supported in delete operations
+	 * @param column
+	 * @param value
 	 * 
 	 * @throws UnsupportedOperationException : always, entries are not supported on SQLDeleteMaticO
 	 */
@@ -75,7 +77,7 @@ public class SQLDeleteMaticO implements QueryMaticO{
 
 	/** add "column name-column value" as filter of query (into where clausole or similar) 
 	 * 
-	 * @param   Couple name-value as {@link java.util.Map.Entry Entry} class
+	 * @param  filter Couple name-value as {@link java.util.Map.Entry Entry} class
 	 * @return SQLDeleteMaticO updated reference
 	 *  */
 	@Override
@@ -141,7 +143,6 @@ public class SQLDeleteMaticO implements QueryMaticO{
 	/**
 	 * Build delete istruction and return it as String
 	 * @return DELETE istruction, as String, <code>null</code> if {@link #validate() validazione} fail
-
 	 * */
 	@Override
 	public String build() {

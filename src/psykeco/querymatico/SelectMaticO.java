@@ -61,7 +61,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	
 	/**
 	 * add a couple <code>column of this</code>-<code>column of other</code> as filter of join
-	 * @param thisOther couple column-column as {@link Entry} class
+	 * @param thisOther couple column-column (this-other) as {@link Entry} class
 	 * @return SelectMaticO updated reference
 	 */
 	public abstract SelectMaticO joinFilter (Entry<String,String> thisOther);
@@ -130,7 +130,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	}
 	
 	/**
-	 * build only <i>select part</i> of query<br>
+	 * build only <i>select clausole</i> of query<br>
 	 * example:<br>
 	 * <pre>Select field1,field2,field3...
 	 * </pre>
@@ -140,7 +140,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	protected abstract String selectBuild();
 	
 	/**
-	 * build only <i>from part</i> of query 
+	 * build only <i>from clausole</i> of query 
 	 * example:<br>
 	 * <pre>from table1,table2,table3...</pre>
 	 * @return word "from" and tables field to join
@@ -148,7 +148,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	protected abstract String   fromBuild();
 	
 	/**
-	 * build only <i>where part</i> of query 
+	 * build only <i>where clausole</i> of query 
 	 * example:<br>
 	 * <pre>where field1=value1,field2=other.field2,field3 is null...</pre>
 	 * @return "where" word and all couple field=value to filter
@@ -156,7 +156,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	protected abstract String  whereBuild();
 	
 	/**
-	 * build only <i>groupby part</i> of query 
+	 * build only <i>groupby clausole</i> of query 
 	 * example:<br>
 	 * <pre>groupby field1</pre>
 	 * @return "group By" words and column that group others fields
@@ -164,7 +164,7 @@ public abstract class SelectMaticO implements QueryMaticO{
 	protected abstract String groupByBuild();
 	
 	/**
-	 * build only <i>order by part</i> of query 
+	 * build only <i>order by clausole</i> of query 
 	 * example:<br>
 	 * <pre>order by field1</pre>
 	 * @return "order By" words and column needed to order results

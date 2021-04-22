@@ -11,20 +11,20 @@ import java.util.Map.Entry;
 public interface QueryMaticO {
 	
 	/** Set db name
-	 *  @param name of db
+	 *  @param DB name of db
 	 *  @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO DB(String DB);
 	
 	/** set table name
-	 *  @param name of table
+	 *  @param table name of table
 	 *  @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO table(String table);
 	
 	/** add "column name-column value" into insert, select or update fields
 	 * 
-	 *  @param  Couple name-value as {@link java.util.Map.Entry Entry} class
+	 *  @param  kv name-value as {@link java.util.Map.Entry Entry} class
 	 *  @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO entry(Entry<String,Object> kv);
@@ -39,7 +39,7 @@ public interface QueryMaticO {
 	
 	/** add "column name-column value" as filter of query (into where clausole or similar) 
 	 * 
-	 * @param   Couple name-value as {@link java.util.Map.Entry Entry} class
+	 * @param   filter name-value as {@link java.util.Map.Entry Entry} class
 	 * @return QueryMaticO updated reference
 	 *  */
 	public QueryMaticO filter(Entry<String,Object> filter);
@@ -55,7 +55,14 @@ public interface QueryMaticO {
 	/**
 	 * check all the fields in order to validate a possible query. <br>
 	 * Returned value represent a String with encountered 
-	 * error or empty string if every controls passes
+	 * error or empty string if every controls passes.<br>  
+	 * Field required:
+	 * <ul>
+	 * 		<li>db</li>
+	 * 		<li>table</li>
+	 * </ul>
+	 * 
+	 * Every couple value-key needed to be valid and not null
 	 * 
 	 * @return empty string if all check is passed, an error message otherwise
 	 */

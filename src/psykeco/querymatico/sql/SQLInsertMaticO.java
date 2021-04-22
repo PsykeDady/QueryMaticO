@@ -13,44 +13,83 @@ import psykeco.querymatico.QueryMaticO;
 import psykeco.querymatico.sql.runners.MySqlConnection;
 
 /**
- * Costruisce la insert per le query di tipo SQL<br>
- * implementa {@link QueryMaticO}
+ * MySQL insert implementation of {@link QueryMaticO}.<br>   
  * 
- * @author psykedady
- *
- */
+ * Perform insert operations on database,
+ * table name and db name are required! <br>   
+ * 
+ * entry are used into <code>values</code> clausole.
+ * 
+ * @author PsykeDady (psdady@msn.com) 
+ * */
 public class SQLInsertMaticO implements QueryMaticO {
 	
 	public SQLInsertMaticO() {}
 	
+	/** table name */
 	private String table;
+	/** db name */
 	private String db;
+	/** map of value ( entry ) */
 	private HashMap<String,Object> kv=new HashMap<>();
 	
-	
+	/** Set db name
+	 *  @param DB name of db
+	 *  @return SQLInsertMaticO updated reference
+	 *  */
 	@Override
 	public SQLInsertMaticO DB(String DB) {
 		this.db=DB;
 		return this;
 	}
-	
+
+	/** set table name
+	 *  @param table name of table
+	 *  @return SQLInsertMaticO updated reference
+	 *  */
 	@Override
 	public SQLInsertMaticO table(String table) {
 		this.table=table;
 		return this;
 	}
 
+	/** add "column name-column value" into insert <code>value</code> fields
+	 * 
+	 *  @param  kv name-value as {@link java.util.Map.Entry Entry} class
+	 *  @return SQLInsertMaticO updated reference
+	 *  */
 	@Override
 	public SQLInsertMaticO entry(Entry<String, Object> kv) {
 		return entry(kv.getKey(),kv.getValue());
 	}
-	
+
+	/** add "column name-column value" into insert <code>value</code> fields
+	 * 
+	 *  @param  column : column name
+	 *  @param  value : column value
+	 *  @return SQLInsertMaticO updated reference
+	 *  */
 	@Override
 	public SQLInsertMaticO entry(String column, Object value) {
 		this.kv.putIfAbsent(column, value);
 		return this;
 	}
 
+	/**
+	 * check all the fields in order to validate a possible query. <br>
+	 * Returned value represent a String with encountered 
+	 * error or empty string if every controls passes.<br>  
+	 * Field required:
+	 * <ul>
+	 * 		<li>db</li>
+	 * 		<li>table</li>
+	 * 		<li>almost one {@link #entry(Entry)} (or {@link #entry(String, Object)}) couple</li>
+	 * </ul>
+	 * 
+	 * Every couple value-key needed to be valid and not null
+	 * 
+	 * @return empty string if all check is passed, an error message otherwise
+	 */
 	@Override
 	public String validate() {
 		
@@ -83,6 +122,10 @@ public class SQLInsertMaticO implements QueryMaticO {
 		return "";
 	}
 
+	/**
+	 * Build insert istruction and return it as String
+	 * @return INSERT istruction, as String, <code>null</code> if {@link #validate() validazione} fail
+	 * */
 	@Override
 	public String build() {
 		StringBuilder column=new StringBuilder(kv.size()*20);
@@ -110,16 +153,32 @@ public class SQLInsertMaticO implements QueryMaticO {
 		return values.toString()+column.toString();
 	}
 
+	/**
+	 * filters are not supported in isnert operations
+	 * @param filter 
+	 * @throws UnsupportedOperationException : always, entries are not supported on SQLDeleteMaticO
+	 */
 	@Override
 	public SQLInsertMaticO filter(Entry<String, Object> filter) {
 		throw new UnsupportedOperationException("SqlInsertMaticO does not support filter");
 	}
 
+	/**
+	 * filters are not supported in isnert operations
+	 *  @param  column
+	 *  @param  value
+	 * @throws UnsupportedOperationException : always, entries are not supported on SQLDeleteMaticO
+	 */
 	@Override
 	public SQLInsertMaticO filter(String column, Object value) {
 		throw new UnsupportedOperationException("SqlInsertMaticO does not support filter");
 	}
 
+	/**
+	 * create a SQLInsertMaticO as new object with same data of this.
+	 * 
+	 * @return the new instance
+	 */
 	@Override
 	public SQLInsertMaticO copy() {
 		SQLInsertMaticO cf=new SQLInsertMaticO().DB(db).table(table);
