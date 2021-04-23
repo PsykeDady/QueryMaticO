@@ -17,6 +17,17 @@ import psykeco.querymatico.sql.runners.MySqlConnection;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * MySQL select implementation of {@link QueryMaticO}.<br>   
+ * 
+ * Perform select query on database,
+ * table name and db name are required! <br>   
+ * 
+ * entry are used into <code>select</code> clausole.
+ * filter are used into <code>where</code> clausole.
+ * 
+ * @author PsykeDady (psdady@msn.com) 
+ * */
 public class SQLSelectMaticO extends SelectMaticO {
 	
 	/**  
