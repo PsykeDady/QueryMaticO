@@ -19,19 +19,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * classe di utilit&agrave; per leggere i parametri di una classe e quindi mapparli 
- * su tipi di SQL
+ * utility class to map java classes and fields into MySQL type 
  * 
- * @author psykedady
+ * @author PsykeDady (psdady@msn.com) 
  */
 public final class SQLClassParser {
 	
 	/**
-	 * lista dei tipi di mysql
-	 * @author psykedady
-	 *
+	 * MySQL types enumeration
+	 * 
+	 * 
+	 * @author PsykeDady (psdady@msn.com) 
 	 */
-	public static enum Tipo{
+	public static enum MySqlType{
 		VARCHAR   ,
 		INT       ,
 		DECIMAL   ,
@@ -48,23 +48,30 @@ public final class SQLClassParser {
 		TIMESTAMP ,
 		DATETIME  ;
 		
+		/** precision of numerical types */
 		public static String precision() {
 			return "(10,2)";
 		}
 		
+		/** number of character primary text type */
 		public static String NVARCHAR_PRIMARY() {
 			return "NVARCHAR(676)";
 		}
 	}//enum
 	
-	//static class, private constructor
+	/** static class, private constructor */ 
 	private SQLClassParser() {}
 	
 	/**
-	 * ritaglia la stringa che rappresenta il nome di una classe con il suo package, e 
-	 * ne preleva quindi solo il nome
-	 * @param s package.della.classe$subclasse
-	 * @return l'ultimo nome
+	 * <p>take name of class from complete java-path of class. </p>
+	 * <p>For example if string is: <br></p>
+	 * <p><code>path.to.the.package.nameclass</code></p><br>
+	 * <p>this function return <code>nameclass</code><br></p>
+	 * 
+	 * <p><br>it work also with subclass paths, with <code>$</code> sign</p>
+	 * 
+	 * @param s path.to.the.package.nameclass$subclass
+	 * @return name of class
 	 */
 	public static String getTrueName(String s) {
 		int li=s.lastIndexOf('.');
@@ -78,31 +85,47 @@ public final class SQLClassParser {
 	}
 	
 	/**
-	 * Preleva il nome della classe, privato di package e altro
-	 * @param c la classe 
-	 * @return il nome
+	 * <p>take name of class from complete java-path of class. </p>
+	 * <p>For example if class is: <br></p>
+	 * <p><code>path.to.the.package.nameclass</code></p><br>
+	 * <p>this function return <code>nameclass</code><br></p>
+	 * 
+	 * <p><br>it work also with subclass paths, with <code>$</code> sign</p>
+	 * 
+	 * @param c the class
+	 * @return name of class
 	 */
 	public static String getTrueName(@SuppressWarnings("rawtypes") Class c) {
 		return getTrueName(c.toString());
 	}
+
 	/**
-	 * Preleva il nome della classe, privato di package e altro
-	 * @param t il tipo
-	 * @return il nome
+	 * <p>take name of type from complete java-path of type. </p>
+	 * <p>For example if type is: <br></p>
+	 * <p><code>path.to.the.package.nametype</code></p><br>
+	 * <p>this function return <code>nametype</code><br></p>
+	 * 
+	 * <p><br>it work also with subtype paths, with <code>$</code> sign</p>
+	 * 
+	 * @param c the type
+	 * @return name of class
 	 */
 	public static String getTrueName(Type t) {
 		return getTrueName(t.toString());
 	}
 	
 	/**
-	 * Costruisce una mappa con i campi di una classe e i tipi SQL
-	 * La mappa contiene come:
+	 * <p>Build a map using field and type of input class<br></p>
+	 * 
+	 * <p>Map contains:<br></p>
 	 * <ul>
-	 *  <li>chiave : nome campo</li>
-	 *  <li>valore : tipo campo</li>
+	 *  <li>key : field name</li>
+	 *  <li>value : field type</li>
 	 * </ul>
-	 * @param c
-	 * @return la mappa <nome attributo,tipo sql>
+	 * <p><br></p>
+	 * <p><br></p>
+	 * @param c class
+	 * @return Map of &lt; field name, field type &gt;
 	 */
 	public static Map<String,String> parseClass(@SuppressWarnings("rawtypes") Class c){
 		Map<String,String> map= new HashMap<>();
@@ -118,13 +141,19 @@ public final class SQLClassParser {
 	}
 	
 	/**
-	 * Costruisce una mappa "nome del campo-valore" dell'oggetto istanza 
-	 * passata con i campi della classe passata ( se è un istanza di quella classe)
 	 * 
-	 * @param type     classe supposta
-	 * @param instance istanza della classe 
+	 * * <p>Build a map using class and its istance in input contains every fields of class with values<br></p>
 	 * 
-	 * @return mappa nomecampo,valore
+	 * <p>Map contains:<br></p>
+	 * <ul>
+	 *  <li>key : field name</li>
+	 *  <li>value : instance value</li>
+	 * </ul>
+	 * <p><br></p>
+	 * <p><br></p>
+	 * @param type : a type
+	 * @param instance : an instance of type
+	 * @return Map of &lt; field name, field value &gt; of instance
 	 */
 	public static Map<String,Object> parseInstance(@SuppressWarnings("rawtypes") Class type, Object instance){
 		if(!type.isInstance(instance))
@@ -149,9 +178,11 @@ public final class SQLClassParser {
 	}
 	
 	/**
-	 * Dato una stringa che rappresenta una classe java, restituisce un tipo SQL
-	 * @param type una stringa rappresentate la classe
-	 * @return il tipo sql associato
+	 * <p>return a sql type from {@link MySqlType} toString using an input String contains java class name. <br></p>
+	 * <p>if primary, can be different (a primary String will be convert nvarchar, otherwise Text) <br></p>
+	 * @param type name of class
+	 * @param primary true if column will be primary
+	 * @return toString of Mysqltype from {@link MySqlType}
 	 */
 	public static String parseType(String type, boolean primary) {
 		
@@ -160,25 +191,25 @@ public final class SQLClassParser {
 			case "byte"   : case "Byte"   :
 			case "long"   : case "Long"   :
 			case "boolean": case "Boolean":
-			case "short"  : case "Short"  : return Tipo.INT.name();
+			case "short"  : case "Short"  : return MySqlType.INT.name();
 			
 			case "float"  : case "Float"  :
-			case "double" : case "Double" : return Tipo.DECIMAL.name()+Tipo.precision();
+			case "double" : case "Double" : return MySqlType.DECIMAL.name()+MySqlType.precision();
 			
 			case "Date"   : 
 			case "GregorianCalendar"      : 
-			case "LocalDateTime"          : return Tipo.TIMESTAMP.name()+" null ";
+			case "LocalDateTime"          : return MySqlType.TIMESTAMP.name()+" null ";
 			
-			case "File"                   :  return Tipo.LONGBLOB.name();
+			case "File"                   :  return MySqlType.LONGBLOB.name();
 		}
 		
-		return primary ? Tipo.NVARCHAR_PRIMARY() : Tipo.TEXT.name();
+		return primary ? MySqlType.NVARCHAR_PRIMARY() : MySqlType.TEXT.name();
 	}
 	
 	/**
-	 * Dato una stringa che rappresenta una classe java, restituisce un tipo SQL
-	 * @param type una stringa rappresentate la classe
-	 * @return il tipo sql associato
+	 * return default <code>null</code> value for specific conversion from java class to mysql value
+	 * @param c a java class 
+	 * @return default <code>null</code> value 
 	 */
 	public static Object nullValue(Class<?> c) {
 		String type=getTrueName(c);
@@ -197,6 +228,22 @@ public final class SQLClassParser {
 		
 	}
 
+	/**
+	 * <p>Create an instance of a specific type parsing a resultset after a query.<br></p>
+	 * <p>Through name of input field, search specific column with same name, try to 
+	 * automatically parse with getObject method from  ResultSet the column and in some cases 
+	 * manage that object to return specific class<br></p>
+	 * <p> <br></p>
+	 * <p>It can launch some exception if something goes wrong <br></p>
+	 * <p> <br></p>
+	 * 
+	 * @param rs the result set
+	 * @param x the field of class, with same name of wanted column
+	 * @param columns set of column we expect
+	 * @return a parsed object with Type of x and value from ResultSet
+	 * @throws SQLException
+	 * @throws IOException
+	 */
 	public static Object parseResultToField(ResultSet rs, Field x,Set<String> columns) throws SQLException, IOException {
 		Object inst=null;
 		boolean f=rs.wasNull();
@@ -242,6 +289,18 @@ public final class SQLClassParser {
 		return inst;
 	}
 	
+	/**
+	 * <p>check if a string not match with database requirement as name of db, table or column.</br></p>
+	 * <p>it must: <br></p>
+	 * <ul>
+	 * 		<li>start with letter</li>
+	 * 		<li>not contain unsupported character (from ASCII 0 to 32 and not 127)</li>
+	 * 		<li>if contain a <code>`</code>, it will be duplicated</li>
+	 * </ul>
+	 * <p> <br></p>
+	 * @param base the string will be checked as name of db, table or column
+	 * @return <code>null</code> if not valid, base string with eventually <code>`</code> duplicated if valid
+	 */
 	public static String validateBase(String base) {
 		if(base==null) return null;
 		StringBuilder sb=new StringBuilder(base);
@@ -264,6 +323,17 @@ public final class SQLClassParser {
 		return sb.toString();
 	}
 	
+	/**
+	 * <p>check if a string not match with database requirement as varchar string.</br></p>
+	 * <p>it must: <br></p>
+	 * <ul>
+	 * 		<li>not contain unsupported character (from ASCII 0 to 32 and not 127, ASCII 9 and 10 excluded)</li>
+	 * 		<li>if contain a <code>'</code>, it will be duplicated</li>
+	 * </ul>
+	 * <p> <br></p>
+	 * @param value the string will be checked as varchar string
+	 * @return <code>null</code> if not valid, value string with eventually <code>'</code> duplicated if valid
+	 */
 	public static String validateValue(String value) {
 		if(value.length()>60) return null;
 		StringBuilder sb=new StringBuilder(value);
@@ -287,7 +357,7 @@ public final class SQLClassParser {
 	/**
 	 * create a temporary file to call native LOAD_FILE from db
 	 * @param f : origin file
-	 * @return LOAD_FILE(absolutepath of tmp file)
+	 * @return string: <code>LOAD_FILE(absolutepath of tmp file)</code>
 	 */
 	public static String FileParsing(File f) {
 		File tmp=null;
@@ -311,6 +381,13 @@ public final class SQLClassParser {
 		return "LOAD_FILE('"+tmp.getAbsoluteFile()+"')";
 	}
 	
+	/**
+	 * <p>if input Object is istance of {@link java.util.Date Date}, {@link java.util.GregorianCalendar GregorianCalendar} or {@link java.time.LocalDateTime LocalDateTime} , it will be parsed into String formatted as yyyy-mm-ddThh:mm:ss</br></p>
+	 * 
+	 * 
+	 * @param o the date as {@link java.util.Date Date}, {@link java.util.GregorianCalendar GregorianCalendar} or {@link java.time.LocalDateTime LocalDateTime}
+	 * @return the representation in String of date, <code>null</code> if the class can't be converted
+	 */
 	public static String DateParsing(Object o) {
 		Class<?> type=o.getClass();
 		
@@ -324,8 +401,10 @@ public final class SQLClassParser {
 			GregorianCalendar gc=(GregorianCalendar)o;
 			
 			l=gc.toZonedDateTime().toLocalDateTime();
-		} else {
+		} else if (type.equals(LocalDateTime.class)){
 			l=(LocalDateTime)o;
+		} else {
+			return null;
 		}
 		
 		String s=String.format(
@@ -337,10 +416,11 @@ public final class SQLClassParser {
 	}
 	
 	/**
-	 * ritorna una versione "stringa" dell'oggetto da usare nelle query.
-	 * Ad esempio, le stringhe vanno racchiuse tra singoli apici
-	 * @param o : l'oggetto
-	 * @return mysql string dell'oggetto
+	 * <p>return a String representation of object, not always coincide with the <code>toString()</code> operation.</br></p>
+	 * <p>In example, String will be enclosed into single quote char (<code>'</code>)</br></p>
+	 * 
+	 * @param o  object
+	 * @return String representation to be send into mysql statement
 	 */
 	public static String str(Object o) {
 		if ( 
