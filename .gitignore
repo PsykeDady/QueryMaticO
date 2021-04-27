@@ -1,2 +1,9 @@
 psk
 .vscode/
+.classpath
+.project
+.settings
+bin
+test_bin
+testfile
+testfile2
