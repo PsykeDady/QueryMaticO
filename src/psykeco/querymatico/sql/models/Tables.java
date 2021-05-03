@@ -1,9 +1,8 @@
 package psykeco.querymatico.sql.models;
 
-import psykeco.querymatico.sql.runners.InformationSchema;
 
 /**
- * <p>This class is basically a java-bean needed to query from {@link InformationSchema} DB and tables.</br></p> 
+ * <p>This class is basically a java-bean needed to query from {@link psykeco.querymatico.sql.runners.InformationSchema InformationSchema} DB and tables.</br></p> 
  * 
  * 
  * @author PsykeDady (psdady@msn.com)
