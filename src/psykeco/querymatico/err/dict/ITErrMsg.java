@@ -5,6 +5,10 @@ import static psykeco.querymatico.err.ErrMsg.KEY_MSG.*;
 
 import java.util.HashMap;
 
+/**
+ * @author PsykeDady (psdady@msn.com)
+ *
+ */
 public final class ITErrMsg {
 	
 	public static HashMap<KEY_MSG, String> getDict(){

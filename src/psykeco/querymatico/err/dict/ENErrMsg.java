@@ -23,6 +23,11 @@ import java.util.HashMap;
 
 import psykeco.querymatico.err.ErrMsg.KEY_MSG;
 
+/**
+ * 
+ * @author PsykeDady (psdady@msn.com)
+ *
+ */
 public class ENErrMsg {
 	
 	public static HashMap<KEY_MSG, String> getDict(){
