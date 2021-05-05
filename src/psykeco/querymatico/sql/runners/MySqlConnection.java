@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import psykeco.querymatico.ConnectionMaticO;
 import psykeco.querymatico.DBMaticO;
 import psykeco.querymatico.sql.SQLConnectionMaticO;
 import psykeco.querymatico.sql.SQLDBMaticO;
@@ -22,30 +23,29 @@ import psykeco.querymatico.sql.utility.SQLClassParser;
 
 
 /**
- * Gestore delle connessioni di mysql, la classe permette di avviare una connessione,
- * scambiare dati con mysql tirando fuori i ResultSet, dire se sei connesso o no,
- * le cause della mancanza di connessione e altro.
+ * <p></br></p>
+ * <p>Manage mysql connection and session.</br></p>
+ * <p>It start a singleton instance of {@link java.sql.Connection Connection} created through {@link psykeco.querymatico.sql SQLConnectionMaticO}, checking state of connection, getting mysql errors string, exec query and other</br></p>
+ * <p></br></p>
+ * <p>To start connection call {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)}</br></p>
  * 
- * Per Connettere al database la classe da chiamare tuttavia e' {@link psykeco.ioeasier.db.ConnessioneDB},
- * prima di instanziare questa classe basta chiamare {@link psykeco.ioeasier.db.ConnessioneDB #createInstance(String...)} e
- * automaticamente si istanzia la connessione verso il db.
- * @author archdady
+ * @author PsykeDady (psdady@msn.com)
  *
  */
 public class MySqlConnection {
 	
 	/**
-	 * descrizione della connessione al db
+	 * the connection builder
 	 */
 	private static SQLConnectionMaticO connMaticO;
 	
 	/**
-	 * Connessione al database
+	 * Connection to database
 	 */
-	private static Connection connessione;
+	private static Connection connection;
 	
 	/**
-	 * include una serie di query
+	 * a single statement can perform more query, if you want to rollback more actions
 	 */
 	private static Statement statement;
 	
@@ -55,38 +55,36 @@ public class MySqlConnection {
 	private String errMsg="";
 	
 	/**
-	 * frase di testing che serve a vedere se la connesione con mysql e' valida
+	 * this is a DB name to test if connection work properly
 	 */
 	public static final String TEST_ECHO="test_QueryMaticO_Connection";
 	
 	
 	/**
-	 * non inizia nessuna connessione, ma se ne esiste una 
-	 * la può sfruttare<br>
-	 * 
+	 * Empty constructor. Do not initialize a connection, but if a connection are already present, it can using that
 	 */
 	public MySqlConnection() { }
 
 	
 	/**
-	 *esegue un comando mysql e restituisce true se e' stato eseguito correttamente.<BR>
-	 *Nel caso in cui non sia stata creata una connessione, ci sia un errore nella richiesta
-	 *o comunque la richiesta non fosse andata a buon termine,  ritorna false.
-	 *
-	 *@param il comando sql da eseguire
-	 *
-	 *@return stringa vuota se il comando &egrave; andato a buon fine. il messaggio di errore altrimenti
+	 * <p>Execute a single MySql command and return a string contains an error message. If no error occur, it returns an empty string.</br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately an error string</br></p>
+	 * <p></br></p>
+	 * 
+	 * @param command sql command to execute
+	 * 
+	 * @return empty string if no error occurs. Error message instead
 	 */
-	public String exec(String comando){
+	public String exec(String command){
 		if(!existConnection()) {
 			errMsg= "Connessione Chiusa";
 			return errMsg;
 		}
 		try{
-			if (connessione.getAutoCommit()) connessione.createStatement().execute(comando);
+			if (connection.getAutoCommit()) connection.createStatement().execute(command);
 			else {
-				if( statement==null ) statement=connessione.createStatement();
-				statement.execute(comando);
+				if( statement==null ) statement=connection.createStatement();
+				statement.execute(command);
 			}
 			return errMsg="";
 		}catch(SQLException s){
@@ -95,14 +93,14 @@ public class MySqlConnection {
 	}//esegui
 	
 	/**
-	 * esegue una query e ritorna il ResultSet associato.<br>
-	 * Se avviene un errore, o il db non e' connesso allora il valore
-	 * ritornato e' null.
+	 * <p>Execute a single MySql query and return the resultSet. </br></p>
+	 * <p>If error occur, it returns <code>null</code> and message errors can be queried from {@link #getErrMsg()} </br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>
+	 * <p></br></p>
 	 * 
-	 * @param la query da eseguire
+	 * @param query sql query to execute
 	 * 
-	 * @return il ResultSet corrispondente
-	 * 
+	 * @return the ResultSet or <code>null</code>
 	 */
 	public ResultSet query(String query){
 		if(!existConnection()) {
@@ -110,7 +108,7 @@ public class MySqlConnection {
 			return null;
 		}
 		try{
-			ResultSet rs=connessione.createStatement().executeQuery(query);
+			ResultSet rs=connection.createStatement().executeQuery(query);
 			errMsg="";
 			return  rs;
 		}catch(SQLException s){
@@ -120,20 +118,24 @@ public class MySqlConnection {
 	}//query
 	
 	/**
-	 * esegue una query e ritorna il ResultSet associato.<br>
-	 * Se avviene un errore, o il db non e' connesso allora il valore
-	 * ritornato e' null.
-	 * Per riuscire il mapping automatico, la classe deve avere almeno un costruttore vuoto! (oltre che essere una classe concreta) 
+	 * <p>Execute a single MySql query and return a list of class objects represents the table. </br></p>
+	 * <p>If error occur, it returns an empty list and message errors can be queried from {@link #getErrMsg()}</br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>
+	 * <p>Automatic Relation-Object-mapping with input class is possible only if <b>empty constructor is avaible</b> and <b>class is concrete</b></br></p>
 	 * 
-	 * @param c La classe di cui effettuare il mapping
-	 * @param query la query da eseguire
+	 * @param <T> the class of expected result ( class of queried table ), automatic selected through c parameter
+	 * @param c the class of expected result ( class of queried table )
+	 * @param query sql query to execute
 	 * 
-	 * @return una linked list con il risultato. Se empty, ci potrebbe essere stato un errore (controllare con il msg) 
-	 * 
+	 * @return {@link java.util.List List} &lt; c &gt;, if empty, check {@link #getErrMsg()}
 	 */
 	public <T> List<T> queryList(Class<T> c, String query){
-		ResultSet rs = query(query);
 		LinkedList<T> ris=new LinkedList<T>();
+		if(!existConnection()) {
+			errMsg= "Connessione Chiusa";
+			return ris;
+		}
+		ResultSet rs = query(query);
 		try {
 			ResultSetMetaData rsmeta=rs.getMetaData();
 			Set<String> columns=new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
@@ -169,23 +171,32 @@ public class MySqlConnection {
 			errMsg="Errore chiamando il costruttore. Prevedere un costruttore vuoto!";
 		} 
 		return ris;
-	}//query
+	}
 	
 	/**
-	 * restituisce un' array di mappe dove:
+	 * <p>Execute a single MySql query and return an array of map. Every map rappresent a row of resultset</br></p>
+	 * 
+	 * <p>map will be structurated in this way:</br></p>
 	 * <ul>
-	 * 	<li>chiave = nome della colonne</li>
-	 * 	<li>valore = valore della colonna come {@link Object}</li>
+	 * 	<li>key = column name</li>
+	 * 	<li>value = row value as {@link Object}</li>
 	 * </ul>
-	 * Ogni riga è rappresentata da una mappa
-	 * <br><br>
-	 * In caso di BLOB, viene restituito come valore un array di byte
+	 * 
+	 * if column represent a BLOB, byte array will be returned
+	 * 
+	 * <p>if an error occur, <code>null</code> value will be returned and message errors can be queried from {@link #getErrMsg()}</br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>
+	 * 
 	 * 
 	 * @param query la query
-	 * @return un array di mappe, ogni mappa è una riga, chiave=nomecolonna valore=valorecolonna
+	 * @return a {@link java.util.Map Map} &lt; {@link java.lang.String String},{@link java.lang.Object Object} &gt;
 	 */ 
 	@SuppressWarnings("unchecked")
 	public Map<String,Object>[] queryMap(String query){
+		if(!existConnection()) {
+			errMsg= "Connessione Chiusa";
+			return null;
+		}
 		ResultSet rs = query(query);
 		Map<String,Object>[] ris=null;
 		int nrow=0;
@@ -217,23 +228,24 @@ public class MySqlConnection {
 	// STATIC METHODS
 	
 	/**
-	 * Se non esiste alcuna connessione ne apre una
-	 * @param connMaticO la connectionMaticO con cui aprire la connessione
+	 * <p>if any connection exists, it will be created</br></p>
+	 * @param connMaticO connection builder
 	 */
 	public static void createConnection(SQLConnectionMaticO connMaticO) {
 		
-		if(connessione==null) {
+		if(connection==null) {
 			MySqlConnection.connMaticO=connMaticO;
 			initConnection();
 		} 
 	}
 	
 	/**
-	 * crea una connessione con i dati inseriti.<br>
-	 * richiama {@link #createConnection(SQLConnectionMaticO)}
-	 * @param url localhost o un indirizzo ip 
-	 * @param port 
-	 * @param user nome utente
+	 * <p>if any connection exists, it will be created</br></p>
+	 * 
+	 * <p>it call {@link #createConnection(SQLConnectionMaticO)}</br></p>
+	 * @param url ip address
+	 * @param port port of mysql server
+	 * @param user user name
 	 * @param psk password
 	 */
 	public static void createConnection(
@@ -251,21 +263,20 @@ public class MySqlConnection {
 	
 	/** 
 	 * create the connection with connectionMaticO
-	 * 
 	 */
 	private static void initConnection() {
 		statement=null;
-		connessione=connMaticO.connect();
+		connection=connMaticO.connect();
 		String msg=testConnessione();
 		if(!msg.equals("")) {
-			connessione=null;
+			connection=null;
 			throw new IllegalArgumentException(msg);
 		}
 	}
 	
 	/**
 	 * 
-	 * @return true se la connessione funziona
+	 * @return empty string if connection is active and work ( a db named {@link #TEST_ECHO} will be created and then destroyed )
 	 */
 	private static String testConnessione(){
 		MySqlConnection m=new MySqlConnection();
@@ -290,10 +301,10 @@ public class MySqlConnection {
 	}
 	
 	/**
-	 * @return true se connesso
+	 * @return true if connected
 	 */
 	public static boolean existConnection(){
-		return connessione!=null;
+		return connection!=null;
 	}
 	
 	/**
@@ -309,12 +320,12 @@ public class MySqlConnection {
 	 * reset della connessione per reimpostarne una nuova
 	 */
 	public static void reset() {
-		connessione=null;
+		connection=null;
 		statement=null;
 	}
 	
 	/**
-	 * ricrea la connessione usando le ultime informazioni 
+	 * connection will be recreated
 	 */
 	public static void reboot() {
 		if (connMaticO==null)
@@ -323,23 +334,24 @@ public class MySqlConnection {
 	}
 	
 	/**
-	 * commit delle transizioni
+	 * <p>commit all mysql suspended istructions, if connection have autocommit flag at <code>true</code> (see {@link psykeco.querymatico.ConnectionMaticO #autocommit(boolean) ConnectionMaticO.autocommit})</br></p>
 	 */
 	public static void commit() {
 		if(!existConnection()) return;
 		try{
-			connessione.commit();
+			connection.commit();
 			statement=null;
 		}catch(SQLException s){}
 	}
 	
 	/**
-	 * rollback delle transizioni
+	 * 
+	 * <p>discard every suspended istructions on statement , if connection have autocommit flag at <code>true</code> (see {@link psykeco.querymatico.ConnectionMaticO #autocommit(boolean) ConnectionMaticO.autocommit})</br></p>
 	 */
 	public static void rollback() {
 		if(!existConnection()) return;
 		try{
-			connessione.rollback();
+			connection.rollback();
 			statement=null;
 		}catch(SQLException s){}
 	}
@@ -347,19 +359,25 @@ public class MySqlConnection {
 	
 		
 	/**
-	 * Chiusura della connessione
+	 * connection will be closed
 	 */
 	public static void close(){
 		if(!existConnection()) return;
 		try{
-			connessione.close();
+			connection.close();
 		}catch(SQLException s){}
-	}//chiusura
+	}
 	
 	/**
-	 * 
-	 * @param e
-	 * @return
+	 * <p>build SQL error message if an exception on Mysql Server side attempted. </br></p>
+	 * <p>The message will builded following this template:</br></p>
+	 * <pre>ErrLine number=
+	 * state= the sql state
+	 * code=the error code
+	 * msg=the error message
+	 * </pre>
+	 * @param e the exception describe error
+	 * @return sql error message
 	 */
 	private static String buildSQLErrMessage(SQLException e) {
 		String ln="";
@@ -377,4 +395,4 @@ public class MySqlConnection {
 		return error;
 	}
 	
-}//classe MySqlConnection
+}
