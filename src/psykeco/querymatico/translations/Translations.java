@@ -1,6 +1,9 @@
-package psykeco.querymatico.err;
+package psykeco.querymatico.translations;
 
 import java.util.HashMap;
+
+import psykeco.querymatico.translations.dict.EnDictionary;
+import psykeco.querymatico.translations.dict.ItDictionary;
 
 /**
  * <p>This class is intended to automatic translate Error Message of Framework</br></p>
@@ -16,10 +19,10 @@ import java.util.HashMap;
  * 
  * @author PsykeDady (psdady@msn.com)
  */
-public final class ErrMsg {
+public final class Translations {
 	
 	/** private constructor. not for instantiation use */
-	private ErrMsg() {}
+	private Translations() {}
 	
 	/**
 	 * <p>List of possible Messages of framework.</br></p>
@@ -109,8 +112,8 @@ public final class ErrMsg {
 	public static void init ( LANGUAGE ln ) {
 		trans=null;
 		switch(ln) {
-			case IT: break;
-			case EN: break;
+			case IT: trans=ItDictionary.getDict(); break;
+			case EN: trans=EnDictionary.getDict(); break;
 		}
 	}
 	

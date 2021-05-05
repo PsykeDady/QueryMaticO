@@ -1,16 +1,20 @@
-package psykeco.querymatico.err.dict;
+package psykeco.querymatico.translations.dict;
 
-import static psykeco.querymatico.err.ErrMsg.KEY_MSG;
-import static psykeco.querymatico.err.ErrMsg.KEY_MSG.*;
+import static psykeco.querymatico.translations.Translations.KEY_MSG;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 import java.util.HashMap;
 
 /**
+ * Implementazione dizionario Italiano da utilizzare in {@link psykeco.querymatico.translations.Translations ErrMsg}
+ * 
  * @author PsykeDady (psdady@msn.com)
- *
  */
-public final class ITErrMsg {
+public final class ItDictionary {
 	
+	/**
+	 * @return Dizionario italiano come istanza di {@link HashMap}
+	 */
 	public static HashMap<KEY_MSG, String> getDict(){
 		HashMap<KEY_MSG, String> dict=new HashMap<>();
 		
