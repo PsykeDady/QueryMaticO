@@ -1,6 +1,7 @@
 package psykeco.querymatico.translations;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import psykeco.querymatico.translations.dict.EnDictionary;
 import psykeco.querymatico.translations.dict.ItDictionary;
@@ -89,31 +90,29 @@ public final class Translations {
 	}
 	
 	/**
-	 * List of implemented dictionaries
-	 * 
-	 * @author PsykeDady (psdady@msn.com)
-	 */
-	public static enum LANGUAGE{
-		IT,
-		EN
-	}
-	
-	/**
 	 * map of current translations
 	 */
 	private static HashMap<KEY_MSG,String> trans;
 	
 	/**
-	 * 
-	 * Initialize the map ( {@link #trans} ) of translations
-	 * 
-	 * @param ln : the language
+	 * Initialize the map ( {@link #trans} ) of translations with default Language of System
 	 */
-	public static void init ( LANGUAGE ln ) {
-		trans=null;
-		switch(ln) {
-			case IT: trans=ItDictionary.getDict(); break;
-			case EN: trans=EnDictionary.getDict(); break;
+	public static void init () {
+		Locale language=Locale.getDefault();
+
+		init(language);
+	}
+
+	/**
+	 * Initialize the map ( {@link #trans} ) 
+	 * @param language the selected language
+	 */
+	public static void init (Locale language) {
+
+		if (language.equals(Locale.ITALIAN)){
+			trans=ItDictionary.getDict();
+		} else {
+			trans=EnDictionary.getDict();
 		}
 	}
 	
@@ -125,6 +124,7 @@ public final class Translations {
 	 * @return The message in current translation
 	 */
 	public static String getMsg(KEY_MSG k, String ...strings ) {
+		if(trans==null) init();
 		return trans.get(k);
 	}
 

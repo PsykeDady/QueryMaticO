@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import psykeco.querymatico.ConnectionMaticO;
+import psykeco.querymatico.translations.Translations;
+import psykeco.querymatico.translations.Translations.KEY_MSG;
 
 /**
  * MySQL implementation of {@link ConnectionMaticO}
@@ -160,10 +162,10 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 	 */
 	@Override
 	public String validate() {
-		if(url==null) return "url vuoto";
-		if(port < 1024 || 49151 < port) return "valore della porta errato";
-		if(user==null) return "utente non valido";
-		if(psk==null) return "psk non valida";
+		if(url==null) return Translations.getMsg(KEY_MSG.URL_NULL);
+		if(port < 1024 || 49151 < port) return Translations.getMsg(KEY_MSG.URL_NULL);
+		if(user==null) return Translations.getMsg(KEY_MSG.USER_NULL);
+		if(psk==null) return Translations.getMsg(KEY_MSG.PSK_NULL);
 
 		return "";
 	}
@@ -221,7 +223,7 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 		String validate = validate() ;
 		String db=validateBase(this.db);
 		if (!validate.equals("")) throw new IllegalArgumentException(validate);
-		if (this.db!=null&&db==null) throw new IllegalArgumentException("nome db"+this.db+"non valido");
+		if (this.db!=null&&db==null) throw new IllegalArgumentException(Translations.getMsg(KEY_MSG.DB_NOT_VALID,this.db));
 		
 		
 		return URL_INIT+url+':'+port+((db!=null)?'/'+db:"")+"?"+TIMEZONE;
