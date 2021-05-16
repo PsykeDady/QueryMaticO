@@ -11,6 +11,10 @@ import java.util.Map.Entry;
 
 import psykeco.querymatico.QueryMaticO;
 import psykeco.querymatico.sql.runners.MySqlConnection;
+import psykeco.querymatico.translations.Translations;
+import psykeco.querymatico.translations.Translations.KEY_MSG;
+
+import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * MySQL insert implementation of {@link QueryMaticO}.<br>   
@@ -93,16 +97,16 @@ public class SQLInsertMaticO implements QueryMaticO {
 	@Override
 	public String validate() {
 		
-		if (table==null || table.equals("")) return "nome tabella necessario";
-		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
+		if (table==null || table.equals("")) return Translations.getMsg(TABLE_NULL);
+		if (db   ==null || db   .equals("")) return Translations.getMsg(DB_NULL);
 		
 		String tmp=validateBase(table);
-		if (tmp==null) return " nome tabella "+table+" non valido";
+		if (tmp==null) return Translations.getMsg(TABLE_NOT_VALID,table);
 		
 		tmp=validateBase(db);
-		if (tmp==null) return " nome db "+db+" non valido";
+		if (tmp==null) return Translations.getMsg(DB_NOT_VALID,db);
 		
-		if ( kv.size() < 1 ) return "lista entry vuota. Serve almeno una coppia colonna-valore";
+		if ( kv.size() < 1 ) return Translations.getMsg(ENTRY_EMPTY);
 		
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
@@ -110,13 +114,13 @@ public class SQLInsertMaticO implements QueryMaticO {
 			boolean isString= parseType("String",false).equals(type);
 			String value= kv.getValue().toString();
 			
-			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
+			if (kv.getKey()  == null || kv.getKey().equals("") ) return Translations.getMsg(COLUMN_EMPTY);
+			if (kv.getValue()== null || value      .equals("") ) return Translations.getMsg(VALUE_EMPTY,kv.getKey());
 			
 			tmp=validateBase(kv.getKey());
-			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			if ( tmp==null ) return Translations.getMsg(COLUMN_NOT_VALID,kv.getKey());
 			tmp= isString ? validateValue(value): value;
-			if ( tmp==null ) return "Il valore " +value      +" non \u00e8 valido";
+			if ( tmp==null ) return Translations.getMsg(VALUE_NOT_VALID,value);
 		}
 		
 		return "";
@@ -160,7 +164,7 @@ public class SQLInsertMaticO implements QueryMaticO {
 	 */
 	@Override
 	public SQLInsertMaticO filter(Entry<String, Object> filter) {
-		throw new UnsupportedOperationException("SqlInsertMaticO does not support filter");
+		throw new UnsupportedOperationException(Translations.getMsg(NOT_SUPPORT_METHOD, getTrueName(SQLInsertMaticO.class),"filter"));
 	}
 
 	/**
@@ -171,7 +175,7 @@ public class SQLInsertMaticO implements QueryMaticO {
 	 */
 	@Override
 	public SQLInsertMaticO filter(String column, Object value) {
-		throw new UnsupportedOperationException("SqlInsertMaticO does not support filter");
+		throw new UnsupportedOperationException(Translations.getMsg(NOT_SUPPORT_METHOD, getTrueName(SQLInsertMaticO.class),"filter"));
 	}
 
 	/**

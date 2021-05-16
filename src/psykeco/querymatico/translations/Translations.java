@@ -57,6 +57,12 @@ public final class Translations {
 		COLUMN_NOT_VALID(1),
 		/** ERR: this value is not valid. 1 parameter */
 		VALUE_NOT_VALID(1),
+		/** ERR: alias name not valid. 1 parameter */
+		ALIAS_NOT_VALID(1),
+		/** ERR: aggregate name not valid. 2 parameter */
+		AGGREGATE_NOT_VALID(2),
+		/** ERR: aggregate name not valid. 1 parameter */
+		AGGREGATE_NOT_NULL(1),
 		/** ERR: this Entry is empty. 0 parameters */
 		ENTRY_EMPTY,
 		/** ERR: this not support this. 2 parameters */
@@ -68,7 +74,13 @@ public final class Translations {
 		/** ERR: this suffix value is not valid. 1 parameter */
 		SUFFIX_NOT_VALID(1),
 		/** ERR: primary value can't be null. 0 parameters */
-		PRIMARY_NOT_NULL
+		PRIMARY_NOT_NULL,
+		/** ERR: not support entry method. 2 parameters */
+		NOT_SUPPORT_METHOD(2),
+		/** ERR: join class wrong*/
+		WRONG_CLASS_JOIN(1),
+		/** ERR: primary key refer not to a column  */
+		PRIMARY_KEY_MUST_REFERE
 		;
 		
 		/** number of expected substitution to apply to String format */

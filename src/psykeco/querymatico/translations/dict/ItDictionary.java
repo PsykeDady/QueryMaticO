@@ -30,12 +30,18 @@ public final class ItDictionary {
 		dict.put(VALUE_EMPTY, "Il valore di %s \u00e8 stata trovata vuota");
 		dict.put(COLUMN_NOT_VALID, "La colonna %s non \u00e8 valida");
 		dict.put(VALUE_NOT_VALID, "Il valore %s non \u00e8 valido");
+		dict.put(ALIAS_NOT_VALID, "Il nome alias %s non \u00e8 valido");
+		dict.put(AGGREGATE_NOT_VALID, "la colonna indicata da %s '%s' non \u00e8 valida");
+		dict.put(AGGREGATE_NOT_NULL, "la colonna indicata da %s non pu\u00f2 essere nulla");
 		dict.put(ENTRY_EMPTY, "lista entry vuota. Serve almeno una coppia colonna-valore");
 		dict.put(NOT_SUPPORT, "%s non supporta i %s");
 		dict.put(CLASS_PARAMETERS, "Questa classe non ha parametri, non puo' essere trasformata");
 		dict.put(PREFIX_NOT_VALID, "prefisso %s scelto non valido");
 		dict.put(SUFFIX_NOT_VALID, "suffisso %s scelto non valido");
 		dict.put(PRIMARY_NOT_NULL, "Gli elementi nella chiave primaria non possono essere null");
+		dict.put(NOT_SUPPORT_METHOD, "%s non supporta il metodo %s()");
+		dict.put(WRONG_CLASS_JOIN, "la tabella di join deve essere di tipo %s");
+		dict.put(PRIMARY_KEY_MUST_REFERE, "La chiave primaria deve riferirsi ad una colonna reale");
 		
 		//dict.put(, "");
 		return dict;		

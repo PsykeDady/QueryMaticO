@@ -4,6 +4,8 @@ import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
 
 import psykeco.querymatico.DBMaticO;
 import psykeco.querymatico.sql.runners.InformationSchema;
+import psykeco.querymatico.translations.Translations;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * MySQL implementation of {@link DBMaticO}
@@ -35,10 +37,10 @@ public class SQLDBMaticO implements DBMaticO{
 	 */
 	@Override
 	public String validate() {
-		if (db   ==null || db   .equals("")) return "nome db necessario";
+		if (db   ==null || db   .equals("")) return Translations.getMsg(DB_NULL);
 		
 		String tmp=validateBase(db);
-		if (tmp==null) return " nome db "+db+" non valido";
+		if (tmp==null) return Translations.getMsg(DB_NOT_VALID,db);
 		
 		return "";
 	}

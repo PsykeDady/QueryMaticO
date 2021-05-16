@@ -15,6 +15,8 @@ import psykeco.querymatico.TableMaticO;
 import psykeco.querymatico.sql.runners.InformationSchema;
 import psykeco.querymatico.sql.runners.MySqlConnection;
 import psykeco.querymatico.sql.utility.SQLClassParser;
+import psykeco.querymatico.translations.Translations;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * MySQL implementation of {@link TableMaticO}
@@ -123,7 +125,7 @@ public class SQLTableMaticO implements TableMaticO{
 	 * @throws IllegalArgumentException If the key not exists as class variable
 	 */
 	public SQLTableMaticO primary(String key) { 
-		if(! kv.containsKey(key) ) throw new IllegalArgumentException("La chiave primaria deve riferirsi ad una colonna reale");
+		if(! kv.containsKey(key) ) throw new IllegalArgumentException(Translations.getMsg(PRIMARY_KEY_MUST_REFERE));
 		primary.add(key);
 		return this;
 	}
@@ -144,28 +146,28 @@ public class SQLTableMaticO implements TableMaticO{
 	 */
 	public String validate() {
 		
-		if (table==null || table.equals("")) return "nome tabella necessario";
-		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
-		if ( kv.size() < 1 ) return "Questa classe non ha parametri, non puo' essere trasformata";
+		if (table==null || table.equals("")) return Translations.getMsg(TABLE_NULL);
+		if (db   ==null || db   .equals("")) return Translations.getMsg(DB_NULL);
+		if ( kv.size() < 1 ) return Translations.getMsg(CLASS_PARAMETERS);
 		
 		String tmp=validateBase(db);
-		if (tmp==null) return "nome db "+db+" non valido";
+		if (tmp==null) return Translations.getMsg(DB_NOT_VALID,db);
 		db=tmp;		
 		
 		tmp=validateBase(table);
-		if (tmp==null) return "nome tabella "+table+" non valido";
+		if (tmp==null) return Translations.getMsg(TABLE_NOT_VALID,table); 
 		
 		String tmp2=validateBase(prefix+table);
-		if (tmp2==null) return "prefisso "+ prefix +" scelto non valido";
+		if (tmp2==null) return Translations.getMsg(PREFIX_NOT_VALID,prefix);
 		
 		tmp2=validateBase(table+suffix);
-		if (tmp2==null) return "suffisso "+ suffix +" scelto non valido";
+		if (tmp2==null) return Translations.getMsg(SUFFIX_NOT_VALID,suffix);
 		
 		table=tmp;
 		
 		for (Entry<String,String> kv : kv.entrySet()) {
-			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if ( validateBase(kv.getKey())==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			if (kv.getKey()  == null || kv.getKey().equals("") ) return Translations.getMsg(COLUMN_EMPTY);
+			if ( validateBase(kv.getKey())==null ) return Translations.getMsg(COLUMN_NOT_VALID,kv.getKey());
 		}
 		
 		return "";
@@ -335,7 +337,7 @@ public class SQLTableMaticO implements TableMaticO{
 		for (Entry<String,Object> entry : map.entrySet()) {
 			if(primary.contains(entry.getKey()) ) {
 				if(entry.getValue()==null) 
-					throw new IllegalArgumentException("Gli elementi nella chiave primaria non possono essere null");
+					throw new IllegalArgumentException(Translations.getMsg(PRIMARY_NOT_NULL));
 				
 				qc.filter(entry);
 			} else {

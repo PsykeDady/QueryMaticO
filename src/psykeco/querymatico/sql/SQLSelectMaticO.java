@@ -13,6 +13,10 @@ import java.util.Map.Entry;
 
 import psykeco.querymatico.SelectMaticO;
 import psykeco.querymatico.sql.runners.MySqlConnection;
+import psykeco.querymatico.sql.utility.SQLClassParser;
+import psykeco.querymatico.translations.Translations;
+
+import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -159,35 +163,35 @@ public class SQLSelectMaticO extends SelectMaticO {
 	@Override
 	public String validate() {
 		
-		if (table==null || table.equals("")) return "nome tabella necessario";
-		if (db   ==null || db   .equals("")) return "nome db necessario"     ;
+		if (table==null || table.equals("")) return Translations.getMsg(TABLE_NULL);
+		if (db   ==null || db   .equals("")) return Translations.getMsg(DB_NULL);
 		
 		String tmp=validateBase(table);
-		if (tmp==null) return " nome tabella "+table+" non valido";
+		if (tmp==null) return Translations.getMsg(TABLE_NOT_VALID,table);
 		
 		tmp=validateBase(db);
-		if (tmp==null) return " nome db "+db+" non valido";
+		if (tmp==null) return Translations.getMsg(DB_NOT_VALID,db);
 		
 		tmp=validateBase(alias);
-		if (alias!=null && tmp==null) return " nome alias "+alias+" non valido";
+		if (alias!=null && tmp==null) return Translations.getMsg(ALIAS_NOT_VALID, alias);
 		
 		if ( groupBy!=null && validateBase(groupBy)==null) 
-			return "colonna indicata da group by '"+groupBy+"' non valida";
+			return Translations.getMsg(AGGREGATE_NOT_VALID, "group by", groupBy);
 		
 		if ( orderBy != null && orderBy.getKey() == null )
-			return "colonna indicata da order by non pu&ograve; essere nulla";
+			return Translations.getMsg(AGGREGATE_NOT_NULL, orderBy.getKey());
 		
 		if ( orderBy != null && validateBase(orderBy.getKey())==null)
-			return "colonna indicata da order by '"+orderBy.getKey()+"' non valida";
+			return Translations.getMsg(AGGREGATE_NOT_VALID, "order By", orderBy.getKey());
 		
 		for (Entry<AGGREGATE,String> kv: aggregatesColumn.entrySet()) {
 			if(kv.getValue()!=null && validateBase(kv.getValue())==null)
-				return "colonna indicata da "+kv.getKey().name()+" '"+kv.getValue()+"' non valida";
+				return Translations.getMsg(AGGREGATE_NOT_VALID, kv.getKey().name(), kv.getValue());
 		}
 		
 		for (String s : this.kv) {
-			if (s==null || s.equals("")) return "Una colonna \u00e8 stata trovata vuota";
-			if (validateBase(s)==null) return "La colonna "+s+" non \u00e8 valida";
+			if (s==null || s.equals("")) return Translations.getMsg(COLUMN_EMPTY);
+			if (validateBase(s)==null) return Translations.getMsg(COLUMN_NOT_VALID,s);
 		}
 		
 		for (Entry<String,Object> kv : this.filter.entrySet()) {
@@ -195,13 +199,13 @@ public class SQLSelectMaticO extends SelectMaticO {
 			boolean isString= parseType("String",false).equals(type);
 			String value= kv.getValue().toString();
 			
-			if (kv.getKey()  == null || kv.getKey().equals("") ) return "Una colonna \u00e8 stata trovata vuota";
-			if (kv.getValue()== null || value      .equals("") ) return "Il valore di "+kv.getKey()+ "\u00e8 stata trovata vuota";
+			if (kv.getKey()  == null || kv.getKey().equals("") ) return Translations.getMsg(COLUMN_EMPTY);
+			if (kv.getValue()== null || value      .equals("") ) return Translations.getMsg(VALUE_EMPTY,kv.getKey());
 			
 			tmp=validateBase(kv.getKey());
-			if ( tmp==null ) return "La colonna "+kv.getKey()+" non \u00e8 valida";
+			if ( tmp==null ) return Translations.getMsg(COLUMN_NOT_VALID,kv.getKey());
 			String tmpV= isString ? validateValue(value): value;
-			if ( tmpV==null ) return "Il valore " +value      +" non \u00e8 valido";
+			if ( tmpV==null ) return Translations.getMsg(VALUE_NOT_VALID,value);
 		}
 		
 		return (joinTable!=null)?joinTable.validate():"";
@@ -240,7 +244,7 @@ public class SQLSelectMaticO extends SelectMaticO {
 	@Override
 	public SQLSelectMaticO join(SelectMaticO joinSelect) {
 		if( ! (joinSelect instanceof SelectMaticO) ) 
-			throw new IllegalArgumentException("la tabella di join deve essere di tipo SQLSelectMaticO");
+			throw new IllegalArgumentException(Translations.getMsg(WRONG_CLASS_JOIN,SQLClassParser.getTrueName(SQLSelectMaticO.class)));
 		this.joinTable=(SQLSelectMaticO) joinSelect;
 		return this;
 	}
