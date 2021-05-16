@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import psykeco.querymatico.translations.Translations;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
+
 /**
  * utility class to map java classes and fields into MySQL type 
  * 
@@ -157,7 +160,7 @@ public final class SQLClassParser {
 	 */
 	public static Map<String,Object> parseInstance(@SuppressWarnings("rawtypes") Class type, Object instance){
 		if(!type.isInstance(instance))
-			throw new IllegalArgumentException("oggetto passato di classe non supportata");
+			throw new IllegalArgumentException(Translations.getMsg(WRONG_OBJECT_TYPE));
 
 		Map<String,Object> mappa=new HashMap<>();
 		

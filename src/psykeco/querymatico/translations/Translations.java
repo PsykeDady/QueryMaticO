@@ -77,10 +77,12 @@ public final class Translations {
 		PRIMARY_NOT_NULL,
 		/** ERR: not support entry method. 2 parameters */
 		NOT_SUPPORT_METHOD(2),
-		/** ERR: join class wrong*/
+		/** ERR: join class wrong. 1 parameter */
 		WRONG_CLASS_JOIN(1),
-		/** ERR: primary key refer not to a column  */
-		PRIMARY_KEY_MUST_REFERE
+		/** ERR: primary key refer not to a column. 0 parameters */
+		PRIMARY_KEY_MUST_REFERE,
+		/** ERR: wrong object type. 0 parameters */
+		WRONG_OBJECT_TYPE
 		;
 		
 		/** number of expected substitution to apply to String format */

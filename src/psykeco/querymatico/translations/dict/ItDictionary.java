@@ -41,7 +41,8 @@ public final class ItDictionary {
 		dict.put(PRIMARY_NOT_NULL, "Gli elementi nella chiave primaria non possono essere null");
 		dict.put(NOT_SUPPORT_METHOD, "%s non supporta il metodo %s()");
 		dict.put(WRONG_CLASS_JOIN, "la tabella di join deve essere di tipo %s");
-		dict.put(PRIMARY_KEY_MUST_REFERE, "La chiave primaria deve riferirsi ad una colonna reale");
+		dict.put(PRIMARY_KEY_MUST_REFERE, "La chiave primaria deve riferirsi ad una colonna reale"),
+		dict.put(WRONG_OBJECT_TYPE,"oggetto passato di classe non compatibile");
 		
 		//dict.put(, "");
 		return dict;		
