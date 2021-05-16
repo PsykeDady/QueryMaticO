@@ -1,6 +1,10 @@
 package psykeco.querymatico.sql;
 
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.PSK_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.URL_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.USER_NULL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +12,6 @@ import java.sql.SQLException;
 
 import psykeco.querymatico.ConnectionMaticO;
 import psykeco.querymatico.translations.Translations;
-import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * MySQL implementation of {@link ConnectionMaticO}

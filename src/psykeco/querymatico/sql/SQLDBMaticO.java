@@ -1,11 +1,12 @@
 package psykeco.querymatico.sql;
 
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NULL;
 
 import psykeco.querymatico.DBMaticO;
 import psykeco.querymatico.sql.runners.InformationSchema;
 import psykeco.querymatico.translations.Translations;
-import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * MySQL implementation of {@link DBMaticO}

@@ -4,6 +4,17 @@ import static psykeco.querymatico.sql.utility.SQLClassParser.getTrueName;
 import static psykeco.querymatico.sql.utility.SQLClassParser.parseClass;
 import static psykeco.querymatico.sql.utility.SQLClassParser.parseType;
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.CLASS_PARAMETERS;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.COLUMN_EMPTY;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.COLUMN_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.PREFIX_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.PRIMARY_KEY_MUST_REFERE;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.PRIMARY_NOT_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.SUFFIX_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.TABLE_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.TABLE_NULL;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,7 +27,6 @@ import psykeco.querymatico.sql.runners.InformationSchema;
 import psykeco.querymatico.sql.runners.MySqlConnection;
 import psykeco.querymatico.sql.utility.SQLClassParser;
 import psykeco.querymatico.translations.Translations;
-import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * MySQL implementation of {@link TableMaticO}

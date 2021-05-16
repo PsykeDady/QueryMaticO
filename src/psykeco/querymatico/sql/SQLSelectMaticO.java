@@ -1,25 +1,34 @@
 package psykeco.querymatico.sql;
 
-import java.util.AbstractMap.SimpleEntry;
-
 import static psykeco.querymatico.sql.utility.SQLClassParser.getTrueName;
 import static psykeco.querymatico.sql.utility.SQLClassParser.parseType;
 import static psykeco.querymatico.sql.utility.SQLClassParser.str;
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateValue;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.AGGREGATE_NOT_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.AGGREGATE_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.ALIAS_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.COLUMN_EMPTY;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.COLUMN_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.TABLE_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.TABLE_NULL;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.VALUE_EMPTY;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.VALUE_NOT_VALID;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.WRONG_CLASS_JOIN;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
+import psykeco.querymatico.QueryMaticO;
 import psykeco.querymatico.SelectMaticO;
 import psykeco.querymatico.sql.runners.MySqlConnection;
 import psykeco.querymatico.sql.utility.SQLClassParser;
 import psykeco.querymatico.translations.Translations;
-
-import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
-
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * MySQL select implementation of {@link QueryMaticO}.<br>   
