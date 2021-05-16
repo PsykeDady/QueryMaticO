@@ -1,5 +1,7 @@
 package psykeco.querymatico.sql.utility;
 
+import static psykeco.querymatico.translations.Translations.KEY_MSG.WRONG_OBJECT_TYPE;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,19 +9,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import psykeco.querymatico.translations.Translations;
-import static psykeco.querymatico.translations.Translations.KEY_MSG.*;
 
 /**
  * utility class to map java classes and fields into MySQL type 

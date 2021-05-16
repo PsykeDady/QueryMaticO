@@ -41,8 +41,13 @@ public final class ItDictionary {
 		dict.put(PRIMARY_NOT_NULL, "Gli elementi nella chiave primaria non possono essere null");
 		dict.put(NOT_SUPPORT_METHOD, "%s non supporta il metodo %s()");
 		dict.put(WRONG_CLASS_JOIN, "la tabella di join deve essere di tipo %s");
-		dict.put(PRIMARY_KEY_MUST_REFERE, "La chiave primaria deve riferirsi ad una colonna reale"),
+		dict.put(PRIMARY_KEY_MUST_REFERE, "La chiave primaria deve riferirsi ad una colonna reale");
 		dict.put(WRONG_OBJECT_TYPE,"oggetto passato di classe non compatibile");
+		dict.put(NOT_EMPTY_CONSTRUCTOR,"costruttore non accessibile. Prevedere un costruttore vuoto!");
+		dict.put(NOT_EMPTY_ACCESSIBLE_CONSTRUCTOR,"costruttore non accessibile, classe astratta o interfaccia! Prevedere un costruttore vuoto!");
+		dict.put(CONSTRUCTOR_ERROR,"Errore chiamando il costruttore. Prevedere un costruttore vuoto!");
+		dict.put(CONNECTION_MATICO_NOT_AVAIBLE,"%s non disponibile");
+
 		
 		//dict.put(, "");
 		return dict;		

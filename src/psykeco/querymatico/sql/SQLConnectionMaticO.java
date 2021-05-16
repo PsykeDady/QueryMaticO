@@ -64,7 +64,6 @@ public class SQLConnectionMaticO  implements ConnectionMaticO{
 	 */
 	public static final String URL_INIT="jdbc:mysql://";
 	
-	@SuppressWarnings("unused")
 	private String driver=DEFAULT_DRIVER;
 	private String url=DEFAULT_LOCALHOST;
 	private String db;

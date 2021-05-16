@@ -1,6 +1,13 @@
 package psykeco.querymatico.sql.runners;
 
 
+import static psykeco.querymatico.sql.utility.SQLClassParser.getTrueName;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.CONNECTION_CLOSED;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.CONNECTION_MATICO_NOT_AVAIBLE;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.CONSTRUCTOR_ERROR;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.NOT_EMPTY_ACCESSIBLE_CONSTRUCTOR;
+import static psykeco.querymatico.translations.Translations.KEY_MSG.NOT_EMPTY_CONSTRUCTOR;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -15,11 +22,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import psykeco.querymatico.ConnectionMaticO;
 import psykeco.querymatico.DBMaticO;
 import psykeco.querymatico.sql.SQLConnectionMaticO;
 import psykeco.querymatico.sql.SQLDBMaticO;
 import psykeco.querymatico.sql.utility.SQLClassParser;
+import psykeco.querymatico.translations.Translations;
 
 
 /**
@@ -77,7 +84,7 @@ public class MySqlConnection {
 	 */
 	public String exec(String command){
 		if(!existConnection()) {
-			errMsg= "Connessione Chiusa";
+			errMsg= Translations.getMsg(CONNECTION_CLOSED);
 			return errMsg;
 		}
 		try{
@@ -104,7 +111,7 @@ public class MySqlConnection {
 	 */
 	public ResultSet query(String query){
 		if(!existConnection()) {
-			errMsg= "Connessione Chiusa";
+			errMsg= Translations.getMsg(CONNECTION_CLOSED);
 			return null;
 		}
 		try{
@@ -132,7 +139,7 @@ public class MySqlConnection {
 	public <T> List<T> queryList(Class<T> c, String query){
 		LinkedList<T> ris=new LinkedList<T>();
 		if(!existConnection()) {
-			errMsg= "Connessione Chiusa";
+			errMsg= Translations.getMsg(CONNECTION_CLOSED);
 			return ris;
 		}
 		ResultSet rs = query(query);
@@ -164,11 +171,11 @@ public class MySqlConnection {
 		}catch (SQLException s){
 			errMsg=buildSQLErrMessage(s);
 		} catch (IllegalAccessException e) {
-			errMsg="costruttore non accessibile. Prevedere un costruttore vuoto!";
+			errMsg=Translations.getMsg(NOT_EMPTY_CONSTRUCTOR);
 		} catch (InstantiationException e) {
-			errMsg="costruttore non accessibile, classe astratta o interfaccia! Prevedere un costruttore vuoto!";
+			errMsg=Translations.getMsg(NOT_EMPTY_ACCESSIBLE_CONSTRUCTOR);
 		} catch (Exception e) {
-			errMsg="Errore chiamando il costruttore. Prevedere un costruttore vuoto!";
+			errMsg=Translations.getMsg(CONSTRUCTOR_ERROR);
 		} 
 		return ris;
 	}
@@ -194,7 +201,7 @@ public class MySqlConnection {
 	@SuppressWarnings("unchecked")
 	public Map<String,Object>[] queryMap(String query){
 		if(!existConnection()) {
-			errMsg= "Connessione Chiusa";
+			errMsg= Translations.getMsg(CONNECTION_CLOSED);
 			return null;
 		}
 		ResultSet rs = query(query);
@@ -329,7 +336,7 @@ public class MySqlConnection {
 	 */
 	public static void reboot() {
 		if (connMaticO==null)
-			throw new IllegalStateException("SQLConnectionMaticO non disponibile");
+			throw new IllegalStateException(Translations.getMsg(CONNECTION_MATICO_NOT_AVAIBLE, getTrueName(SQLConnectionMaticO.class)));
 		initConnection();
 	}
 	

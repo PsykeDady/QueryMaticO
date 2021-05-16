@@ -1,6 +1,7 @@
 package psykeco.querymatico.test.syntax;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,12 +21,15 @@ class CopyTest {
 		private String campo;
 		@SuppressWarnings("unused")
 		private String anotherCampo;
+		@SuppressWarnings("unused")
 		public void setChiave(int chiave) {
 			this.chiave = chiave;
 		}
+		@SuppressWarnings("unused")
 		public void setCampo(String campo) {
 			this.campo = campo;
 		}
+		@SuppressWarnings("unused")
 		public void setAnotherCampo(String anotherCampo) {
 			this.anotherCampo = anotherCampo;
 		}

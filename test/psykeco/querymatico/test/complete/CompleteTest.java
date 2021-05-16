@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import psykeco.querymatico.ConnectionMaticO;

@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -27,9 +25,12 @@ class FileTest {
 	String actual=null;
 
 	public static class Entity {
+		@SuppressWarnings("unused")
 		private int identity;
+		@SuppressWarnings("unused")
 		private String name;
 		private File testfile;
+		@SuppressWarnings("unused")
 		private File testfile2;
 		
 		public void setIdentity(int identity) {

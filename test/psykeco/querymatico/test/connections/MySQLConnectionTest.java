@@ -1,15 +1,11 @@
 package psykeco.querymatico.test.connections;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static psykeco.querymatico.sql.utility.SQLClassParser.validateBase;
 import static psykeco.querymatico.sql.utility.SQLClassParser.validateValue;
 
 import java.io.File;
-import java.util.List;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Order;

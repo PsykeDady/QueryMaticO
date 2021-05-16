@@ -82,7 +82,17 @@ public final class Translations {
 		/** ERR: primary key refer not to a column. 0 parameters */
 		PRIMARY_KEY_MUST_REFERE,
 		/** ERR: wrong object type. 0 parameters */
-		WRONG_OBJECT_TYPE
+		WRONG_OBJECT_TYPE,
+		/** ERR: Connection closed. 0 parameters */
+		CONNECTION_CLOSED,
+		/** ERR: not empty constructor. 0 parameters */
+		NOT_EMPTY_CONSTRUCTOR,
+		/** ERR: not empty or accessible constructor. 0 parameters */
+		NOT_EMPTY_ACCESSIBLE_CONSTRUCTOR,
+		/** ERR: error calling constructor. 0 parameters */
+		CONSTRUCTOR_ERROR,
+		/** ERR : Connection template is not avaible. 1 parameters */
+		CONNECTION_MATICO_NOT_AVAIBLE(1)
 		;
 		
 		/** number of expected substitution to apply to String format */
