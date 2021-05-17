@@ -1,6 +1,6 @@
 # QueryMaticO - Query autoMatic Object-oriented builder
 
-version `0.9.2`
+version `0.9.5`
 
 A Java ORM framework to semplify DB connection and to generate istruction.
 
