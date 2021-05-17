@@ -81,8 +81,8 @@ public final class Translations {
 		WRONG_CLASS_JOIN(1),
 		/** ERR: primary key refer not to a column. 0 parameters */
 		PRIMARY_KEY_MUST_REFERE,
-		/** ERR: wrong object type. 0 parameters */
-		WRONG_OBJECT_TYPE,
+		/** ERR: wrong object type. 2 parameters */
+		WRONG_OBJECT_TYPE(2),
 		/** ERR: Connection closed. 0 parameters */
 		CONNECTION_CLOSED,
 		/** ERR: not empty constructor. 0 parameters */
@@ -91,8 +91,10 @@ public final class Translations {
 		NOT_EMPTY_ACCESSIBLE_CONSTRUCTOR,
 		/** ERR: error calling constructor. 0 parameters */
 		CONSTRUCTOR_ERROR,
-		/** ERR : Connection template is not avaible. 1 parameters */
-		CONNECTION_MATICO_NOT_AVAIBLE(1)
+		/** ERR : Connection template is not avaible. 1 parameter */
+		CONNECTION_MATICO_NOT_AVAIBLE(1),
+		/** ERR: wrong number of parameter for translation KEY. 0 parameters */
+		WRONG_TRANSLATIONS_PARAMETER
 		;
 		
 		/** number of expected substitution to apply to String format */
@@ -149,7 +151,11 @@ public final class Translations {
 	 */
 	public static String getMsg(KEY_MSG k, String ...strings ) {
 		if(trans==null) init();
-		return trans.get(k);
+
+		if ( strings.length != k.substitutions)
+			throw new IllegalArgumentException(trans.get(KEY_MSG.WRONG_TRANSLATIONS_PARAMETER));
+
+		return String.format(trans.get(k)+'\n',(Object[])strings);
 	}
 
 }

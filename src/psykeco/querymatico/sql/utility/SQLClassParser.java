@@ -157,11 +157,11 @@ public final class SQLClassParser {
 	 * <p><br></p>
 	 * @param type : a type
 	 * @param instance : an instance of type
-	 * @return Map of &lt; field name, field value &gt; of instance
+	 * @return Map &lt; field name, field value &gt; of instances
 	 */
 	public static Map<String,Object> parseInstance(@SuppressWarnings("rawtypes") Class type, Object instance){
 		if(!type.isInstance(instance))
-			throw new IllegalArgumentException(Translations.getMsg(WRONG_OBJECT_TYPE));
+			throw new IllegalArgumentException(Translations.getMsg(WRONG_OBJECT_TYPE,getTrueName(type),getTrueName(instance.getClass()))));
 
 		Map<String,Object> mappa=new HashMap<>();
 		
