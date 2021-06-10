@@ -87,6 +87,30 @@ public final class SQLClassParser {
 					
 		return s;
 	}
+
+	
+	
+	/**
+	 * <p>Map primitive type to Object one.</br></p> 
+	 * @param t : the primitive type
+	 * @return wrapped type of primitive or type itself if passed type is not primitive 
+	 */
+	public static <T> Class<?> mapPrimitiveToClass (Class<T> t){
+		String s = getTrueName(t);
+
+		switch(s){
+			case 	"byte": return 		Byte.class 	;
+			case   "short": return 	   Short.class 	;
+			case 	 "int": return 	 Integer.class 	;
+			case 	"long": return 		Long.class 	;
+			case   "float": return 	   Float.class 	;
+			case  "double": return 	  Double.class 	;
+			case "boolean": return 	 Boolean.class 	;
+			case 	"char":	return Character.class 	;
+
+			default: return t;
+		}
+	}
 	
 	/**
 	 * <p>take name of class from complete java-path of class. </p>
@@ -161,7 +185,7 @@ public final class SQLClassParser {
 	 */
 	public static Map<String,Object> parseInstance(@SuppressWarnings("rawtypes") Class type, Object instance){
 		if(!type.isInstance(instance))
-			throw new IllegalArgumentException(Translations.getMsg(WRONG_OBJECT_TYPE,getTrueName(type),getTrueName(instance.getClass()))));
+			throw new IllegalArgumentException(Translations.getMsg(WRONG_OBJECT_TYPE,getTrueName(type),getTrueName(instance.getClass())));
 
 		Map<String,Object> mappa=new HashMap<>();
 		
@@ -287,7 +311,7 @@ public final class SQLClassParser {
 				inst=GregorianCalendar.from(t.toLocalDateTime().atZone(ZoneId.systemDefault()));
 			}
 		} else {
-			inst=rs.getObject(x.getName(), x.getType());
+			inst=rs.getObject(x.getName(), mapPrimitiveToClass(x.getType()));
 		}
 		
 		return inst;

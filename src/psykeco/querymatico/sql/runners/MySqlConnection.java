@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import psykeco.querymatico.DBMaticO;
+import psykeco.querymatico.QueryMaticO;
 import psykeco.querymatico.sql.SQLConnectionMaticO;
 import psykeco.querymatico.sql.SQLDBMaticO;
 import psykeco.querymatico.sql.utility.SQLClassParser;
@@ -72,7 +73,71 @@ public class MySqlConnection {
 	 */
 	public MySqlConnection() { }
 
-	
+	/**
+	 * <p>Execute a single MySql command using {@link psykeco.querymatico.QueryMaticO #build QueryMaticO.build()} using {@link #exec(String)} methods and return a string contains an error message. If no error occur, it returns an empty string.</br></p>
+	 * <p>DB info of will be replaced with Connection information with {@link #db} if are not null</p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately an error string</br></p>
+	 * <p></br></p>
+	 * 
+	 * @param command sql command to execute
+	 * 
+	 * @return empty string if no error occurs. Error message instead
+	 */
+	public String exec(QueryMaticO command){
+		return exec( (db()==null)? command.copy().build() : command.copy().DB(db()).build());
+	}
+	/**
+	 * <p>Execute a single MySql query using {@link psykeco.querymatico.QueryMaticO #build QueryMaticO.build()} using {@link #query(String)} methods and return the resultSet. </br></p>
+	 * <p>DB info of will be replaced with Connection information with {@link #db} if are not null</p>
+	 * <p>If error occur, it returns <code>null</code> and message errors can be queried from {@link #getErrMsg()} </br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>
+	 * <p></br></p>
+	 * 
+	 * @param query sql query to execute
+	 * 
+	 * @return the ResultSet or <code>null</code>
+	 */
+	public ResultSet query(QueryMaticO query){
+		return query((db()==null)? query.copy().build() : query.copy().DB(db()).build());
+	}
+	/**
+	 * <p>Execute a single MySql query using {@link psykeco.querymatico.QueryMaticO #build QueryMaticO.build()} using {@link #queryList(Class, String)} methods and return a list of class objects represents the table. </br></p>
+	 * <p>DB info of will be replaced with Connection information with {@link #db} if are not null</p>
+	 * <p>If error occur, it returns an empty list and message errors can be queried from {@link #getErrMsg()}</br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>
+	 * <p>Automatic Relation-Object-mapping with input class is possible only if <b>empty constructor is avaible</b> and <b>class is concrete</b></br></p>
+	 * 
+	 * @param <T> the class of expected result ( class of queried table ), automatic selected through c parameter
+	 * @param c the class of expected result ( class of queried table )
+	 * @param query sql query to execute
+	 * 
+	 * @return {@link java.util.List List} &lt; c &gt;, if empty, check {@link #getErrMsg()}
+	 */
+	public <T> List<T> queryList(Class<T> c, QueryMaticO query){
+		return queryList(c,(db()==null)? query.copy().build() : query.copy().DB(db()).build());
+	}
+	/**
+	 * <p>Execute a single MySql query using {@link psykeco.querymatico.QueryMaticO #build QueryMaticO.build()} using {@link #queryMap(String)} methods and return an array of map. Every map rappresent a row of resultset</br></p>
+	 * <p>DB info of will be replaced with Connection information with {@link #db} if are not null</p>
+	 * <p>map will be structurated in this way:</br></p>
+	 * <ul>
+	 * 	<li>key = column name</li>
+	 * 	<li>value = row value as {@link Object}</li>
+	 * </ul>
+	 * 
+	 * if column represent a BLOB, byte array will be returned
+	 * 
+	 * <p>if an error occur, <code>null</code> value will be returned and message errors can be queried from {@link #getErrMsg()}</br></p>
+	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>
+	 * 
+	 * 
+	 * @param query la query
+	 * @return a {@link java.util.Map Map} &lt; {@link java.lang.String String},{@link java.lang.Object Object} &gt;
+	 */ 
+	public Map<String,Object>[] queryMap(QueryMaticO query){ 
+		return queryMap((db()==null)? query.copy().build() : query.copy().DB(db()).build());
+	}
+
 	/**
 	 * <p>Execute a single MySql command and return a string contains an error message. If no error occur, it returns an empty string.</br></p>
 	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately an error string</br></p>
@@ -189,7 +254,7 @@ public class MySqlConnection {
 	 * 	<li>value = row value as {@link Object}</li>
 	 * </ul>
 	 * 
-	 * if column represent a BLOB, byte array will be returned
+	 * if column represent a <code>BLOB</code>, <code>byte</code> array will be returned
 	 * 
 	 * <p>if an error occur, <code>null</code> value will be returned and message errors can be queried from {@link #getErrMsg()}</br></p>
 	 * <p>If no connection through {@link #createConnection(String,int,String,String)} or {@link #createConnection(SQLConnectionMaticO)} are established, methods return immediately</br></p>

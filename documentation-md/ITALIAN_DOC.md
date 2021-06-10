@@ -91,13 +91,14 @@ public static void main(String [] main){
 
 ### con QueryMaticO
 
-Crea una classe che rappresenti la tabella:
+Seguirà una delle possibili implentazioni con QueryMatico. Crea una classe che rappresenti la tabella:
 
 ```java
 public class Entity {
     private int identity;
     private String name;
     private String description;
+    public Entity(){}
     public Entity(int identity, String name, String description){
         setIdentity(identity);
         setName(name);
@@ -116,38 +117,39 @@ Quindi in un programma esegui:
 ```java
 public static void main(String []args){
 	MySqlConnection.createConnection((SQLConnectionMaticO) 
-				new SQLConnectionMaticO().psk(psk));
-	MySqlConnection m = new MySqlConnection();
+                    new SQLConnectionMaticO().psk("psk"));
+    MySqlConnection m = new MySqlConnection();
 
     // create db
-    DBMaticO dbc = new SQLDBMaticO().DB("DBName");
+    DBMaticO dbc = new SQLDBMaticO().DB("MyDBName");
+    m.exec(dbc.drop());
     m.exec(dbc.create());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     // create table
-    TableMaticO tc = new SQLTableMaticO().DB("DBName").table(Entity.class).primary("identity");
+    TableMaticO tc = new SQLTableMaticO().DB("MyDBName").table(Entity.class).primary("identity");
     m.exec(tc.create());
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     // insert data
     Entity e = new Entity(1, "DOGE", "funny dog");
-    m.exec(tc.insertData(e).build());
+    m.exec(tc.insertData(e));
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     e = new Entity(2, "MARIO", "italian plumber"); 
-    m.exec(tc.insertData(e).build());
+    m.exec(tc.insertData(e));
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
 
     e = new Entity(3, "STEVEN", "strange magic mix of diamond and a kid");
-    m.exec(tc.insertData(e).build());
+    m.exec(tc.insertData(e));
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
-    
-    List<Entity> res=m.queryList(Entity.class, sel.build());
+
+    List<Entity> res=m.queryList(Entity.class, tc.selectData(null));
     if (!m.getErrMsg().equals(""))
         throw new IllegalStateException("an error occur: " + m.getErrMsg());
     for(Entity ent : res ) {
