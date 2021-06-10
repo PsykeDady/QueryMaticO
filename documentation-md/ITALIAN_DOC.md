@@ -165,11 +165,12 @@ public static void main(String []args){
 
 
 
-|                              |                      Senza Query MaticO                       |                       Con Query MaticO                        |
+|                              |                      Senza Query MaticO                      |                       Con Query MaticO                       |
 | ---------------------------- | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | *verbosità*                  | il codice è più lungo, contiene più elementi di distrazione e risulta meno pulito |              il codice è più corto, più pulito               |
 | *riusabilità e manutenzione* | il codice dipende strettamente dall'esempio, non è riadattabile facilmente né facilmente aggiornabile | il codice preleva dalle classi automaticamente le informazioni che servono, il che rende l'approccio facilmente aggiornabile e più manutenibile |
 | *gestione errori*            |      la gestione degli errori viene fatto via try catch      | la gestione degli errori è demandata all'interrogazione di apposite stringhe all'interno della classe che effettua query |
+| *Injection safe*             | Senza utilizzare Preparement State o altri meccanismi, sei soggetto a SQL-Injection | Non scrivi manualmente le query, indichi solo nomi e campi. Avvengono controlli interni che evitano i più comuni problemi di injection |
 
 
 
@@ -180,7 +181,7 @@ Con QueryMaticO puoi:
 
 - generare facilmente update a partire dalle istanze
 - creare più istanze di select diverse e farne la join su determinati campi.
-- preoccuparti di meno delle injection, i controlli sono effettuati già dai builder
+- creare, gestire e manipolare i database stessi, le tabelle o altro, senza mai dover aggiustare il database stess 
 
 E molto altro
 
@@ -189,48 +190,34 @@ E molto altro
 ## Struttura generale dei package
 
 ```
-QueryMaticO/src
-└── psykeco
-    └── querymatico
-        ├── err
-        │   ├── dict
-        │   │   ├── ENErrMsg.java
-        │   │   └── ITErrMsg.java
-        │   └── ErrMsg.java
-        ├── sql
-        │   ├── models
-        │   │   └── Tables.java
-        │   ├── runners
-        │   │   ├── InformationSchema.java
-        │   │   └── MySqlConnection.java
-        │   ├── utility
-        │   │   └── SQLClassParser.java
-        │   ├── SQLConnectionMaticO.java
-        │   ├── SQLDBMaticO.java
-        │   ├── SQLDeleteMaticO.java
-        │   ├── SQLInsertMaticO.java
-        │   ├── SQLSelectMaticO.java
-        │   ├── SQLTableMaticO.java
-        │   └── SQLUpdateMaticO.java
-        ├── ConnectionMaticO.java
-        ├── DBMaticO.java
-        ├── QueryMaticO.java
-        ├── SelectMaticO.java
-        └── TableMaticO.java
-
+ psykeco
+ └── querymatico
+     ├── err
+     │   ├── dict
+     │   │   └── contiene le traduzioni dei messaggi
+     │   └── contiene classi che generano i messaggi
+     ├── nomelinguaggio
+     │   ├── models
+     │   │   └── eventuali mapping interni di tabelle 
+     │   ├── runners
+     │   │   └── Contiene classi che gestiscono la connessione al db
+     │   ├── utility
+     │   │   └── contiene classi che aiutano a mappare tipi e classi
+     │   └── contiene le varie implementazioni dei builder
+     └── contiene le interfacce dei builder
 ```
 
-
+L'unico linguaggio attualmente implmenetato è **MySQL** standard ( nel package `sql` )
 
 ### package querymatico
 
 Contiene le interfacce del framework di QueryMaticO: 
 
-- ConnectionMaticO : gestisce e crea la connessione
-- DBMaticO : genera query per la creazione e gestione di un database
-- TableMaticO : genera query per la creazione e gestione di una tabella, comprese insert, select, ecc..
-- QueryMaticO : ogni implementazione genera una tipologia di istruzioni sql
-- SelectMaticO :  estende QueryMaticO, genera query di selezione dei dati
+- `ConnectionMaticO` : gestisce e crea la connessione
+- `DBMaticO` : genera query per la creazione e gestione di un database
+- `TableMaticO` : genera query per la creazione e gestione di una tabella, comprese insert, select, ecc..
+- `QueryMaticO` : ogni implementazione genera una tipologia di istruzioni sql
+- `SelectMaticO` :  estende QueryMaticO, genera query di selezione dei dati
 
  
 
@@ -239,17 +226,19 @@ Contiene le interfacce del framework di QueryMaticO:
 Il framework inizia da `ConnectionMaticO`, un builder che semplifica i processi di connessione.
 
 
-| nome metodo ( parametri input ) |        output         |                      breve spiegazione                       |
-| ------------------------------- | :-------------------: | :----------------------------------------------------------: |
-| `driver(String)`                |   `ConnectionMaticO`   |          imposta il nome dei driver (se necessario)          |
-| `url(String)`                   |   `ConnectionMaticO`   |         imposta nome url (`localhost` predefinito )          |
-| `user(String)`                  |   `ConnectionMaticO`   |          imposta nome utente  (`root` predefinito )          |
-| `psk(String)`                   |   `ConnectionMaticO`   |            imposta password (`blank` by default)             |
-| `db(String)`                    |   `ConnectionMaticO`   |          imposta nome database  (`null` by default)          |
-| `autocommit(boolean)`           |   `ConnectionMaticO`   |            imposta autocommit (`true` by default)            |
-| `port(int)`                     |   `ConnectionMaticO`   |         imposta numero di porta (`3306` by defautl)          |
-| `connect()`                     | `java.sql.Connection` |         connette al db e restituisce la connessione          |
+| nome metodo ( parametri input ) |        output         |                      breve spiegazione                         |
+| ------------------------------- | :-------------------: | :----------------------------------------------------------:   |
+| `driver(String)`                |   `ConnectionMaticO`  |          imposta il nome dei driver (se necessario)            |
+| `url(String)`                   |   `ConnectionMaticO`  |         imposta nome url (`localhost` predefinito )            |
+| `user(String)`                  |   `ConnectionMaticO`  |          imposta nome utente  (`root` predefinito )            |
+| `psk(String)`                   |   `ConnectionMaticO`  |            imposta password (`blank` by default)               |
+| `db(String)`                    |   `ConnectionMaticO`  |          imposta nome database  (`null` by default)            |
+| `getDB()`                       |       `String`        |          imposta nome database  (`null` by default)            |
+| `autocommit(boolean)`           |   `ConnectionMaticO`  |            imposta autocommit (`true` by default)              |
+| `port(int)`                     |   `ConnectionMaticO`  |         imposta numero di porta (`3306` by defautl)            |
+| `connect()`                     | `java.sql.Connection` |         connette al db e restituisce la connessione            |
 | `validate()`                    |       `String`        | restituisce stringa vuota se i parametri superano il controllo |
+| `build()`                       |       `String`        | costruisce l'url di connessione completo di tutti i parametri  |
 
 
 

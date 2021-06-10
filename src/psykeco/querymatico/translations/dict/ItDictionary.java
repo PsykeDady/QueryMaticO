@@ -13,7 +13,6 @@ import static psykeco.querymatico.translations.Translations.KEY_MSG.DB_NULL;
 import static psykeco.querymatico.translations.Translations.KEY_MSG.ENTRY_EMPTY;
 import static psykeco.querymatico.translations.Translations.KEY_MSG.NOT_EMPTY_ACCESSIBLE_CONSTRUCTOR;
 import static psykeco.querymatico.translations.Translations.KEY_MSG.NOT_EMPTY_CONSTRUCTOR;
-import static psykeco.querymatico.translations.Translations.KEY_MSG.NOT_SUPPORT;
 import static psykeco.querymatico.translations.Translations.KEY_MSG.NOT_SUPPORT_METHOD;
 import static psykeco.querymatico.translations.Translations.KEY_MSG.PORT_NOT_VALID;
 import static psykeco.querymatico.translations.Translations.KEY_MSG.PREFIX_NOT_VALID;

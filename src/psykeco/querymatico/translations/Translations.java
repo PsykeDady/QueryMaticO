@@ -65,8 +65,6 @@ public final class Translations {
 		AGGREGATE_NOT_NULL(1),
 		/** ERR: this Entry is empty. 0 parameters */
 		ENTRY_EMPTY,
-		/** ERR: this not support this. 2 parameters */
-		NOT_SUPPORT(2),
 		/** ERR: class not has parameters to mapping. 0 parameters */
 		CLASS_PARAMETERS,
 		/** ERR: this prefix value is not valid. 1 parameter */
@@ -134,8 +132,7 @@ public final class Translations {
 	 * @param language the selected language
 	 */
 	public static void init (Locale language) {
-
-		if (language.equals(Locale.ITALIAN)){
+		if (language.equals(Locale.ITALIAN) || language.equals(Locale.ITALY)){
 			trans=ItDictionary.getDict();
 		} else {
 			trans=EnDictionary.getDict();
