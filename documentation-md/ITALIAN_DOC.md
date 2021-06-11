@@ -249,16 +249,22 @@ L'unica implementazione attualmente disponibile di **ConnectionMaticO** è `SQLC
 Ecco un esempio di connessione con SQLConnectionMaticO:
 
 ```java
-
+SQLConnectionMaticO s=(SQLConnectionMaticO) new SQLConnectionMaticO()
+				.url(url)
+				.port(port)
+				.user(user)
+				.psk(psk); 
+Connection c=s.connect();
 ```
 
+Tuttavia la connessione non deve essere creata direttamente, ma sarà creata da un ulteriore elemento del framework che si occuperà anche di gestire le query. 
 
 
 ## MySqlConnection
 
-Crea un istanza singleton di `SQLConnectionMaticO` e di `java.sql.Connection` e la usa per le query
+Crea un istanza singleton di `SQLConnectionMaticO` e di `java.sql.Connection`. Si occupa poi di creare le query utilizzando i vari componenti del framework.
 
-Instanziazione in due fasi:
+L'instanziazione avviene in due fasi, una prima fase in cui si creano le informazioni della connessione attraverso un instanza di SQLConnectionMaticO:
 
 ```java
 // creazione della connessione, una tantum nel codice fino a chiusura connessione
@@ -267,19 +273,29 @@ MySqlConnection.createConnection(
 	new SQLConnectionMaticO().url(url).port(nport)
     .psk(psk).user(user).db(db).autocommit(true)
 );
+```
 
+Una seconda fase in cui si inizializza un instanza del `MySqlConnection`, che a questo punto contiene già tutte le informazioni necessarie:
+```java
 // preleva l'istanza e la usa
 MySqlConnection m = new MySqlConnection();
 ```
 
+Si possono quindi utilizzare, sull'istanza m, tutti i metodi per interrogare il db o eseguirci istruzioni.
 
+> NOTA BEME:
+> tutte le istanze d MySqlConnection condividono la stessa connessione a prescindere da dove si trovano. Non si possono creare quindi due istanze con informazioni diverse nello stesso momento.
 
-Fornisce anche alcune **query**:  
+Ecco una lista dei metodi da usare per interagire con il db
 
 | nome metodo ( parametri input ) | output         | breve spiegazione                                   |
 | ------------------------------- | -------------- | --------------------------------------------------- |
-| `exec( String queryCompleta)`   | `String`       | esegue un istruzione MySql *(sconsigliato uso con stringa diretta)* |
-| `query( String queryCompleta)`  | `ResultSet`    | esegue una query, restituisce il ResultSet *(sconsigliato uso con stringa diretta)* |
+| `exec( QueryMaticO )`           | `String`       | esegue un istruzione utilizzando il metodo build del QueryMaticO in input |
+| `query( QueryMaticO)`           | `ResultSet`    | esegue un istruzione utilizzando il metodo build del QueryMaticO in input, restituisce il ResultSet |
+| `queryList(Class<T>, QueryMaticO)` 	| `List<T>` 		| Esegue la query e trasforma ogni riga con un oggetto della classe passata, quindi ne costruisce una lista |
+| `queryMap(QueryMaticO)` 				| `Map <String,Object>`	| Esegue la query e restituisce una mappa dove la chiave rappresenta il nome della colonna e l'oggetto il valore|
+| `exec( String)`   | `String`       | esegue un istruzione MySql *(sconsigliato uso con stringa diretta)* |
+| `query( String)`  | `ResultSet`    | esegue una query, restituisce il ResultSet *(sconsigliato uso con stringa diretta)* |
 | `queryList(Class<T>, String)` 	| `List<T>` 		| Esegue la query e trasforma ogni riga con un oggetto della classe passata, quindi ne costruisce una lista *(sconsigliato uso con stringa diretta)* |
 | `queryMap(String)` 				| `Map <String,Object>`	| Esegue la query e restituisce una mappa dove la chiave rappresenta il nome della colonna e l'oggetto il valore *(sconsigliato uso con stringa diretta)* |
 | `getErrMsg()` 					| `String` 		| Restituisce, se esiste, un messaggio di errore dell'ultima query |
@@ -299,7 +315,8 @@ La classe fornisce i seguenti metodi statici per interagire con la Connessione, 
 | ------------------------------- | -------------- | --------------------------------------------------- |
 |`createConnection(SQLConnectionMaticO)` 		 | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate 	|
 |`createConnection(String url, int port, String user, String psk)` | `void` 	 | se non esiste un istanza attiva, ne crea una con le informazioni passate (versione con parametri) |
-|`statoConnessione()`	 						 | `boolean` | restituisce true se &egrave; connesso 										|
+|`existConnection()`	 						 | `boolean` | restituisce true se &egrave; connesso 										|
+|`db()` 										 | `String` 	 | restituisce il nom del db							|
 |`reset()` 										 | `void` 	 | imposta a null l'istanza statica di connessione								|
 |`reboot()` 									 | `void` 	 | ricrea la connessione con le informazioni passate a momento di creazione		|
 |`commit()` 									 | `void` 	 | esegue il commit dello statement corrente 									|
